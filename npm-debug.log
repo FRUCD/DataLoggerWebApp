@@ -1,62 +1,26 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/local/Cellar/node/6.8.1/bin/node',
-1 verbose cli   '/usr/local/bin/npm',
-1 verbose cli   'install',
-1 verbose cli   '-g',
-1 verbose cli   'csvtojson' ]
-2 info using npm@3.10.8
-3 info using node@v6.8.1
-4 silly loadCurrentTree Starting
-5 silly install loadCurrentTree
-6 silly install readGlobalPackageData
-7 silly fetchPackageMetaData csvtojson
-8 silly fetchOtherPackageData csvtojson
-9 silly cache add args [ 'csvtojson', null ]
-10 verbose cache add spec csvtojson
-11 silly cache add parsed spec Result {
-11 silly cache add   raw: 'csvtojson',
-11 silly cache add   scope: null,
-11 silly cache add   escapedName: 'csvtojson',
-11 silly cache add   name: null,
-11 silly cache add   rawSpec: 'csvtojson',
-11 silly cache add   spec: '/Users/gdelvillar/Desktop/CSVtoJSON_Project/csvtojson',
-11 silly cache add   type: 'local' }
-12 silly addLocalTarball shasum (computed) 3199024eb6322a1ec8c4d7f588c412ee6d3d0a7d
-13 verbose addTmpTarball /Users/gdelvillar/Desktop/CSVtoJSON_Project/csvtojson not in flight; adding
-14 verbose correctMkdir /Users/gdelvillar/.npm correctMkdir not in flight; initializing
-15 verbose addTmpTarball validating metadata from /Users/gdelvillar/Desktop/CSVtoJSON_Project/csvtojson
-16 verbose tar unpack /Users/gdelvillar/Desktop/CSVtoJSON_Project/csvtojson
-17 verbose tar unpacking to /var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625
-18 silly gentlyRm /var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625 is being purged
-19 verbose gentlyRm don't care about contents; nuking /var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625
-20 silly gunzTarPerm modes [ '755', '644' ]
-21 error not a package /Users/gdelvillar/Desktop/CSVtoJSON_Project/csvtojson
-22 error addLocal Could not install /Users/gdelvillar/Desktop/CSVtoJSON_Project/csvtojson
-23 silly fetchPackageMetaData Error: ENOENT: no such file or directory, open '/var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625/package.json'
-23 silly fetchPackageMetaData     at Error (native)
-23 silly fetchPackageMetaData  error for csvtojson { Error: ENOENT: no such file or directory, open '/var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625/package.json'
-23 silly fetchPackageMetaData     at Error (native)
-23 silly fetchPackageMetaData   errno: -2,
-23 silly fetchPackageMetaData   code: 'ENOENT',
-23 silly fetchPackageMetaData   syscall: 'open',
-23 silly fetchPackageMetaData   path: '/var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625/package.json' }
-24 silly rollbackFailedOptional Starting
-25 silly rollbackFailedOptional Finishing
-26 silly runTopLevelLifecycles Finishing
-27 silly install printInstalled
-28 verbose stack Error: ENOENT: no such file or directory, open '/var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625/package.json'
-28 verbose stack     at Error (native)
-29 verbose cwd /Users/gdelvillar/Desktop/CSVtoJSON_Project
-30 error Darwin 16.0.0
-31 error argv "/usr/local/Cellar/node/6.8.1/bin/node" "/usr/local/bin/npm" "install" "-g" "csvtojson"
-32 error node v6.8.1
-33 error npm  v3.10.8
-34 error path /var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625/package.json
-35 error code ENOENT
-36 error errno -2
-37 error syscall open
-38 error enoent ENOENT: no such file or directory, open '/var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625/package.json'
-39 error enoent ENOENT: no such file or directory, open '/var/folders/yn/8lr1bp_17ylf4jz1fn8yc3f40000gn/T/npm-996-e6ca7611/unpack-b0de3625/package.json'
-39 error enoent This is most likely not a problem with npm itself
-39 error enoent and is related to npm not being able to find a file.
-40 verbose exit [ -2, true ]
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'start' ]
+2 info using npm@3.10.3
+3 info using node@v6.7.0
+4 verbose stack Error: missing script: start
+4 verbose stack     at run (C:\Program Files\nodejs\node_modules\npm\lib\run-script.js:151:19)
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\lib\run-script.js:61:5
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:356:5
+4 verbose stack     at checkBinReferences_ (C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:320:45)
+4 verbose stack     at final (C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:354:3)
+4 verbose stack     at then (C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:124:5)
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:311:12
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\graceful-fs\graceful-fs.js:78:16
+4 verbose stack     at tryToString (fs.js:455:3)
+4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:442:12)
+5 verbose cwd C:\Users\Cesar\Documents\FRUCD DATALOGGER\datalogger
+6 error Windows_NT 10.0.14393
+7 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "start"
+8 error node v6.7.0
+9 error npm  v3.10.3
+10 error missing script: start
+11 error If you need help, you may report this error at:
+11 error     <https://github.com/npm/npm/issues>
+12 verbose exit [ 1, true ]

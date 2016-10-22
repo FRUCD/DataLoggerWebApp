@@ -1,0 +1,23 @@
+{
+  "name": "datalogger",
+  "version": "0.0.1",
+  "description": "converts data from csv into json and parses their descriptors",
+  "main": "csvparser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gdelvillar/dataLogger.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gdelvillar/dataLogger/issues"
+  },
+  "homepage": "https://github.com/gdelvillar/dataLogger#readme",
+  "dependencies": {
+    "csvtojson": "^1.0.3",
+    "express": "^4.14.0"
+  }
+}
