@@ -1,6 +1,6 @@
 var fs = require('fs');
 const readline = require('readline');
-var parser = require('./parser.js');
+var parser = require('../serial/parser.js');
 fs.readdir("intermediate",function(err,files){
     for(var i=0;i<files.length;i++)
     {
