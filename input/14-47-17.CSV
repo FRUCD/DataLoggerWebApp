@@ -1,4 +1,4 @@
-CAN_ID,TIMESTAMP,bit1,bit2,bit3,bit4,bit5,bit6,bit7,bit8
+CAN_ID,Timestamp,bit1,bit2,bit3,bit4,bit5,bit6,bit7,bit8
 1574,16776693,1,0,0,0,0,0,0,0
 1894,16776693,0,0,0,0,0,0,0,0
 1638,16776692,FF,0,0,0,0,0,0,0

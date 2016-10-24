@@ -1,20 +1,20 @@
 var Converter = require("csvtojson").Converter;
-var converter = new Converter({});
 var fs = require("fs"); 
 //end_parsed will be emitted once parsing finished 
-converter.on("end_parsed", function (jsonArray) {
-    jsonArray.forEach(function(value,index,array){
-        switch(value.CAN_ID)
-        {
-            case 1574:
-                value.PDO_Description = "TPDO1 Dash Status";
-                value.State = value.bit1;
-                delete value.bit1;
-                break;
-        } 
-    });
-   fs.writeFile('output/14-47-17.json',JSON.stringify(jsonArray)); 
-});
- 
 //read from file 
-fs.createReadStream("input/14-47-17.CSV").pipe(converter);
+
+fs.readdir("input",function(err,files){
+    for(var i=0;i<files.length;i++)
+    {
+        var string = fs.readFileSync("input/"+files[i]);
+        if(string.length>0){
+            string = string.toString();
+            var can = string.substring(0,6);
+            if(can!="CAN_ID") string = "CAN_ID,Timestamp,bit1,bit2,bit3,bit4,bit5,bit6,bit7,bit8\n"+string;
+            fs.writeFileSync("input/"+files[i],string);
+            var converter = new Converter({});
+            var out = fs.createWriteStream("intermediate/"+files[i]);
+            fs.createReadStream("input/"+files[i]).pipe(converter).pipe(out);
+        }
+    }
+});
