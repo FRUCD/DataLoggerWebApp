@@ -20,6 +20,7 @@
     "csvtojson": "^1.0.3",
     "express": "^4.14.0",
     "mongodb": "^2.2.11",
-    "serialport": "^4.0.3"
+    "serialport": "^4.0.3",
+    "socket.io": "^1.5.1"
   }
 }
