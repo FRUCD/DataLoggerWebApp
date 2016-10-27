@@ -680,7 +680,7 @@
 {"CAN_Id":1574,"Timestamp":16776356,"State":1}
 {"CAN_Id":1894,"Timestamp":16776356}
 {"CAN_Id":392,"Timestamp":16776355,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16776355}
+{"CAN_Id":904,"Timestamp":16776355,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1574,"Timestamp":16776355,"State":1}
 {"CAN_Id":1894,"Timestamp":16776355}
 {"CAN_Id":1160,"Timestamp":16776354,"temp_array":[34,33,33,33,33,35],"highest":5,"pack_max_temp":35}
@@ -1207,7 +1207,7 @@
 {"CAN_Id":1382,"Timestamp":16749966}
 {"CAN_Id":1126,"Timestamp":16749966}
 {"CAN_Id":392,"Timestamp":16749959,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16749959}
+{"CAN_Id":904,"Timestamp":16749959,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16749958,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16749953}
 {"CAN_Id":1830,"Timestamp":16749922}
@@ -1263,7 +1263,7 @@
 {"CAN_Id":1382,"Timestamp":16749363}
 {"CAN_Id":1126,"Timestamp":16749363}
 {"CAN_Id":392,"Timestamp":16749331,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16749330}
+{"CAN_Id":904,"Timestamp":16749330,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16749329,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16749324}
 {"CAN_Id":1830,"Timestamp":16749319}
@@ -1318,7 +1318,7 @@
 {"CAN_Id":1126,"Timestamp":16748759}
 {"CAN_Id":1830,"Timestamp":16748716}
 {"CAN_Id":392,"Timestamp":16748702,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16748702}
+{"CAN_Id":904,"Timestamp":16748702,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16748701,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16748696}
 {"CAN_Id":512,"Timestamp":16748684}
@@ -1380,7 +1380,7 @@
 {"CAN_Id":512,"Timestamp":16748083}
 {"CAN_Id":513,"Timestamp":16748083}
 {"CAN_Id":392,"Timestamp":16748073,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16748073}
+{"CAN_Id":904,"Timestamp":16748073,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16748072,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16748067}
 {"CAN_Id":1382,"Timestamp":16748036}
@@ -1432,7 +1432,7 @@
 {"CAN_Id":513,"Timestamp":16747483}
 {"CAN_Id":512,"Timestamp":16747483}
 {"CAN_Id":392,"Timestamp":16747445,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16747444}
+{"CAN_Id":904,"Timestamp":16747444,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16747443,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16747438}
 {"CAN_Id":1382,"Timestamp":16747432}
@@ -1489,7 +1489,7 @@
 {"CAN_Id":1382,"Timestamp":16746829}
 {"CAN_Id":1126,"Timestamp":16746829}
 {"CAN_Id":392,"Timestamp":16746816,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16746816}
+{"CAN_Id":904,"Timestamp":16746816,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16746815,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16746810}
 {"CAN_Id":1830,"Timestamp":16746805}
@@ -1545,7 +1545,7 @@
 {"CAN_Id":1126,"Timestamp":16746226}
 {"CAN_Id":1830,"Timestamp":16746202}
 {"CAN_Id":392,"Timestamp":16746187,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16746187}
+{"CAN_Id":904,"Timestamp":16746187,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16746186,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":512,"Timestamp":16746184}
 {"CAN_Id":513,"Timestamp":16746184}
@@ -1603,7 +1603,7 @@
 {"CAN_Id":513,"Timestamp":16745583}
 {"CAN_Id":512,"Timestamp":16745583}
 {"CAN_Id":392,"Timestamp":16745559,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16745559}
+{"CAN_Id":904,"Timestamp":16745559,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16745558,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16745552}
 {"CAN_Id":1382,"Timestamp":16745502}
@@ -1660,7 +1660,7 @@
 {"CAN_Id":513,"Timestamp":16744983}
 {"CAN_Id":512,"Timestamp":16744983}
 {"CAN_Id":392,"Timestamp":16744930,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16744930}
+{"CAN_Id":904,"Timestamp":16744930,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16744929,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16744924}
 {"CAN_Id":1382,"Timestamp":16744899}
@@ -1715,7 +1715,7 @@
 {"CAN_Id":512,"Timestamp":16744383}
 {"CAN_Id":513,"Timestamp":16744383}
 {"CAN_Id":392,"Timestamp":16744302,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16744301}
+{"CAN_Id":904,"Timestamp":16744301,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16744300,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16744295}
 {"CAN_Id":1126,"Timestamp":16744295}
@@ -1776,7 +1776,7 @@
 {"CAN_Id":513,"Timestamp":16743683}
 {"CAN_Id":512,"Timestamp":16743683}
 {"CAN_Id":392,"Timestamp":16743673,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16743673}
+{"CAN_Id":904,"Timestamp":16743673,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16743672,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16743667}
 {"CAN_Id":1830,"Timestamp":16743588}
@@ -1831,7 +1831,7 @@
 {"CAN_Id":513,"Timestamp":16743083}
 {"CAN_Id":512,"Timestamp":16743083}
 {"CAN_Id":392,"Timestamp":16743044,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16743044}
+{"CAN_Id":904,"Timestamp":16743044,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16743043,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16743038}
 {"CAN_Id":512,"Timestamp":16742984}
@@ -1884,7 +1884,7 @@
 {"CAN_Id":513,"Timestamp":16742483}
 {"CAN_Id":1830,"Timestamp":16742481}
 {"CAN_Id":392,"Timestamp":16742416,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16742416}
+{"CAN_Id":904,"Timestamp":16742416,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16742414,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":3,"Timestamp":16742409}
 {"CAN_Id":1894,"Timestamp":16742401}
@@ -1939,7 +1939,7 @@
 {"CAN_Id":1126,"Timestamp":16741882}
 {"CAN_Id":1830,"Timestamp":16741878}
 {"CAN_Id":392,"Timestamp":16741787,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16741787}
+{"CAN_Id":904,"Timestamp":16741787,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1160,"Timestamp":16741786,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
 {"CAN_Id":512,"Timestamp":16741784}
 {"CAN_Id":513,"Timestamp":16741784}
@@ -2002,7 +2002,7 @@
 {"CAN_Id":512,"Timestamp":16741183}
 {"CAN_Id":1830,"Timestamp":16741174}
 {"CAN_Id":392,"Timestamp":16741158,"carName":"FE","SOC":"A0","flag":10241}
-{"CAN_Id":904,"Timestamp":16741158}
+{"CAN_Id":904,"Timestamp":16741158,"min_voltage":0,"max_voltage":2583,"pack_voltage":65536}
 {"CAN_Id":1382,"Timestamp":16741158}
 {"CAN_Id":1126,"Timestamp":16741157}
 {"CAN_Id":1160,"Timestamp":16741157,"temp_array":[34,33,33,33,34,35],"highest":5,"pack_max_temp":35}
