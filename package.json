@@ -4,7 +4,7 @@
   "description": "converts data from csv into json and parses their descriptors",
   "main": "csvparser.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha serial/parser_test/test.js"
   },
   "repository": {
     "type": "git",
@@ -21,5 +21,7 @@
     "express": "^4.14.0",
     "mongodb": "^2.2.11",
     "serialport": "^4.0.3"
+  },
+  "devDependencies": { 
   }
 }
