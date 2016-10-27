@@ -18,6 +18,7 @@
   "homepage": "https://github.com/gdelvillar/dataLogger#readme",
   "dependencies": {
     "csvtojson": "^1.0.3",
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "mongodb": "^2.2.11"
   }
 }
