@@ -32,7 +32,7 @@ function parseThrottle(out,data){
     }
     out.difference_check = data[2] & 0x80;
     out.throttle = (data[2] & 0x7F) << 8 | data[3];
-    out.state = data[6] << 24 | data[7] << 16 | data[8] << 8 | data[9];
+    out.flag = data[6] << 24 | data[7] << 16 | data[8] << 8 | data[9];
 }
 function parseBrake(out,data){
     for(var i=2;i<data.length;i++){
@@ -40,7 +40,7 @@ function parseBrake(out,data){
     }
     out.difference_check = data[2] & 0x80;
     out.brake = (data[2] & 0x7F) << 8 | data[3];
-    out.state = data[6] << 24 | data[7] << 16 | data[8] << 8 | data[9];
+    out.flag = data[6] << 24 | data[7] << 16 | data[8] << 8 | data[9];
 }
 function chooseParser(out,data){
       switch(data[0]){
