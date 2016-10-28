@@ -8,7 +8,7 @@ import ngSanitize from 'angular-sanitize';
 import 'angular-socket-io';
 
 import uiRouter from 'angular-ui-router';
-
+import uiBootstrap from 'angular-ui-bootstrap';
 // import ngMessages from 'angular-messages';
 
 
@@ -25,14 +25,14 @@ import socket from '../components/socket/socket.service';
 
 import './app.scss';
 
-angular.module('testGenApp', [ngCookies, ngResource, ngSanitize, 'btford.socket-io', uiRouter,
-    navbar, footer, main, constants, socket, util
+angular.module('dataLoggerWebAppApp', [ngCookies, ngResource, ngSanitize, 'btford.socket-io',
+    uiRouter, uiBootstrap, navbar, footer, main, constants, socket, util
   ])
   .config(routeConfig);
 
 angular.element(document)
   .ready(() => {
-    angular.bootstrap(document, ['testGenApp'], {
+    angular.bootstrap(document, ['dataLoggerWebAppApp'], {
       strictDi: true
     });
   });

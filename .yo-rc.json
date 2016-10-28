@@ -20,16 +20,16 @@
       "html": true,
       "sass": true,
       "uirouter": true,
-      "bootstrap": false,
-      "uibootstrap": false,
+      "bootstrap": true,
+      "uibootstrap": true,
       "socketio": true,
       "models": true,
       "mongooseModels": true,
       "mongoose": true,
-      "jasmine": true,
-      "mocha": false,
+      "mocha": true,
+      "jasmine": false,
       "should": false,
-      "expect": false
+      "expect": true
     }
   },
   "generator-ng-component": {
@@ -43,7 +43,8 @@
     "modulePrompt": true,
     "filters": [
       "uirouter",
-      "jasmine",
+      "mocha",
+      "expect",
       "uirouter",
       "es6",
       "webpack"

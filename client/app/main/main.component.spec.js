@@ -35,6 +35,6 @@ describe('Component: MainComponent', function() {
     mainComponent.$onInit();
     $httpBackend.flush();
     expect(mainComponent.awesomeThings.length)
-      .toBe(4);
+      .to.equal(4);
   });
 });

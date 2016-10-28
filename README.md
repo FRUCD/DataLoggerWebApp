@@ -1,4 +1,4 @@
-# FRUCD Data Logger
+# FRUCD Data Logger Web App
 
 ## Getting Started
 

@@ -10,7 +10,13 @@ module.exports = function(config) {
     basePath: '',
 
     // testing framework to use (jasmine/mocha/qunit/...)
-    frameworks: ['jasmine'],
+    frameworks: ['mocha', 'chai', 'sinon-chai', 'chai-as-promised', 'chai-things'],
+
+    client: {
+      mocha: {
+        timeout: 5000 // set default mocha spec timeout
+      }
+    },
 
     // list of files / patterns to load in the browser
     files: ['spec.js'],
@@ -43,8 +49,9 @@ module.exports = function(config) {
       require('karma-chrome-launcher'),
       require('karma-coverage'),
       require('karma-firefox-launcher'),
+      require('karma-mocha'),
+      require('karma-chai-plugins'),
 
-      require('karma-jasmine'),
       require('karma-spec-reporter'),
       require('karma-phantomjs-launcher'),
       require('karma-script-launcher'),

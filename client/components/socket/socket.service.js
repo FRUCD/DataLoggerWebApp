@@ -80,6 +80,6 @@ function Socket(socketFactory) {
   };
 }
 
-export default angular.module('testGenApp.socket', [])
+export default angular.module('dataLoggerWebAppApp.socket', [])
   .factory('socket', Socket)
   .name;

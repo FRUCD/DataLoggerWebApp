@@ -7,7 +7,7 @@
 
 module.exports = {
   DOMAIN: 'http://localhost:9000',
-  SESSION_SECRET: 'testgen-secret',
+  SESSION_SECRET: 'dataloggerwebapp-secret',
 
   // Control debug level for modules using visionmedia/debug
   DEBUG: ''

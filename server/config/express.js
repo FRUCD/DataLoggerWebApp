@@ -54,7 +54,7 @@ export default function(app) {
     resave: false,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
-      db: 'test-gen'
+      db: 'data-logger-web-app'
     })
   }));
 

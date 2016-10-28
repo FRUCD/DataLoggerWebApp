@@ -5,6 +5,6 @@ import {
   UtilService
 } from './util.service';
 
-export default angular.module('testGenApp.util', [])
+export default angular.module('dataLoggerWebAppApp.util', [])
   .factory('Util', UtilService)
   .name;

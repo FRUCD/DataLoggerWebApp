@@ -2,6 +2,6 @@
 
 import angular from 'angular';
 
-export default angular.module('testGenApp.constants', [])
+export default angular.module('dataLoggerWebAppApp.constants', [])
   .constant('appConfig', require('../../server/config/environment/shared'))
   .name;

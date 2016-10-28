@@ -24,7 +24,7 @@ describe('Thing API:', function() {
     });
 
     it('should respond with JSON array', function() {
-      things.should.be.instanceOf(Array);
+      expect(things).to.be.instanceOf(Array);
     });
   });
 
@@ -48,8 +48,8 @@ describe('Thing API:', function() {
     });
 
     it('should respond with the newly created thing', function() {
-      newThing.name.should.equal('New Thing');
-      newThing.info.should.equal('This is the brand new thing!!!');
+      expect(newThing.name).to.equal('New Thing');
+      expect(newThing.info).to.equal('This is the brand new thing!!!');
     });
   });
 
@@ -75,8 +75,8 @@ describe('Thing API:', function() {
     });
 
     it('should respond with the requested thing', function() {
-      thing.name.should.equal('New Thing');
-      thing.info.should.equal('This is the brand new thing!!!');
+      expect(thing.name).to.equal('New Thing');
+      expect(thing.info).to.equal('This is the brand new thing!!!');
     });
   });
 
@@ -106,8 +106,8 @@ describe('Thing API:', function() {
     });
 
     it('should respond with the original thing', function() {
-      updatedThing.name.should.equal('New Thing');
-      updatedThing.info.should.equal('This is the brand new thing!!!');
+      expect(updatedThing.name).to.equal('New Thing');
+      expect(updatedThing.info).to.equal('This is the brand new thing!!!');
     });
 
     it('should respond with the updated thing on a subsequent GET', function(done) {
@@ -121,8 +121,8 @@ describe('Thing API:', function() {
           }
           let thing = res.body;
 
-          thing.name.should.equal('Updated Thing');
-          thing.info.should.equal('This is the updated thing!!!');
+          expect(thing.name).to.equal('Updated Thing');
+          expect(thing.info).to.equal('This is the updated thing!!!');
 
           done();
         });
@@ -155,8 +155,8 @@ describe('Thing API:', function() {
     });
 
     it('should respond with the patched thing', function() {
-      patchedThing.name.should.equal('Patched Thing');
-      patchedThing.info.should.equal('This is the patched thing!!!');
+      expect(patchedThing.name).to.equal('Patched Thing');
+      expect(patchedThing.info).to.equal('This is the patched thing!!!');
     });
   });
 

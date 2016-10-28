@@ -38,7 +38,7 @@ export class MainController {
   }
 }
 
-export default angular.module('testGenApp.main', [uiRouter])
+export default angular.module('dataLoggerWebAppApp.main', [uiRouter])
   .config(routing)
   .component('main', {
     template: require('./main.html'),

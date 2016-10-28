@@ -7,7 +7,7 @@ module.exports = {
 
   // MongoDB connection options
   mongo: {
-    uri: 'mongodb://localhost/testgen-dev'
+    uri: 'mongodb://localhost/dataloggerwebapp-dev'
   },
 
   // Seed database on startup
