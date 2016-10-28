@@ -16,7 +16,8 @@ io.on('connection',function(socket){
 var rl = readline.createInterface({input:fs.createReadStream("../csv/output/14-47-17.json")});
 rl.pause();
 rl.on('line',function(line){
-    io.emit("data",JSON.parse(line));
+    var data = JSON.parse(line);
+    io.emit("data",data);
 });
 app.use(express.static("public"));
 server.listen(80);
