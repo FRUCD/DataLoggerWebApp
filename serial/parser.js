@@ -63,23 +63,18 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             var out = new Object();
             data = JSON.parse(data);
             if(!data)return "";
-            if(data instanceof Array)
+            var array = [];
+            if(data instanceof Object)
             {
-                out.CAN_Id = data[0];
-                out.Timestamp = data[1];
-                chooseParser(out,data);
-            }
-            else if(data instanceof Object)
-            {
-                var array = [];
                 for(var i=0;i<Object.keys(data).length;i++)
                 {
                     array.push(data[Object.keys(data)[i]]);
                 }
-                out.CAN_Id = array[0];
-                out.Timestamp = array[1];
-                chooseParser(out,array);
-            }   
+            }
+            else array = data;
+            out.CAN_Id = array[0];
+            out.Timestamp = array[1];
+            chooseParser(out,array);   
             return out;
         }
         else return "";
