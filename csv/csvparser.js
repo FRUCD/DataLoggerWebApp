@@ -12,6 +12,7 @@ fs.readdir("input",function(err,files){ //reads all the files in the input direc
             if(can!="CAN_ID") string = "CAN_ID,Timestamp,bit1,bit2,bit3,bit4,bit5,bit6,bit7,bit8\n"+string;
             fs.writeFileSync("input/"+files[i],string);
             var outputFileName = "output/"+files[i];
+            
             var parser = new Parser({decodeStrings:false,stringOut:true});
             outputFileName = outputFileName.substring(0,outputFileName.length-3)+"json"; //removes.csv and adds .json
             parser.pipe(fs.createWriteStream(outputFileName));
