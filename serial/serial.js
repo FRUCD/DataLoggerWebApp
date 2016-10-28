@@ -1,32 +1,23 @@
-// function getSerialPort() {
-//
-//     SerialPort.list(function (err, ports) {
-//         ports.forEach(function (port) {
-//             console.log(port.comName);
-//             console.log(port.pnpId);
-//             console.log(port.manufacturer);
-//             if (port.manufacturer.includes("Arduino")) {
-//                 var arduinoPort = new SerialPort(port.comName, {
-//                     parser: SerialPort.parsers.readline('\n')
-//                 });
-//                 arduinoPort.on('error', function (err) {
-//                     console.log('Error: ', err.message);
-//                 })
-//                 arduinoPort.on('data', function (data) {
-//                     console.log('Data: ' + data);
-//                 });
-//             }
-//         });
-//     });
-// }
 const SerialPort = require("serialport");
 const Readable = require('stream').Readable;
-
+var async = require('async');
 class serialStream extends Readable
 {
     constructor(options)
     {
         super(options);
+    }
+    _read()
+    {
+        if(this.arduinoPort && this.arduinoPort.resume)this.arduinoPort.resume();
+    }
+    connect(){
+        var self = this;
+        this.findArduino(function(err,port){
+            self.setPort(port);
+        });
+    }
+    findArduino(callback){
         SerialPort.list(function (err, ports) {
             ports.forEach(function (port) {
                 console.log(port.comName);
@@ -34,26 +25,27 @@ class serialStream extends Readable
                 console.log(port.manufacturer);
                 if (port.manufacturer.includes("Arduino"))
                 {
-                    this.arduinoPort = new SerialPort(port.comName, {
+                    callback(null,new SerialPort(port.comName, {
                         parser: SerialPort.parsers.readline('\n')
-                    });
-
-                     arduinoPort.on('data', function (data) {
-                        if (!this.push(data))
-                            arduinoPort.close();
-                    });
-                    arduinoPort.on('close', function (data) {
-                        this.push(null);
-                    });
+                    }));
                 }
             });
         });
-
-
-
     }
-    _read()
-    {
+    setPort(port){
+        var self = this;
+        port.on('data',this._data.bind(self));
+        port.on("close",this._close.bind(self));
+        this.arduinoPort = port;
+    }
+    _close(){
+        this.push(null);
+    }
+    _data(data){
+        if(!this.push(data)){
+            console.log("pausing because the read has stopped");
+            this.arduinoPort.pause();
+        }
     }
 }
-var serial = new serialStream();
+module.exports.serialStream = serialStream;
