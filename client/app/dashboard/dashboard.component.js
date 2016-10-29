@@ -4,22 +4,11 @@ import routing from './dashboard.routes';
 
 export class DashboardController {
   /*@ngInject*/
-  constructor($http, $scope, socket) {
-    //this.$http = $http;
-    //this.socket = socket;
-    //TODO: Cleanup and add relevant stuff
-    /*$scope.$on('$destroy', function() {
-      socket.unsyncUpdates('thing');
-    });*/
+  constructor($scope, $state) {
+    $scope.$state = $state;
   }
 
   $onInit() {
-    //TODO: Cleanup and add relevant stuff
-    /*this.$http.get('/api/things')
-      .then(response => {
-        this.awesomeThings = response.data;
-        this.socket.syncUpdates('thing', this.awesomeThings);
-      });*/
   }
 }
 
