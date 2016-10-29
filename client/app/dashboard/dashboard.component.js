@@ -3,6 +3,8 @@ import uiRouter from 'angular-ui-router';
 import routing from './dashboard.routes';
 
 import overview from './overview/overview.component';
+import car from './car/car.component';
+import bms from './bms/bms.component';
 
 
 export class DashboardController {
@@ -15,7 +17,7 @@ export class DashboardController {
   }
 }
 
-export default angular.module('dataLoggerWebAppApp.dashboard', [uiRouter, overview])
+export default angular.module('dataLoggerWebAppApp.dashboard', [uiRouter, overview, car, bms])
   .config(routing)
   .component('dashboard', {
     template: require('./dashboard.html'),
