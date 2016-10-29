@@ -1,6 +1,6 @@
 var Converter = require("csvtojson").Converter;
 var fs = require("fs"); 
-var Parser = require("../serial/parser.js");
+var Parser = require("../serial/testparser.js");
 fs.readdir("input",function(err,files){ //reads all the files in the input directory, files is an array of names
     for(var i=0;i<files.length;i++)
     {
@@ -18,7 +18,6 @@ fs.readdir("input",function(err,files){ //reads all the files in the input direc
             parser.pipe(fs.createWriteStream(outputFileName));
             //create a new instance of a converter for each file
             var converter = new Converter({});
-            var out = fs.createWriteStream("intermediate/"+files[i]);
             //nodejs piping magic
             fs.createReadStream("input/"+files[i]).pipe(converter).pipe(parser);
         }

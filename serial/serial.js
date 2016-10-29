@@ -48,4 +48,4 @@ class serialStream extends Readable
         }
     }
 }
-module.exports.serialStream = serialStream;
+module.exports = serialStream;
