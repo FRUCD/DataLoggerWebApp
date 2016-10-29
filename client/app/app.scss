@@ -150,5 +150,6 @@ $fa-font-path: '/assets/fonts/font-awesome/';
 // Component styles are injected through gulp
 /* inject:scss */
 @import 'dashboard/dashboard';
+@import 'dashboard/overview/overview';
 @import 'login/login';
 /* endinject */

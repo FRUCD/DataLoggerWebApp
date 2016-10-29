@@ -6,7 +6,7 @@ export class LoginController {
   /*@ngInject*/
   constructor($scope, $state) {
     $scope.submit = function() { //TODO: make sure password matches something
-      $state.go('dashboard');
+      $state.go('dashboard.overview');
     };
   }
 
