@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-// import ngAnimate from 'angular-animate';
+import ngAnimate from 'angular-animate';
 import ngCookies from 'angular-cookies';
 import ngResource from 'angular-resource';
 import ngSanitize from 'angular-sanitize';
@@ -16,23 +16,22 @@ import {
   routeConfig
 } from './app.config';
 
-import navbar from '../components/navbar/navbar.component';
-import footer from '../components/footer/footer.component';
-import main from './main/main.component';
+import login from './login/login.component';
+import dashboard from './dashboard/dashboard.component';
 import constants from './app.constants';
 import util from '../components/util/util.module';
 import socket from '../components/socket/socket.service';
 
 import './app.scss';
 
-angular.module('dataLoggerWebAppApp', [ngCookies, ngResource, ngSanitize, 'btford.socket-io',
-    uiRouter, uiBootstrap, navbar, footer, main, constants, socket, util
+angular.module('dataLoggerWebApp', [ngCookies, ngResource, ngSanitize, ngAnimate,
+    'btford.socket-io', uiRouter, uiBootstrap, login, dashboard, constants, socket, util
   ])
   .config(routeConfig);
 
 angular.element(document)
   .ready(() => {
-    angular.bootstrap(document, ['dataLoggerWebAppApp'], {
+    angular.bootstrap(document, ['dataLoggerWebApp'], {
       strictDi: true
     });
   });
