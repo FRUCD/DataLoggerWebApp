@@ -11,11 +11,31 @@ class serialStream extends Readable
     {
         if(this.arduinoPort && this.arduinoPort.resume)this.arduinoPort.resume();
     }
+    get arduinoPort(){
+        return this.arduinoPort;
+    }
     connect(){
         var self = this;
         this.findArduino(function(err,port){
             self.setPort(port);
         });
+        this.reconnect = setInterval(function(){
+            if(!self.arduinoPort){
+                console.log("reconnecting to Arduino Serial");
+                self.findArduino(function(err,port){
+                    self.setPort(port);
+                });
+            }
+            else if(!self.arduinoPort.isOpen()){
+                self.arduinoPort.open();
+            }
+        },1000);
+    }
+    disconnect(){
+        if(this.arduinoPort){
+            this.arduinoPort.close();
+        }
+        clearInterval(this.reconnect);
     }
     findArduino(callback){
         SerialPort.list(function (err, ports) {

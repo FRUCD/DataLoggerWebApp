@@ -10,7 +10,6 @@ parser.on('data',function(data){
     io.emit(data);
 });
 arduinoListener.pipe(parser);
-
 app.use(express.static("public"));
 server.listen(80);
 //yea literally this is all we need to run our server
