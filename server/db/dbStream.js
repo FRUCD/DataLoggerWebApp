@@ -7,7 +7,8 @@ class dbStream extends Writable {
         var self = this;
         mongo.connect('mongodb://localhost/data',function(err,db){
             if(err)console.error.bind(console,"connection error");
-            self.collection = db.collection(Date.getMonth()+"/"+Date.getDate()+"/"+Date.getFullYear()+"-"+Date.getHours()+"."+Date.getMinutes()+"."+Date.getSeconds());
+            var d = new Date();
+            self.collection = db.collection(d.getMonth()+"/"+d.getDate()+"/"+d.getFullYear()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
             self.collection.insertMany(self.buffer);
             delete self.buffer;
         });        
