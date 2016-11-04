@@ -1,4 +1,4 @@
-var socket = io.connect(window.href);
+var socket = io.connect('http://localhost');
 var body = document.getElementById("body");
 socket.on('data', function (data) {
     console.log("message");
