@@ -9,29 +9,23 @@ class dbStream extends Writable {
             if(err)console.error.bind(console,"connection error");
             var d = new Date();
             self.collection = db.collection(d.getMonth()+"/"+d.getDate()+"/"+d.getFullYear()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
-            self.collection.insertMany(self.buffer);
+            if(self.buffer.length>0){
+                self.collection.insertMany(self.buffer);
+                console.log("write many");
+            }
             delete self.buffer;
         });        
     }
     _write(chunk,encoding,callback)
     {
         if(this.collection){
-            this.collection.insertOne(JSON.parse(chunk));
+            console.log("writing");
+            this.collection.insert(JSON.parse(chunk));
         }
         else if(!this.collection){
             this.buffer.push(JSON.parse(chunk));
         }
-    }
-    _writev(chunks,callback)
-    {
-        chunks.forEach(function (item, index, array) {
-            if(this.collection){
-                this.collection.insertOne(JSON.parse(item));
-            }
-            else if(!this.collection){
-                this.buffer.push(JSON.parse(item));
-            }
-        });
+        callback();
     }
 }
 module.exports = dbStream;
