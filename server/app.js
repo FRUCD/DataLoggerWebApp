@@ -32,7 +32,16 @@ var socketio = require('socket.io')(server, {
 require('./config/socketio').default(socketio);
 require('./config/express').default(app);
 require('./routes').default(app);
-
+var Serial = require('./serial/serial.js');
+var Parser = require('./serial/parser.js');
+var dbStream = require('./db/dbStream.js');
+var arduinoListener = new Serial();
+var parser = new Parser({decodeStrings:false});
+var database = new dbStream();
+parser.on('data',function(data){
+    socketio.emit(data);
+});
+arduinoListener.pipe(parser).pipe(database);
 // Start server
 function startServer() {
   app.angularFullstack = server.listen(config.port, config.ip, function() {
