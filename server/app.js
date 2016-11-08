@@ -29,9 +29,6 @@ var socketio = require('socket.io')(server, {
   serveClient: config.env !== 'production',
   path: '/socket.io-client'
 });
-require('./config/socketio').default(socketio);
-require('./config/express').default(app);
-require('./routes').default(app);
 var Serial = require('./serial/serial.js');
 var Parser = require('./serial/parser.js');
 var dbStream = require('./db/dbStream.js');
@@ -42,6 +39,16 @@ parser.on('data',function(data){
     socketio.emit(data);
 });
 arduinoListener.pipe(parser).pipe(database);
+require('./config/socketio').default(socketio);
+require('./config/express').default(app);
+require('./routes').default(app);
+app.get('/start',function(req,res){
+  database = new dbStream();
+  parser.pipe(database);
+});
+app.get('/stop',function(req,res){
+  parser.unpipe();
+});
 // Start server
 function startServer() {
   app.angularFullstack = server.listen(config.port, config.ip, function() {

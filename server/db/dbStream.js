@@ -8,13 +8,19 @@ class dbStream extends Writable {
         mongo.connect('mongodb://localhost/data',function(err,db){
             if(err)console.error.bind(console,"connection error");
             var d = new Date();
+            self.db = db;
             self.collection = db.collection(d.getMonth()+"/"+d.getDate()+"/"+d.getFullYear()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
             if(self.buffer.length>0){
                 self.collection.insertMany(self.buffer);
                 console.log("write many");
             }
             delete self.buffer;
-        });        
+        });  
+        this.on('unpipe',function(){
+            if(self.db){
+                self.db.close();
+            }
+        });    
     }
     _write(chunk,encoding,callback)
     {
