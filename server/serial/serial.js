@@ -5,6 +5,7 @@ class serialStream extends Readable
     constructor(options)
     {
         super(options);
+        this.connect();
     }
     _read()
     {
@@ -23,7 +24,11 @@ class serialStream extends Readable
                 }); 
             } 
             else if(!self.arduinoPort.isOpen()){ 
-                self.arduinoPort.open(); 
+                self.arduinoPort.open(function(err){
+                    if(err){
+                        console.error.bind(err);
+                    }
+                }); 
             } 
         },1000); 
     } 
@@ -34,33 +39,54 @@ class serialStream extends Readable
     clearInterval(this.reconnect); 
     }
     findArduino(callback){
+        if(this.arduinoPort){
+            this.arduinoPort.close();
+        }
         SerialPort.list(function (err, ports) {
+            if(err){
+                console.error.bind(err);
+            }
             ports.forEach(function (port) {
                 console.log(port.comName);
                 console.log(port.pnpId);
                 console.log(port.manufacturer);
-                if (port.manufacturer.includes("Arduino"))
+                if (port.manufacturer&&port.manufacturer.includes("Arduino"))
                 {
-                    callback(null,new SerialPort(port.comName, {
-                        parser: SerialPort.parsers.readline('\n')
-                    }));
+                    callback(null,port);
                 }
             });
         });
     }
-    setPort(port){
+    setPort(found){
         var self = this;
-        port.on('data',this._data.bind(self));
-        port.on("close",this._close.bind(self));
-        this.arduinoPort = port;
+        if(!(this.arduinoPort&&this.arduinoPort.path==found.comName)){
+            var port = new SerialPort(found.comName, {
+                            parser: SerialPort.parsers.byteDelimiter([10])
+                        });
+            port.on('data',this._data.bind(self));
+            port.on("close",this._close.bind(self));
+            this.arduinoPort = port;
+        }
     }
     _close(){
-        this.push(null);
+        this.arduinoPort = undefined;
+        this.connect();
+    }
+    _open(){
     }
     _data(data){
-        if(!this.push(data)){
-            console.log("pausing because the read has stopped");
-            this.arduinoPort.pause();
+        if(data.length==15){
+            var array = [];
+            data = Buffer.from(data,'utf-8').slice(0,data.length-1);
+            array.push(data.readUInt16BE(0));
+            array.push(data.readUInt32BE(2));
+            for(var i=6;i<data.length;i++){
+                array.push(data.readUInt8(i));
+            }
+            if(!this.push(JSON.stringify(array))){
+                console.log("pausing because the read has stopped");
+                this.arduinoPort.pause();
+            }
         }
     }
 }

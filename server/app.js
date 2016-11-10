@@ -33,7 +33,7 @@ var Serial = require('./serial/serial.js');
 var Parser = require('./serial/parser.js');
 var dbStream = require('./db/dbStream.js');
 var arduinoListener = new Serial();
-var parser = new Parser({decodeStrings:false});
+var parser = new Parser();
 var database = new dbStream();
 parser.on('data',function(data){
     socketio.emit(data);
@@ -41,14 +41,7 @@ parser.on('data',function(data){
 arduinoListener.pipe(parser).pipe(database);
 require('./config/socketio').default(socketio);
 require('./config/express').default(app);
-require('./routes').default(app);
-app.get('/start',function(req,res){
-  database = new dbStream();
-  parser.pipe(database);
-});
-app.get('/stop',function(req,res){
-  parser.unpipe();
-});
+require('./routes').default(app,parser);
 // Start server
 function startServer() {
   app.angularFullstack = server.listen(config.port, config.ip, function() {

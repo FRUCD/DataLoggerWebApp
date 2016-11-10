@@ -94,13 +94,10 @@ function chooseParser(out,data){
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
     constructor(options){
         super(options);
-        if(options) this.stringOut = options.stringOut || false; //variable for string output (file write)
-
     }
     _transform(chunk, encoding, next) {
         var transformed = this.parse(chunk);
-        if(this.stringOut) this.push(JSON.stringify(transformed)+"\n");
-        else          this.push(transformed);
+        this.push(JSON.stringify(transformed));
         next();
     }
     parse(data){
