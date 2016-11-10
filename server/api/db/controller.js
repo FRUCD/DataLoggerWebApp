@@ -8,12 +8,12 @@ export function list(req,res){
   });
 }
 export function printData(req,res){
-  var name = req.collectionName;
+  var name = req.collection;
   MongoClient.connect('mongodb://localhost/data',function(err,db){
     db.collection(name, {strict:true}, function(err, collection) {
-      collection.find().toArray(function(err,elements)
+      collection.find().forEach(function(err,element)
       {
-        res.send(elements);
+        res.send(element);
       });
     });
   });
