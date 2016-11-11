@@ -74,6 +74,8 @@ class serialStream extends Readable
     }
     _open(){
     }
+    _open(){
+    }
     _data(data){
         if(data.length==15){
             var array = [];
