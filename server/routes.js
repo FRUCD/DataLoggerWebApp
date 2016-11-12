@@ -8,8 +8,9 @@ import errors from './components/errors';
 import path from 'path';
 var dbStream = require('./db/dbStream.js');
 var database;
-export default function(app,parser) {
+export default function(app,parser,db) {
   // Insert routes below
+  database = db;
   app.use('/api/things', require('./api/thing'));
   app.use('/api/db',require('./api/db/routes.js'));
   // All undefined asset or api routes should return a 404
@@ -23,6 +24,9 @@ export default function(app,parser) {
   app.get('/stop',function(req,res){
     parser.unpipe();
     res.sendStatus(200);
+  });
+  app.get('/name',function(req,res){
+    res.status(200).send(database.collection.collectionName);
   });
   // All other routes should redirect to the index.html
   app.route('/*')

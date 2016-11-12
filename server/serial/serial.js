@@ -72,10 +72,6 @@ class serialStream extends Readable
         this.arduinoPort = undefined;
         this.connect();
     }
-    _open(){
-    }
-    _open(){
-    }
     _data(data){
         if(data.length==15){
             var array = [];
