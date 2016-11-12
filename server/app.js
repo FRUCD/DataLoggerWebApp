@@ -36,7 +36,18 @@ var arduinoListener = new Serial();
 var parser = new Parser();
 var database = new dbStream();
 parser.on('data',function(data){
-    socketio.emit(data);
+    switch(data.CAN_Id){
+      case 1574:
+      case 512:
+      case 513:
+        socketio.emit("car",data);
+        break;
+      case 1160:
+      case 392:
+      case 904:
+        socketio.emit("bms",data);
+        break;
+    }
 });
 arduinoListener.pipe(parser).pipe(database);
 require('./config/socketio').default(socketio);
