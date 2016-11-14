@@ -1,6 +1,6 @@
 var stream = require('stream');
 function parseDashStatus(out,data){
-    out.State = data[2];
+    out.state = data[2];
 }
 function parsePackStatus(out,data){
     out.carName = data[2];
