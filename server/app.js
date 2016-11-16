@@ -30,7 +30,7 @@ var socketio = require('socket.io')(server, {
   path: '/socket.io-client'
 });
 var Serial = require('./serial/serial.js');
-var Parser = require('./serial/parser.js');
+var Parser = require('./serial/dynamicParser.js');
 var dbStream = require('./db/dbStream.js');
 var arduinoListener = new Serial();
 var parser = new Parser();
