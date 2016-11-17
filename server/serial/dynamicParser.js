@@ -1,7 +1,6 @@
 var stream = require('stream');
 var Q = require('q');
 var Descriptor = require('../api/db/parse_descriptor.js');
-
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
     constructor(options){
         super(options);
@@ -29,7 +28,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
     getArray(data,map){
         var out = [];
         for(var i=Math.floor(map.offset/8)+2;i<data.length;i+=map.array.subLength/8){
-            out.push(this.getValue(data,
+            out.push(this.getValue(data.slice(),
                 {dataType:map.array.subDataType,
                     offset:(i-2)*8,
                     length:map.array.subLength
@@ -110,14 +109,14 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         var self = this;
         spec.map.forEach(function(value,index,array){
             if(value.key){
-                out[value.key] = self.getValue(data,value);
+                out[value.key] = self.getValue(data.slice(),value);
             }
             else{
                 if(!out.generics) out.generics = new Array();
                 var object = new Object();
                 object.description = value.description;
                 object.dataType = value.dataType;
-                object.value = self.getValue(data,value);
+                object.value = self.getValue(data.slice(),value);
                 out.generics.push(object);
             }
         });
@@ -128,13 +127,14 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         var out = new Object();
         out.CAN_Id = data[0];
         out.Timestamp = data[1];
-        this.load.done();
+        if(this.load.status=='pending')this.load.done();
         for(var i=0;i<this.specification.length;i++)
         {
             if(data[0]==this.specification[i].CAN_Id) {
                 return self.beginParsing(out,data,this.specification[i]);
             }
         }
+        console.log("looking up database");
         return Descriptor.model.findOne({CAN_Id:data[0]}).exec().then(function(doc){
         //TODO run validation
             if(self.specification){
@@ -147,19 +147,23 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
     }
     parse(data){
         if(data&&data.length>0){
-            data = JSON.parse(data);
-            if(!data)return "";
-            var array = [];
-            if(data instanceof Object)
-            {
-                for(var i=0;i<Object.keys(data).length;i++)
+            var deferred = Q.defer();
+            setImmediate(function(){
+                data = JSON.parse(data);
+                if(!data)return "";
+                var array = [];
+                if(data instanceof Object)
                 {
-                    array.push(data[Object.keys(data)[i]]);
+                    for(var i=0;i<Object.keys(data).length;i++)
+                    {
+                        array.push(data[Object.keys(data)[i]]);
+                    }
                 }
-            }
-            else array = data;
-            //console.log(array); 
-            return Q.fcall(this.chooseParser.bind(this),array);
+                else array = data;
+                //console.log(array); 
+                deferred.resolve(Q.fcall(this.chooseParser.bind(this),array));
+            }.bind(this));
+            return deferred.promise;
         }
         else return "";
     }
