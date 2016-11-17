@@ -9,7 +9,8 @@ var mongoose = Mongoose.createConnection("mongodb://localhost/data");
 var canDescription  = new Mongoose.Schema({
     CAN_Id: {
         type:Number,
-        unique:true
+        unique:true,
+        index:true
     },
     PDO_Description:String,
     map:[{
@@ -39,6 +40,7 @@ function load(){
                 if(defaults.can_1574){
                     model.create(defaults.can_1574,function(err,doc){
                         if(err) console.error(err);
+                        assert.deepEqual(defaults.can_1574,doc);
                     });
                 }
             }

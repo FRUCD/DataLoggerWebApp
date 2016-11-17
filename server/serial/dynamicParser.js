@@ -5,8 +5,12 @@ var Descriptor = require('../api/db/parse_descriptor.js');
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
     constructor(options){
         super(options);
+        var self = this;
+        this.load = Descriptor.model.find().exec().then(function(array){
+            self.specification = array;
+        });
         if(options&&options.done)
-            this.spec.done(function(){
+            this.load.done(function(){
                 options.done();
             });
     }
@@ -38,6 +42,8 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
     }
     getDecimal(data,map){
         var out = 0;
+        var offset = map.offset;
+        var length = map.length;
         var preStartIndex = Math.floor(map.offset/8)+2;
         var preShift = map.offset%8;
         for(var i=0;i<preShift;i++){
@@ -45,14 +51,14 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             data[preStartIndex] = data[preStartIndex]<<1;
         }
         data[preStartIndex] = data[preStartIndex]>>preShift;
-        map.offset -= preShift;
-        map.length += preShift; 
-        while(map.length>0){
+        offset -= preShift;
+        length += preShift; 
+        while(length>0){
             out = out<<1;
-            out |= ((data[Math.floor(map.offset/8)+2]&0x80)>>7);
-            data[Math.floor(map.offset/8)+2] = data[Math.floor(map.offset/8)+2]<<1;
-            map.offset++;
-            map.length--;
+            out |= ((data[Math.floor(offset/8)+2]&0x80)>>7);
+            data[Math.floor(offset/8)+2] = data[Math.floor(offset/8)+2]<<1;
+            offset++;
+            length--;
         }
         return out;        
     }
@@ -77,12 +83,14 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
     }
     getState(data,map){
         var out=0;
+        var length = map.length;
+        var offset = map.offset;
         //console.log(map);
-        while(map.length>0){
+        while(length>0){
             out = out<<8;
-            out |= data[Math.floor(map.offset/8)+2];
-            map.offset+=8;
-            map.length-=8;
+            out |= data[Math.floor(offset/8)+2];
+            offset+=8;
+            length-=8;
         }
         return out;
     }
@@ -120,15 +128,15 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         var out = new Object();
         out.CAN_Id = data[0];
         out.Timestamp = data[1];
-        /*for(var i=0;i<this.spec.length;i++)
+        this.load.done();
+        for(var i=0;i<this.specification.length;i++)
         {
-            if(data[0]==this.spec[i].CAN_Id) {
-                var returnvalue = this.beginParsing(out,data,this.spec[i]);
-                return returnvalue;
+            if(data[0]==this.specification[i].CAN_Id) {
+                return self.beginParsing(out,data,this.specification[i]);
             }
-        }*/
+        }
         return Descriptor.model.findOne({CAN_Id:data[0]}).exec().then(function(doc){
-            //TODO run validation
+        //TODO run validation
             return self.beginParsing(out,data,doc);
         }).catch(function(){
             throw new Error("something went horribly wrong");
