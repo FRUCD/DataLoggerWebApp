@@ -32,7 +32,7 @@ var socketio = require('socket.io')(server, {
 var Serial = require('./serial/serial.js');
 var Parser = require('./serial/dynamicParser.js');
 var dbStream = require('./db/dbStream.js');
-var arduinoListener = new Serial();
+var arduinoListener;
 var parser = new Parser();
 var database = new dbStream();
 parser.on('data',function(data){
@@ -49,7 +49,6 @@ parser.on('data',function(data){
         break;
     }
 });
-arduinoListener.pipe(parser).pipe(database);
 require('./config/socketio').default(socketio);
 require('./config/express').default(app);
 require('./routes').default(app,parser,database);
@@ -61,6 +60,9 @@ function startServer() {
 }
 
 setImmediate(startServer);
-
+setTimeout(function(){
+  arduinoListener = new Serial();
+  arduinoListener.pipe(parser).pipe(database);
+},10000);
 // Expose app
 exports = module.exports = app;
