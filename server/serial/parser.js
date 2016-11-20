@@ -1,6 +1,6 @@
 var stream = require('stream');
 function parseDashStatus(out,data){
-    out.state = data[2];
+    out.State = data[2];
 }
 function parsePackStatus(out,data){
     out.carName = data[2];
@@ -94,10 +94,13 @@ function chooseParser(out,data){
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
     constructor(options){
         super(options);
+        if(options) this.stringOut = options.stringOut || false; //variable for string output (file write)
+
     }
     _transform(chunk, encoding, next) {
         var transformed = this.parse(chunk);
-        this.push(JSON.stringify(transformed));
+        if(this.stringOut) this.push(JSON.stringify(transformed)+"\n");
+        else          this.push(transformed);
         next();
     }
     parse(data){
@@ -114,7 +117,6 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 }
             }
             else array = data;
-            console.log(array);
             out.CAN_Id = array[0];
             out.Timestamp = array[1];
             chooseParser(out,array);   
