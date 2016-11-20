@@ -29,19 +29,29 @@ var socketio = require('socket.io')(server, {
   serveClient: config.env !== 'production',
   path: '/socket.io-client'
 });
-require('./config/socketio').default(socketio);
-require('./config/express').default(app);
-require('./routes').default(app);
 var Serial = require('./serial/serial.js');
-var Parser = require('./serial/parser.js');
+var Parser = require('./serial/dynamicParser.js');
 var dbStream = require('./db/dbStream.js');
-var arduinoListener = new Serial();
-var parser = new Parser({decodeStrings:false});
+var arduinoListener;
+var parser = new Parser();
 var database = new dbStream();
 parser.on('data',function(data){
-    socketio.emit(data);
+    switch(data.CAN_Id){
+      case 1574:
+      case 512:
+      case 513:
+        socketio.emit("car",data);
+        break;
+      case 1160:
+      case 392:
+      case 904:
+        socketio.emit("bms",data);
+        break;
+    }
 });
-arduinoListener.pipe(parser).pipe(database);
+require('./config/socketio').default(socketio);
+require('./config/express').default(app);
+require('./routes').default(app,parser,database);
 // Start server
 function startServer() {
   app.angularFullstack = server.listen(config.port, config.ip, function() {
@@ -50,6 +60,9 @@ function startServer() {
 }
 
 setImmediate(startServer);
-
+setTimeout(function(){
+  arduinoListener = new Serial();
+  arduinoListener.pipe(parser).pipe(database);
+},10000);
 // Expose app
 exports = module.exports = app;
