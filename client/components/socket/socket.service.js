@@ -24,47 +24,44 @@ function Socket(socketFactory) {
     /**
      * Register listeners to sync an array with updates on a model
      *
-     * Takes the array we want to sync, the model name that socket updates are sent from,
+     * Takes the model name that socket updates are sent from,
      * and an optional callback function after new items are updated.
      *
      * @param {String} modelName
-     * @param {Array} array
      * @param {Function} cb
      */
-    syncUpdates(modelName, array, cb) {
+    syncUpdates(modelName, cb) {
       cb = cb || angular.noop;
 
       /**
-       * Syncs item creation/updates on 'model:save'
+       * Syncs item creation/updates on 'model:newData'
        */
-      socket.on(`${modelName}:save`, function(item) {
-        var oldItem = _.find(array, {
-          _id: item._id
-        });
-        var index = array.indexOf(oldItem);
-        var event = 'created';
+      socket.on(`${modelName}:newData`, function(item) {
+        var arrayData;
+        if(modelName == 'car') {
+          arrayData = [
+            ['throttleX'],
+            ['brakeX'],
+            ['throttleY'],
+            ['brakeY']
+          ];
 
-        // replace oldItem if it exists
-        // otherwise just add item to the collection
-        if(oldItem) {
-          array.splice(index, 1, item);
-          event = 'updated';
+          if(item.hasOwnProperty('throttle')) {
+            arrayData[0].push(item.Timestamp);
+            arrayData[2].push(item.throttle);
+          } else {
+            arrayData[1].push(item.Timestamp);
+            arrayData[3].push(item.brake);
+          }
+        } else if(modelName == 'bms') {
+          //TODO: Finish like above
+        } else if(modelName == 'curtis') {
+          //TODO: Finish like above
         } else {
-          array.push(item);
+          //TODO: Finish like above
         }
 
-        cb(event, item, array);
-      });
-
-      /**
-       * Syncs removed items on 'model:remove'
-       */
-      socket.on(`${modelName}:remove`, function(item) {
-        var event = 'deleted';
-        _.remove(array, {
-          _id: item._id
-        });
-        cb(event, item, array);
+        cb(arrayData);
       });
     },
 
@@ -74,8 +71,7 @@ function Socket(socketFactory) {
      * @param modelName
      */
     unsyncUpdates(modelName) {
-      socket.removeAllListeners(`${modelName}:save`);
-      socket.removeAllListeners(`${modelName}:remove`);
+      socket.removeAllListeners(`${modelName}:newData`);
     }
   };
 }
