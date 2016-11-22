@@ -80,7 +80,7 @@ class serialStream extends Readable
                     array.push(data.readUInt8(i));
                 }
                 if(!this.push(JSON.stringify(array))){
-                    console.log("pausing because the read has stopped");
+                    //console.log("pausing because the read has stopped");
                 }
             }.bind(this));
         }
