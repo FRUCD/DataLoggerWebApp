@@ -27,6 +27,7 @@ var app = express();
 var server = http.createServer(app);
 var socketio = require('socket.io')(server, {
   serveClient: config.env !== 'production',
+  path:'/socket.io-client'
 });
 var Serial = require('./serial/serial.js');
 var Parser = require('./serial/dynamicParser.js');
