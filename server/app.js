@@ -37,14 +37,14 @@ parser.on('data',function(data){
       case 1574:
       case 512:
       case 513:
-        socketio.emit("car",data);
+        socketio.emit("car:newData",data);
         break;
       case 1160:
         socketio.emit("temp",data);
         break;
       case 392:
       case 904:
-        socketio.emit("bms",data);
+        socketio.emit("bms:newData",data);
         break;
     }
 });
