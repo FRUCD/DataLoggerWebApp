@@ -9,6 +9,9 @@ export class LiveComponent {
   /*@ngInject*/
   constructor() {
   }
+  $onInit(){
+    
+  }
 }
 
 export default angular.module('dataLoggerWebApp.live', [uiRouter])
