@@ -9,12 +9,9 @@ export class LiveComponent {
   /*@ngInject*/
   constructor() {
   }
-<<<<<<< d58588c18cdeffce6cb1b3759ab4f916a26723aa
-=======
   $onInit(){
     
   }
->>>>>>> revert to the old columns implementation
 }
 
 export default angular.module('dataLoggerWebApp.live', [uiRouter])
