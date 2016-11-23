@@ -11,7 +11,6 @@ var database;
 export default function(app,parser,db) {
   // Insert routes below
   database = db;
-  app.use('/api/things', require('./api/thing'));
   app.use('/api/db',require('./api/db/routes.js'));
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|bower_components|assets)/*')
