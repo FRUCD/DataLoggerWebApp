@@ -26,5 +26,5 @@ void loop() {
   Serial.write(1);
   Serial.write(1);
   Serial.write('\n');
-  delay(1000);
+  delay(2);
 }
