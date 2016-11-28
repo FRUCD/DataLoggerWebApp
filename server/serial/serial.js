@@ -61,13 +61,16 @@ class serialStream extends Readable
                             parser: SerialPort.parsers.byteDelimiter([10])
                         });
             port.on('data',this._data.bind(self));
-            port.on("close",this._close.bind(self));
+            port.on("close",this._closePort.bind(self));
             this.arduinoPort = port;
         }
     }
-    _close(){
+    _closePort(){
         console.log("closing");
-        this.disconnect();
+        clearInterval(this.reconnect); 
+        this.reconnect = undefined;
+        this.arduinoPort = undefined;
+        this.connect();
     }
     _data(data){
         if(data.length==15){
@@ -80,7 +83,7 @@ class serialStream extends Readable
                     array.push(data.readUInt8(i));
                 }
                 if(!this.push(JSON.stringify(array))){
-                    console.log("pausing because the read has stopped");
+                    //console.log("pausing because the read has stopped");
                 }
             }.bind(this));
         }
