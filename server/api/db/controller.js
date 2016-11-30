@@ -10,10 +10,7 @@ MongoClient.connect('mongodb://localhost/data',function(err,db){
 export function list(req,res){
   console.log("list");
   database.listCollections().toArray(function (err,collections) {
-    console.log("inside");
     if(err)console.error(err);
-    console.log(collections);
-    console.log(res);
     res.status(200).send(collections);
   });
 }

@@ -8,9 +8,5 @@ module.exports = {
   // MongoDB connection options
   mongo: {
     uri: 'mongodb://localhost/dataloggerwebapp-dev'
-  },
-
-  // Seed database on startup
-  seedDB: true
-
+  }
 };

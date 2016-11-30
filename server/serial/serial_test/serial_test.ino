@@ -51,5 +51,5 @@ void loop() {
   Serial.write('\n');
   delay(2);
   x++;
-  if(x>0x7FF) x = 0x7FF;
+  if(x>0x7FF) x = 0;
 }
