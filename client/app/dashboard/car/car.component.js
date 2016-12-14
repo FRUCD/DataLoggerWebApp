@@ -99,12 +99,7 @@ export class CarController {
   }
 
   $onInit() {
-    this.socket.syncUpdates('car', function(data){
-      if(data){
-        if(data.CAN_Id==512) this.throttleBuffer.push(data);
-        else if(data.CAN_Id==513) this.brakeBuffer.push(data);
-      }
-    }.bind(this));
+    this.socket.syncUpdates('car', plotNew);
   }
 }
 
