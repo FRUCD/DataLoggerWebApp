@@ -6,37 +6,6 @@ import c3 from 'c3';
 
 var carChart;
 var count = 0;
-class Buffer{
-  constructor(ms,key,callback){
-    this.ms = ms;
-    this.buffer = [];
-    this.callback = callback;
-    this.key = key;
-  }
-  push(point){
-    var self = this;
-    if(point instanceof Object){
-      if(!this.start) this.start = point.Timestamp;
-      if(point.Timestamp - this.start < this.ms){
-        this.buffer.push(point);
-      }
-      else{
-        var out = new Object();
-        out.Timestamp = this.start;
-        out.CAN_Id = this.buffer[0].CAN_Id;
-        var sum=0;
-        this.buffer.forEach(function(value){
-          sum+=value[self.key];
-        });
-        sum = sum/this.buffer.length;
-        out[this.key] = sum;
-        this.start = undefined;
-        this.buffer = [];
-        this.callback(out);
-      }
-    }
-  }
-}
 var initialPointRemoved = false;
 function plotNew(newData) {
   if(count<100)carChart.flow({
@@ -56,8 +25,6 @@ export class CarController {
     count = 0;
     initialPointRemoved = false;
     this.socket = socket;
-    this.throttleBuffer = new Buffer(1000,'throttle',plotNew);
-    this.brakeBuffer = new Buffer(1000,'brake',plotNew);
     carChart = c3.generate({
       bindto: '#car-chart',
       data: {
