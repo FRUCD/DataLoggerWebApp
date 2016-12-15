@@ -12,35 +12,38 @@ class serialStream extends Readable
         if(this.arduinoPort && this.arduinoPort.resume)this.arduinoPort.resume();
     }
     connect(){
+        console.log("connect called");
         var self = this;
         this.findArduino(function(err,port){
-            self.setPort(port);
+            if(err) console.error(err);
+            if(port)self.setPort(port);
         });
-        if(!this.reconnect){
-            this.reconnect = setInterval(function(){ 
+        if(!self.reconnect){
+            self.reconnect = setInterval(function(){ 
                 if(!self.arduinoPort){ 
                     console.log("reconnecting to Arduino Serial"); 
-                    self.findArduino(function(err,port){ 
-                        self.setPort(port); 
+                    self.findArduino(function(err,port){
+                        if(err) console.err(err); 
+                        if(port)self.setPort(port); 
                     }); 
                 }  
-            },1000);
+            },3000);
         } 
     } 
     disconnect(){ 
-        if(this.arduinoPort){ 
+        if(this.arduinoPort){
+            this.arduinoPort.removeListener("close",this._closePort); 
             this.arduinoPort.close(); 
         } 
         clearInterval(this.reconnect); 
         this.reconnect = undefined;
     }
     findArduino(callback){
-        if(this.arduinoPort){
-            this.arduinoPort.close();
-        }
         SerialPort.list(function (err, ports) {
             if(err){
-                console.error.bind(err);
+                console.error(err);
+                console.log("error in listing ports");
+                callback(err,null);
             }
             ports.forEach(function (port) {
                 console.log(port.comName);
@@ -56,21 +59,23 @@ class serialStream extends Readable
     setPort(found){
         var self = this;
         if(!(this.arduinoPort&&this.arduinoPort.path==found.comName)){
-            clearInterval(this.reconnect);
-            var port = new SerialPort(found.comName, {
-                            parser: SerialPort.parsers.byteDelimiter([10])
-                        });
-            port.on('data',this._data.bind(self));
-            port.on("close",this._closePort.bind(self));
-            this.arduinoPort = port;
+            try{
+                var port = new SerialPort(found.comName, {
+                    parser: SerialPort.parsers.byteDelimiter([10])
+                });
+                port.on('data',this._data.bind(self));
+                port.on("close",this._closePort.bind(self));
+                this.arduinoPort = port;
+            }
+            catch(e){
+                console.log("error attaching to port");
+                console.error(e);
+            }
         }
     }
     _closePort(){
         console.log("closing");
-        clearInterval(this.reconnect); 
-        this.reconnect = undefined;
         this.arduinoPort = undefined;
-        this.connect();
     }
     _data(data){
         if(data.length==15){
