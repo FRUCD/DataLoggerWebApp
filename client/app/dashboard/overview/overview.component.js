@@ -2,18 +2,16 @@ import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './overview.routes';
 
-
-
 function updateThrottleBrake(throttle,brake) {
   if(throttle)
   {
-    angular.element(document.querySelector('#throttle-bar')).html(Math.round(throttle / 0x7FF) + "%");
-    document.getElementById("throttle-bar").style.height = (4 * throttle) / 0x7FF + "px";
+    angular.element(document.querySelector('#throttle-bar')).html(Math.round(throttle / 0x7FF * 100) + "%");
+    document.getElementById("throttle-bar").style.height = (400 * throttle) / 0x7FF + "px";
   }
   if(brake)
   {
     angular.element(document.querySelector('#brake-bar')).html(Math.round(brake / 0x7FF) + "%");
-    document.getElementById("brake-bar").style.height = (4 * brake) / 0x7FF + "px";
+    document.getElementById("brake-bar").style.height = (400 * brake) / 0x7FF + "px";
   }
 }
 
@@ -21,7 +19,8 @@ function updateTemperatures($scope,temp) {
   var arrayLength = temp.temp_array.length;
   for (var i = 0; i < arrayLength; i++) {
     angular.element(document.querySelector('#t'+ i)).html(temp.temp_array[i]+"&degC");
-    document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - (temp.temp_array[i]*1.6)) +", 75%, 50%)"
+    if(temp.temp_array[i]>150) temp.temp_array[i] = 150;
+    document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - (temp.temp_array[i]/150*120)) +", 75%, 50%)"
   }
 
 }
@@ -29,10 +28,9 @@ function updateTemperatures($scope,temp) {
 
 export class OverviewController {
   /*@ngInject*/
-  constructor($scope, $timeout, socket) {
+  constructor($scope, socket) {
     this.socket = socket;
     this.scope = $scope;
-    $scope.temps = [];
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('car');
     });

@@ -4,6 +4,8 @@ void setup() {
 }
 int can[2] = {0x06,0x26};
 int throttle[2] = {0x02,0x00};
+int temp[2] = {0x04,0x88};
+int tempDegrees[6] = {120,80,40,10,0,250};
 int x = 0;
 void loop() {
   // put your main code here, to run repeatedly:
@@ -27,7 +29,9 @@ void loop() {
   Serial.write(1);
   Serial.write(1);
   Serial.write(1);
+  Serial.write(0xFF);
   Serial.write('\n');
+  Serial.flush();
   delay(2);
   Serial.write(throttle[0]);
   Serial.write(throttle[1]);
@@ -48,7 +52,32 @@ void loop() {
   Serial.write(1);
   Serial.write(1);
   Serial.write(1);
+  Serial.write(0xFF);
   Serial.write('\n');
+  Serial.flush();
+  delay(2);
+  Serial.write(temp[0]);
+  Serial.write(temp[1]);
+  tick = millis();
+  time[0] = (unsigned int)((tick&0xFF000000)>>24);
+  time[1] = (unsigned int)((tick&0x00FF0000)>>16);
+  time[2] = (unsigned int)((tick&0x0000FF00)>>8);
+  time[3] = (unsigned int)(tick&0x000000FF);
+  Serial.write(time[0]);
+  Serial.write(time[1]);
+  Serial.write(time[2]);
+  Serial.write(time[3]);
+  Serial.write(x&0xFF);
+  Serial.write(tempDegrees[1]);
+  Serial.write(tempDegrees[2]);
+  Serial.write(tempDegrees[3]);
+  Serial.write(tempDegrees[4]);
+  Serial.write(tempDegrees[5]);
+  Serial.write(0x05);
+  Serial.write(250);
+  Serial.write(0xFF);
+  Serial.write('\n');
+  Serial.flush();
   delay(2);
   x++;
   if(x>0x7FF) x = 0;
