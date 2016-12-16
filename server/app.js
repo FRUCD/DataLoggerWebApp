@@ -40,6 +40,8 @@ parser.on('data',function(data){
         socketio.emit("car",data);
         break;
       case 1160:
+        socketio.emit("temp",data);
+        break;
       case 392:
       case 904:
         socketio.emit("bms",data);
