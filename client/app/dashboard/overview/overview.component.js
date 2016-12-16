@@ -7,13 +7,13 @@ import routing from './overview.routes';
 function updateThrottleBrake(throttle,brake) {
   if(throttle)
   {
-    angular.element(document.querySelector('#throttle-bar')).html(throttle + "%");
-    document.getElementById("throttle-bar").style.height = 4 * throttle + "px";
+    angular.element(document.querySelector('#throttle-bar')).html(Math.round(throttle / 0x7FF) + "%");
+    document.getElementById("throttle-bar").style.height = (4 * throttle) / 0x7FF + "px";
   }
   if(brake)
   {
-    angular.element(document.querySelector('#brake-bar')).html(brake + "%");
-    document.getElementById("brake-bar").style.height = 4 * brake + "px";
+    angular.element(document.querySelector('#brake-bar')).html(Math.round(brake / 0x7FF) + "%");
+    document.getElementById("brake-bar").style.height = (4 * brake) / 0x7FF + "px";
   }
 
 }
