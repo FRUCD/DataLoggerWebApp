@@ -40,7 +40,6 @@ function load(){
                 if(defaults.can_1574){
                     model.create(defaults.can_1574,function(err,doc){
                         if(err) console.error(err);
-                        assert.deepEqual(defaults.can_1574,doc);
                     });
                 }
             }

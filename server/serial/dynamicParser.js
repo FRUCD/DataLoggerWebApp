@@ -64,10 +64,11 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         var out = [];
         var value = 0;
         var length = map.length;
+        var offset = map.offset;
         while(length>0){
             value = value<<8;
             value |= data[Math.floor(map.offset/8)+2];
-            map.offset+=8;
+            offset+=8;
             length-=8;
         }
         length = map.length;
