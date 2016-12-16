@@ -14,40 +14,42 @@
   <div class="container">
     <div style="display: flex">
       <div class="throttle-brake">
-        <div style="display: inline-flex; align-items: flex-end; height: 400px; position: relative; text-align: center;margin-top: 40px">
+        <div style="display: inline-flex; align-items: flex-end; max-height: 400px; height: 400px; text-align: center;margin-top: 40px">
           <div>
-            <div style="width: 100px;height: 400px;background-color: darkgreen;margin-right: 10px; text-align:center; padding-top: 5px;margin-bottom: 15px">
-             <font color="white">100%</font>
+            <div id="throttle-bar" style="width: 100px;height: 400px;background-color: darkgreen;margin-right: 10px; text-align:center; padding-top: 5px;margin-bottom: 15px; color: white">
+              100%
             </div>
               <font size="4">Throttle</font>
           </div>
           <div>
-            <div style="width: 100px;height: 100px; background-color: darkred; text-align:center;padding-top: 5px;margin-bottom: 15px">
-              <font color="white">20%</font>
+            <div id="brake-bar" style="width: 100px;height: 100px; background-color: darkred; text-align:center;padding-top: 5px;margin-bottom: 15px; color: white">
+              20%
             </div>
                <font size="4">Brake</font>
           </div>
         </div>
       </div>
-      <div  class="temperature-table" style="margin-left: 15%;display: flex; flex-direction: column-reverse; align-items: flex-end;">
+      <div  class="temperature-table" style="margin-left: 10%;display: flex; flex-direction: column-reverse; align-items: flex-end;">
         <div style="text-align: center">
           <table>
             <tr>
-              <th><div class="temperature" style="background-color: darkred">90&degC</div></th>
-              <th><div class="temperature" style="background-color: darkgreen">40&degC</div></th>
-              <th><div class="temperature" style="background-color: darkred">80&degC</div></th>
+              <td><div class="temperature" id="t0" style="background-color: darkred">90&degC</div></td>
+              <td><div class="temperature" id="t1" style="background-color: darkgreen">40&degC</div></td>
+              <td><div class="temperature" id="t2" style="background-color: darkred">80&degC</div></td>
+              <td><div class="temperature" id="t3" style="background-color: darkred">80&degC</div></td>
             </tr>
             <tr>
-              <th><div class="temperature" style="background-color: darkgreen">60&degC</div></th>
-              <th><div class="temperature" style="background-color: darkgreen">33&degC</div></th>
-              <th><div class="temperature" style="background-color: darkred">85&degC</div></th>
+              <td><div class="temperature" id="t4" style="background-color: darkgreen">60&degC</div></td>
+              <td><div class="temperature" id="t5" style="background-color: darkgreen">33&degC</div></td>
+              <td><div class="temperature" id="t6" style="background-color: darkred">85&degC</div></td>
+              <td><div class="temperature" id="t7" style="background-color: darkred">85&degC</div></td>
             </tr>
           </table>
           <font size="4">Temperatures</font>
         </div>
       </div>
 
-      <div class="info" style="margin-left: 15%">
+      <div class="info" style="margin-left: 10%">
         <font size="4">BMS State: Full</font>
         <br><br>
         <font size="4">Car State: Drive</font>
