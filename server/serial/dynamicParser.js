@@ -1,6 +1,7 @@
 var stream = require('stream');
 var Q = require('q');
 var Descriptor = require('../api/db/parse_descriptor.js');
+var Validator = require('../api/db/validator.js');
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
     constructor(options){
         super(options);
@@ -36,7 +37,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         return out;
     }
     getString(data,map){
-
+        return this.getDecimal(data,map).toString();
     }
     getDecimal(data,map){
         var out = 0;
@@ -137,10 +138,16 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         console.log("looking up database");
         return Descriptor.model.findOne({CAN_Id:data[0]}).exec().then(function(doc){
         //TODO run validation
-            if(self.specification){
-                self.specification.push(doc);
+            try{
+                Validator(doc);
+                if(self.specification){
+                    self.specification.push(doc);
+                }
+                return self.beginParsing(out,data,doc);
             }
-            return self.beginParsing(out,data,doc);
+            catch(e){
+                throw new Error(e);
+            }
         }).catch(function(){
             throw new Error("something went horribly wrong");
         });
