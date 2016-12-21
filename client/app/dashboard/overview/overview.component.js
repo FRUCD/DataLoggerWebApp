@@ -25,6 +25,16 @@ function updateTemperatures($scope,temp) {
 
 }
 
+function updateStates(bms,car)
+{
+  if(bms){
+    angular.element(document.querySelector('#bms-state')).html("BMS State: " + bms.flag);
+  }
+  if(car) {
+    angular.element(document.querySelector('#car-state')).html("Car State: " + car.flag);
+  }
+}
+
 
 export class OverviewController {
   /*@ngInject*/
@@ -37,6 +47,9 @@ export class OverviewController {
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('temp');
     });
+    $scope.$on('$destroy', function () {
+      socket.unsyncUpdates('bms');
+    });
   }
 
   $onInit() {
@@ -44,11 +57,17 @@ export class OverviewController {
       if (data) {
         if (data.CAN_Id == 512) updateThrottleBrake(data.throttle, null);
         else if (data.CAN_Id == 513) updateThrottleBrake(null, data.brake);
+        else if (data.CAN_Id == 1574) updateStates(null,data)
       }
     }.bind(this));
     this.socket.syncUpdates('temp', function (data) {
       if (data) {
         updateTemperatures(this.scope,data);
+      }
+    }.bind(this));
+    this.socket.syncUpdates('bms', function (data) {
+      if (data && data.CAN_Id == 392) {
+        updateStates(data,null);
       }
     }.bind(this));
   }
