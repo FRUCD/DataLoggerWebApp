@@ -22,6 +22,7 @@ function quicksort(collections,low,high){
     quicksort(collections,i+1,high);
   }
 }
+
 function transform(object){
   if(object instanceof Array){
     if(object.length>0){
@@ -45,6 +46,7 @@ function transform(object){
   }
   return object;
 }
+
 MongoClient.connect('mongodb://localhost/data',function(err,db){
   if(err){
     console.error(err);
@@ -52,6 +54,7 @@ MongoClient.connect('mongodb://localhost/data',function(err,db){
   }
   database = db;
 });
+
 export function list(req,res){
   database.listCollections({name:/[1-12].[1-31].[1-9]+/}).toArray(function (err,array) {
     if(err)console.error(err);
@@ -76,7 +79,7 @@ export function download(req,res){
     return;
   }
   var collection = database.collection(name);
-  collection.find().forEach(function(element)
+  collection.find().project({_id:0}).forEach(function(element)
   {
     if(fileType=="json"){
       res.write(JSON.stringify(element)+'\r\n');

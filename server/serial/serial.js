@@ -61,7 +61,7 @@ class serialStream extends Readable
         if(!(this.arduinoPort&&this.arduinoPort.path==found.comName)){
             try{
                 var port = new SerialPort(found.comName, {
-                    parser: SerialPort.parsers.byteDelimiter([10])
+                    parser: SerialPort.parsers.byteDelimiter([0xFF,10])
                 });
                 port.on('data',this._data.bind(self));
                 port.on("close",this._closePort.bind(self));
@@ -78,10 +78,10 @@ class serialStream extends Readable
         this.arduinoPort = undefined;
     }
     _data(data){
-        if(data.length==15){
+        if(data.length==16){
             setImmediate(function(){
                 var array = [];
-                data = Buffer.from(data,'utf-8').slice(0,data.length-1);
+                data = Buffer.from(data,'utf-8').slice(0,data.length-2);
                 array.push(data.readUInt16BE(0));
                 array.push(data.readUInt32BE(2));
                 for(var i=6;i<data.length;i++){
