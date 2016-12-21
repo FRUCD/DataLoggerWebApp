@@ -27,11 +27,58 @@ function updateTemperatures($scope,temp) {
 
 function updateStates(bms,car)
 {
+  var flagStrs = ["No error",
+    "Charge mode",
+    "Pack temperature limit exceeded",
+    "Pack temperature limit close",
+    "Pack temperature low limit",
+    "Low SOC",
+    "Critical SOC",
+    "Imbalance",
+    "Internal Fault (6804 comm failure)",
+    "Negative contactor closed",
+    "Positive contactor closed",
+    "Isolation fault",
+    "Cell too high",
+    "Cell too low",
+    "Charge halt",
+    "Full",
+    "Precharge contactor closed"
+  ];
   if(bms){
-    angular.element(document.querySelector('#bms-state')).html("BMS State: " + bms.flag);
+    var bmsFlagMsg = "";
+    for (var i = 0; i < bms.flag.length; i++) {
+      if(bms.flag[i]){
+          bmsFlagMsg += "<li>" + flagStrs[i] + "</li>";
+      }
+    }
+    angular.element(document.querySelector('#bms-state')).html("<ul>" + bmsFlagMsg + "</ul>");
   }
   if(car) {
-    angular.element(document.querySelector('#car-state')).html("Car State: " + car.state);
+    var carState = "";
+    switch (car.state)
+    {
+      case 0:
+        carState = "Startup";
+        break;
+      case 1:
+        carState = "LV";
+        break;
+      case 2:
+        carState = "Precharging";
+        break;
+      case 3:
+        carState = "HV Enabled";
+        break;
+      case 4:
+        carState = "Drive";
+        break;
+      case 5:
+        carState = "Fault";
+        break;
+
+    }
+    angular.element(document.querySelector('#car-state')).html("Car State: " + carState);
   }
 }
 
