@@ -43,16 +43,19 @@ export class SettingsController {
         if(edit.map[i].dataType!="array") delete edit.map[i].array;
       }
       $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'PUT',data:edit}).then(function(data){
-        console.log(data);
+        console.log(data.data);
+        alert("success");
       },function(msg){
-        console.log(msg);
+        console.log(msg.data);
+        alert(msg.data);
         $scope.loadForEdit();
       });
     };
     $scope.delete = function(deleteMap){
       if(deleteMap){
         $http({url:`/api/db/descriptors/${$scope.selected}/`,params:deleteMap,method:'DELETE'}).then(function(data){
-          console.log(data);
+          console.log(data.data);
+          alert("success");
           $scope.loadForEdit();
         },function(res){
           alert(res.data);
@@ -61,6 +64,7 @@ export class SettingsController {
       else{
         $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'DELETE'}).then(function(data){
           console.log(data.data);
+          alert("success");
           $scope.search();
         },function(res){
           alert(res.data);

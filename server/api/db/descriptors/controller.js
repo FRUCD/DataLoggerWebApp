@@ -68,7 +68,7 @@ export function updateDescriptor(req,res){
     }
     catch(e){
         console.log(e);
-        res.status(402).send("invalid formatting" + e);
+        res.status(402).send("invalid formatting");
     }
 }
 export function deleteMap(req,res){
