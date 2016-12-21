@@ -31,7 +31,7 @@ function updateStates(bms,car)
     angular.element(document.querySelector('#bms-state')).html("BMS State: " + bms.flag);
   }
   if(car) {
-    angular.element(document.querySelector('#car-state')).html("Car State: " + car.flag);
+    angular.element(document.querySelector('#car-state')).html("Car State: " + car.state);
   }
 }
 
