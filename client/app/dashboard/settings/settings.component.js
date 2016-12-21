@@ -39,8 +39,8 @@ export class SettingsController {
       for(var i=0;i<edit.map.length;i++){
         edit.map[i].offset = parseInt(edit.map[i].offset);
         edit.map[i].length = parseInt(edit.map[i].length);
-        if(edit.map[i].array)
-          edit.map[i].array.subLength = parseInt(edit.map[i].array.subLength);
+        if(edit.map[i].array) edit.map[i].array.subLength = parseInt(edit.map[i].array.subLength);
+        if(edit.map[i].dataType!="array") delete edit.map[i].array;
       }
       $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'PUT',data:edit}).then(function(data){
         console.log(data);
@@ -49,6 +49,24 @@ export class SettingsController {
         $scope.loadForEdit();
       });
     };
+    $scope.delete = function(deleteMap){
+      if(deleteMap){
+        $http({url:`/api/db/descriptors/${$scope.selected}/`,params:deleteMap,method:'DELETE'}).then(function(data){
+          console.log(data);
+          $scope.loadForEdit();
+        },function(res){
+          alert(res.data);
+        });
+      }
+      else{
+        $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'DELETE'}).then(function(data){
+          console.log(data.data);
+          $scope.search();
+        },function(res){
+          alert(res.data);
+        });
+      }
+    }
   }
 
   $onInit() {

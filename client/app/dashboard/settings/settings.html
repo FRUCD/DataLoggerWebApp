@@ -34,13 +34,23 @@
         </div>
         <div class="col-md-6">
           <form>
-            <div class="form-group"><select class="form-control" ng-options= "option.CAN_Id as option.PDO_Description for option in list" ng-model="selected" ng-change="loadForEdit()"></select></div>
+            <div class="form-group">
+              <select class="form-control" ng-options= "option.CAN_Id as option.PDO_Description for option in list" ng-model="selected" ng-change="loadForEdit()"></select>
+              <input type="button" class="btn btn-danger" ng-click="delete()" value="Delete CAN"/>
+            </div>
             <div class="form-group"><label>CAN ID: <input type="number" class="form-control" ng-model="edit.CAN_Id"/></label></div>
             <div class="form-group"><label>Description: <input type="text" class="form-control" ng-model="edit.PDO_Description"/></label></div>
             <h2>Mapping</h2>
             <div class="form-group" ng-repeat="map in edit.map">
-              <label ng-repeat="(key,value) in map" ng-if="key!='array'">{{key}}: <input type="text" class="form-control" ng-model="map[key]" ng-required="key!='key'"/></label> <br />
-              <label ng-repeat="(key,value) in map.array">{{key}}: <input type="text" class="form-control" ng-model="map.array[key]" required/></label>
+              <label>description: <input type="text" class="form-control" ng-model="map.description" required /></label>
+              <label>offset: <input type="number" class="form-control" ng-model="map.offset" required /></label>
+              <label>length: <input type="number" class="form-control" ng-model="map.length" required /></label>
+              <label>dataType: <input type="text" class="form-control" ng-model="map.dataType" required /></label>
+              <input type="button" class="btn btn-danger" ng-click="delete(map)" value="Delete Map"/>
+              <div ng-if="map.dataType=='array'">
+                <label>subLength: <input type="number" class="form-control" ng-model="map.array.subLength" required /></label>
+                <label>subDataType: <input type="text" class="form-control" ng-model="map.array.subDataType" required /></label>
+              </div>
             </div>
             <input type="button" class="btn btn-secondary" ng-click="edit.map.push({length:'',offset:'',description:'',dataType:''});" value="Add Map"/>
             <input type="submit" class="btn btn-primary" ng-click="submit()" value="Save"/>
