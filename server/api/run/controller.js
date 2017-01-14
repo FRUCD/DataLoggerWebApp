@@ -20,6 +20,7 @@ class Controller{
     stop(req,res){
         this.parser.unpipe();
         this.parser.pause();
+        this.parser.specification = [];
         res.status(200).send("Stopped");
     }
     current(req,res){
