@@ -4,15 +4,44 @@
       <h2 class="heading">Database <small>View all data per collection</small></h2>
     </div>
     <div class="col-sm-2 col-md-1">
-      <a ui-sref="car" class="btn btn-primary btn-outline btn-rounded">Car</a>
+      <a ui-sref="dashboard.car" class="btn btn-primary btn-outline btn-rounded">Car</a>
     </div>
     <div class="col-sm-2 col-md-1">
-      <a ui-sref="bms" class="btn btn-primary btn-outline btn-rounded">BMS</a>
+      <a ui-sref="dashboard.bms" class="btn btn-primary btn-outline btn-rounded">BMS</a>
     </div>
   </div>
 	<div class="jumbotron">
 		<div class="container">
 			<h1>Log</h1>
+      <div class="content">
+        <select ng-options="item for item in collections" ng-model="selected"></select>
+        <button type="button" class="search btn btn-primary" ng-click="search()">Query</button>
+        <a target="_blank" ng-href="/api/db/collections/{{selected}}/download/json" download><button type="button" class="download btn btn-secondary">Download JSON</button></a>
+        <a target="_blank" ng-href="/api/db/collections/{{selected}}/download/csv" download><button type="button" class="download btn btn-secondary">Download CSV</button></a>
+        <table class="table">
+          <thead>
+            <tr>
+              <td>CAN</td>
+              <td>Timestamp</td>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+              <td>4</td>
+              <td>5</td>
+              <td>6</td>
+              <td>7</td>
+              <td>8</td>  
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in datas">
+              <td>{{row.CAN_Id}}</td>
+              <td>{{row.Timestamp}}</td>
+              <td ng-repeat="value in row.data track by $index">{{value}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="loader text-center btn btn-outline" ng-mouseenter="load()">Load More</button>
+      </div
 		</div>
 	</div>
 </div>

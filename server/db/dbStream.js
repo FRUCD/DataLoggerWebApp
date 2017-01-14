@@ -1,9 +1,11 @@
 const Writable = require('stream').Writable;
 var mongo = require("mongodb").MongoClient;
+var EventEmitter = require('events');
 class dbStream extends Writable {
     constructor(options) {
         super(options);
         this.buffer = [];
+        this.emitter = new EventEmitter();
         var self = this;
         mongo.connect('mongodb://localhost/data',function(err,db){
             if(err)console.error.bind(console,"connection error");
@@ -12,11 +14,12 @@ class dbStream extends Writable {
             self.collection = db.collection((d.getMonth()+1)+"."+d.getDate()+"."+d.getFullYear()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
             self.collection.createIndex("Timestamp");
             self.collection.createIndex("CAN_Id");
-            console.log(self.collection.s.name);
+            console.log(self.collection.collectionName);
             if(self.buffer.length>0){
                 self.collection.insertMany(self.buffer);
                 console.log("write many");
             }
+            self.emitter.emit("ready");
             delete self.buffer;
         });  
         this.on('unpipe',function(){
@@ -35,6 +38,9 @@ class dbStream extends Writable {
             this.buffer.push(JSON.parse(chunk));
         }
         callback();
+    }
+    ready(callback){
+        this.emitter.on("ready",callback);
     }
 }
 module.exports = dbStream;
