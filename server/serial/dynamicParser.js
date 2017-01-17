@@ -128,6 +128,10 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         var out = new Object();
         out.CAN_Id = data[0];
         out.Timestamp = data[1];
+        out.raw = new Array();
+        for(var i=2;i<data.length;i++){
+            out.raw.push(data[i].toString(16));
+        }
         if(this.load.status=='pending')this.load.done();
         for(var i=0;i<this.specification.length;i++)
         {

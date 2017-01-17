@@ -11,7 +11,7 @@ class dbStream extends Writable {
             if(err)console.error.bind(console,"connection error");
             var d = new Date();
             self.db = db;
-            self.collection = db.collection((d.getMonth()+1)+"."+d.getDate()+"."+d.getFullYear()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
+            self.collection = db.collection(d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
             self.collection.createIndex("Timestamp");
             self.collection.createIndex("CAN_Id");
             console.log(self.collection.collectionName);
