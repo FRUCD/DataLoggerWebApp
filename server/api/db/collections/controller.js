@@ -56,7 +56,7 @@ MongoClient.connect('mongodb://localhost/data',function(err,db){
 });
 
 export function list(req,res){
-  database.listCollections({name:/[1-12].[1-31].[1-9]+/}).toArray(function (err,array) {
+  database.listCollections({name:/[1-9]+.[1-9]+.[0-9]+/}).toArray(function (err,array) {
     if(err)console.error(err);
     var collections = [];
     array.forEach(function(value,index,array){
@@ -79,19 +79,41 @@ export function download(req,res){
     return;
   }
   var collection = database.collection(name);
-  collection.find().project({_id:0}).forEach(function(element)
-  {
-    if(fileType=="json"){
-      res.write(JSON.stringify(element)+'\r\n');
-    }
-  },function(err){
-    if(err){
-      console.error(err);
-      res.status(402).end();
-      return;
-    }
-    res.status(200).send();
-  });
+  if(fileType=="json"){
+    collection.find().project({_id:0,raw:0}).forEach(function(element)
+    {
+        res.write(JSON.stringify(element)+'\r\n');
+    },function(err){
+      if(err){
+        console.error(err);
+        res.status(402).end();
+        return;
+      }
+      res.status(200).send();
+    });
+  }
+  else if(fileType=="csv"){
+    collection.find().project({_id:0,CAN_Id:1,Timestamp:1,raw:1}).forEach(function(element){
+      var string = "";
+      string+=element.CAN_Id.toString();
+      string+=",";
+      string+=element.Timestamp.toString();
+      string+=",";
+      for(let data of element.raw){
+        string+=data.toString();
+        string+=","
+      }
+      string+="\n";
+      res.write(string);
+    },function(err){
+      if(err){
+        console.error(err);
+        res.status(402).end();
+        return;
+      }
+      res.status(200).send();
+    });
+  }
 }
 export function printData(req,res){
   var name = req.params.collection;
@@ -107,7 +129,7 @@ export function printData(req,res){
     for(var i=0;i<elements.length;i++){
       elements[i].data = [];
       for(var key in elements[i]){
-        if(key!="CAN_Id"&&key!="Timestamp"&&key!="_id"&&key!="data"&&key!="generics") {
+        if(key!="CAN_Id"&&key!="Timestamp"&&key!="_id"&&key!="data"&&key!="generics"&&key!="raw") {
           elements[i].data.push(transform(elements[i][key]));
           delete elements[i][key];
         }
