@@ -200,14 +200,14 @@ export class LiveComponent {
       axis: {
         y: {
           tick: {
-            format: d3.format("%")
+            format: d3.format(".3")
           }
         }
       },
       tooltip: {
         format: {
           title: function (d) { return 'Time ' + d; },
-          value: d3.format('%')
+          value: d3.format('.3')
         }
       },
       subchart: {
