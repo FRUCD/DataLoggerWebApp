@@ -4,8 +4,13 @@ import routing from './dashboard.routes';
 
 import overview from './overview/overview.component';
 import car from './car/car.component';
+import bms from './bms/bms.component';
+import database from './database/database.component';
 import curtis from './curtis/curtis.component';
-
+import status from './status/status.component';
+import settings from './settings/settings.component';
+import live from './live/live.component';
+import display from './display/display.component';
 
 export class DashboardController {
   /*@ngInject*/
@@ -17,7 +22,7 @@ export class DashboardController {
   }
 }
 
-export default angular.module('dataLoggerWebAppApp.dashboard', [uiRouter, overview, car, curtis])
+export default angular.module('dataLoggerWebAppApp.dashboard', [uiRouter, overview, database, status, settings, car, bms, curtis, live, display])
   .config(routing)
   .component('dashboard', {
     template: require('./dashboard.html'),

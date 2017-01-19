@@ -18,30 +18,39 @@ mongoose.connection.on('error', function(err) {
 });
 
 // Populate databases with sample data
-if(config.seedDB) {
-  require('./config/seed');
-}
-
 // Setup server
 var app = express();
 var server = http.createServer(app);
 var socketio = require('socket.io')(server, {
   serveClient: config.env !== 'production',
-  path: '/socket.io-client'
+  path:'/socket.io-client'
+});
+var Serial = require('./serial/serial.js');
+var Parser = require('./serial/dynamicParser.js');
+var dbStream = require('./db/dbStream.js');
+var arduinoListener;
+var parser = new Parser();
+var database = new dbStream();
+parser.on('data',function(data){
+  data = JSON.parse(data);
+    switch(data.CAN_Id){
+      case 1574:
+      case 512:
+      case 513:
+        socketio.emit("car:newData",data);
+        break;
+      case 1160:
+        socketio.emit("temp",data);
+        break;
+      case 392:
+      case 904:
+        socketio.emit("bms:newData",data);
+        break;
+    }
 });
 require('./config/socketio').default(socketio);
 require('./config/express').default(app);
-require('./routes').default(app);
-var Serial = require('./serial/serial.js');
-var Parser = require('./serial/parser.js');
-var dbStream = require('./db/dbStream.js');
-var arduinoListener = new Serial();
-var parser = new Parser({decodeStrings:false});
-var database = new dbStream();
-parser.on('data',function(data){
-    socketio.emit(data);
-});
-arduinoListener.pipe(parser).pipe(database);
+require('./routes').default(app,parser,database);
 // Start server
 function startServer() {
   app.angularFullstack = server.listen(config.port, config.ip, function() {
@@ -50,6 +59,9 @@ function startServer() {
 }
 
 setImmediate(startServer);
-
+setImmediate(function(){
+  arduinoListener = new Serial();
+  arduinoListener.pipe(parser).pipe(database);
+});
 // Expose app
 exports = module.exports = app;
