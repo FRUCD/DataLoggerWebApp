@@ -473,6 +473,7 @@ gulp.task('build', cb => {
         [
             'copy:extras',
             'copy:assets',
+            'copy:defaults',
             'copy:fonts:dist',
             'copy:server',
             'webpack:dist'
@@ -505,7 +506,11 @@ gulp.task('revReplaceWebpack', function() {
         .pipe(plugins.revReplace({manifest: gulp.src(`${paths.dist}/${paths.client.revManifest}`)}))
         .pipe(gulp.dest('dist/client'));
 });
-
+gulp.task('copy:defaults', () => {
+    return gulp.src([
+        `${serverPath}/api/db/defaults.conf`
+    ]).pipe(gulp.dest(`${paths.dist}/${serverPath}/api/db`));
+})
 gulp.task('copy:extras', () => {
     return gulp.src([
         `${clientPath}/favicon.ico`,

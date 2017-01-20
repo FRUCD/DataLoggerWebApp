@@ -8,10 +8,8 @@ function Socket(socketFactory) {
   'ngInject';
   // socket.io now auto-configures its connection when we ommit a connection url
 
-  var ioSocket = io('', {
-    // Send auth token on connection, you will need to DI the Auth service above
-    // 'query': 'token=' + Auth.getToken()
-    path: '/socket.io-client'
+  var ioSocket = io('',{
+    path:'/socket.io-client'
   });
 
   var socket = socketFactory({
@@ -36,32 +34,8 @@ function Socket(socketFactory) {
       /**
        * Syncs item creation/updates on 'model:newData'
        */
-      socket.on(`${modelName}:newData`, function(item) {
-        var arrayData;
-        if(modelName == 'car') {
-          arrayData = [
-            ['throttleX'],
-            ['brakeX'],
-            ['throttleY'],
-            ['brakeY']
-          ];
-
-          if(item.hasOwnProperty('throttle')) {
-            arrayData[0].push(item.Timestamp);
-            arrayData[2].push(item.throttle);
-          } else {
-            arrayData[1].push(item.Timestamp);
-            arrayData[3].push(item.brake);
-          }
-        } else if(modelName == 'bms') {
-          //TODO: Finish like above
-        } else if(modelName == 'curtis') {
-          //TODO: Finish like above
-        } else {
-          //TODO: Finish like above
-        }
-
-        cb(arrayData);
+      socket.on(`${modelName}`, function(item) {
+        cb(item);
       });
     },
 
@@ -71,7 +45,7 @@ function Socket(socketFactory) {
      * @param modelName
      */
     unsyncUpdates(modelName) {
-      socket.removeAllListeners(`${modelName}:newData`);
+      socket.removeAllListeners(`${modelName}`);
     }
   };
 }
