@@ -91,9 +91,9 @@ function plotNew(newData) {
   else if (newData.CAN_Id == 904) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
-    if (newData.min_voltage) object.min_voltage = newData.min_voltage;
-    if (newData.max_voltage) object.max_voltage = newData.max_voltage;
-    if (newData.pack_voltage) object.pack_voltage = newData.pack_voltage;
+    if (newData.min_voltage != undefined) object.min_voltage = newData.min_voltage;
+    if (newData.max_voltage != undefined) object.max_voltage = newData.max_voltage;
+    if (newData.pack_voltage != undefined) object.pack_voltage = newData.pack_voltage;
     if (batt_count < 100 && batt_initialPointRemoved) batt_chart.flow({
       json: object,
       length: 0
@@ -149,6 +149,8 @@ export class LiveComponent {
     this.brakeBuffer = new Buffer(1000, ['brake'], plotNew);
     this.tempBuffer = new Buffer(1000, ['temp_array'], plotNew);
     this.voltageBuffer = new Buffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
+    $scope.genericsGraphMap = genericsGraphMap;
+    $scope.genericsBufferMap = genericsBufferMap;
 
 
     tb_chart = c3.generate({
@@ -174,13 +176,16 @@ export class LiveComponent {
           }
         }
       },
-      tooltip: {
-        format: {
-          title: function (d) {
-            return 'Time ' + d;
-          },
-          value: d3.format('%')
-        }
+      // tooltip: {
+      //   format: {
+      //     title: function (d) {
+      //       return 'Time ' + d;
+      //     },
+      //     value: d3.format('%')
+      //   }
+      // },
+      transition: {
+        duration: 0
       },
       subchart: {
         show: true
@@ -217,13 +222,16 @@ export class LiveComponent {
           }
         }
       },
-      tooltip: {
-        format: {
-          title: function (d) {
-            return 'Time ' + d;
-          },
-          value: d3.format('.3')
-        }
+      // tooltip: {
+      //   format: {
+      //     title: function (d) {
+      //       return 'Time ' + d;
+      //     },
+      //     value: d3.format('.3')
+      //   }
+      // },
+      transition: {
+        duration: 0
       },
       subchart: {
         show: true
@@ -263,13 +271,16 @@ export class LiveComponent {
           }
         }
       },
-      tooltip: {
-        format: {
-          title: function (d) {
-            return 'Time ' + d;
-          },
-          value: d3.format('.3')
-        }
+      // tooltip: {
+      //   format: {
+      //     title: function (d) {
+      //       return 'Time ' + d;
+      //     },
+      //     value: d3.format('.3')
+      //   }
+      // },
+      transition: {
+        duration: 0
       },
       subchart: {
         show: true
@@ -300,11 +311,14 @@ export class LiveComponent {
     }.bind(this));
     this.socket.syncUpdates('bms', function (data) {
       if (data) {
-        if (data.CAN_Id == 904) this.voltageBuffer.push(data);
+        if (data.CAN_Id == 904) {
+          this.voltageBuffer.push(data);
+        }
       }
     }.bind(this));
     this.socket.syncUpdates('data', function (data) {
       if (data) {
+        console.log(data.CAN_Id);
         if (data.generics) {
           if (genericsGraphMap.get(data.CAN_Id))//can id already exists
           {
