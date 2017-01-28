@@ -26,51 +26,29 @@ class Buffer {
         out.Timestamp = this.start;
         out.CAN_Id = this.buffer[0].CAN_Id;
         this.keys.forEach(function (key) {
-          out[key] = 0;
-          self.buffer.forEach(function (value) {
-            out[key] += value[key];
-          });
-          out[key] /= self.buffer.length;
+          if (self.buffer[key] instanceof Array) {
+            var sums = [];
+            for (var i = 0; i < this.buffer[0][self.key].length; i++) {
+              sums.push(0);
+              this.buffer.forEach(function (value) {
+                sums[i] += value[self.key][i];
+              });
+            }
+            for (var i = 0; i < sums.length; i++) {
+              sums[i] = sums[i] / this.buffer.length;
+            }
+            out[this.key] = sums;
+          }
+          else {
+            out[key] = 0;
+            self.buffer.forEach(function (value) {
+              out[key] += value[key];
+
+            });
+            out[key] /= self.buffer.length;
+          }
         });
 
-        this.start = undefined;
-        this.buffer = [];
-        this.callback(out);
-      }
-    }
-  }
-}
-
-class BufferArray {
-  constructor(ms, key, callback) {
-    this.ms = ms;
-    this.buffer = [];
-    this.callback = callback;
-    this.key = key;
-  }
-
-  push(point) {
-    var self = this;
-    if (point instanceof Object) {
-      if (!this.start) this.start = point.Timestamp;
-      if (point.Timestamp - this.start < this.ms) {
-        this.buffer.push(point);
-      }
-      else {
-        var out = new Object();
-        out.Timestamp = this.start;
-        out.CAN_Id = this.buffer[0].CAN_Id;
-        var sums = [];
-        for (var i = 0; i < this.buffer[0][self.key].length; i++) {
-          sums.push(0);
-          this.buffer.forEach(function (value) {
-            sums[i] += value[self.key][i];
-          });
-        }
-        for (var i = 0; i < sums.length; i++) {
-          sums[i] = sums[i] / this.buffer.length;
-        }
-        out[this.key] = sums;
         this.start = undefined;
         this.buffer = [];
         this.callback(out);
@@ -156,6 +134,8 @@ function plotNew(newData) {
   }
 }
 
+var genericsGraphMap = new Map();
+var genericsBufferMap = new Map();
 export class LiveComponent {
   /*@ngInject*/
   constructor($scope, $timeout, socket) {
@@ -164,8 +144,8 @@ export class LiveComponent {
     this.socket = socket;
     this.throttleBuffer = new Buffer(1000, ['throttle'], plotNew);
     this.brakeBuffer = new Buffer(1000, ['brake'], plotNew);
-    this.tempBuffer = new BufferArray(1000, 'temp_array', plotNew);
-    this.voltageBuffer = new Buffer(1000, ['min_voltage','max_voltage','pack_voltage'], plotNew);
+    this.tempBuffer = new Buffer(1000, ['temp_array'], plotNew);
+    this.voltageBuffer = new Buffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
 
 
     tb_chart = c3.generate({
@@ -246,6 +226,13 @@ export class LiveComponent {
       },
       subchart: {
         show: true
+      },
+      grid: {
+        y: {
+          lines: [
+            {value: 80, text: 'Threshold'}
+          ]
+        }
       }
     });
 
@@ -259,7 +246,7 @@ export class LiveComponent {
         ],
         keys: {
           x: 'Timestamp',
-          value: ['min_voltage', 'max_voltage','pack_voltage']
+          value: ['min_voltage', 'max_voltage', 'pack_voltage']
         },
         names: {
           'min_voltage': 'Min Voltage',
@@ -309,6 +296,66 @@ export class LiveComponent {
     this.socket.syncUpdates('bms', function (data) {
       if (data) {
         if (data.CAN_Id == 904) this.voltageBuffer.push(data);
+      }
+    }.bind(this));
+    this.socket.syncUpdates('data', function (data) {
+      if (data) {
+        if (data.generics) {
+          if (genericsGraphMap.get(data.CAN_Id))//can id already exists
+          {
+            genericsBufferMap.get(data.CAN_Id,).push(data);
+          }
+          else {
+            var dataElements = new Array();
+            var descriptionArr = new Array();
+            data.generics.forEach(function (generic) {
+              if (generic.dataType == 'decimal') {
+                var simpleVal = new Object();
+                simpleVal.Timestamp = generic.Timestamp;
+                simpleVal[generic.description] = generic.value;
+                dataElements.push(simpleVal);
+                descriptionArr.push(generic.description);
+              }
+            });
+            genericsBufferMap.set(data.CAN_Id, new Buffer(1000, descriptionArr, plotNew));
+            genericsGraphMap.set(data.CAN_Id, c3.generate({
+              data: {
+                json: dataElements,
+                keys: {
+                  x: 'Timestamp',
+                  value: descriptionArr
+                }
+              },
+              axis: {
+                y: {
+                  tick: {
+                    format: d3.format(".3")
+                  }
+                }
+              },
+              tooltip: {
+                format: {
+                  title: function (d) {
+                    return 'Time ' + d;
+                  },
+                  value: d3.format('.3')
+                }
+              },
+              subchart: {
+                show: true
+              }
+            }));
+          }
+        }
+        if (generic.dataType = 'array') {
+          if (genericsGraphMap.get(data.CAN_Id))//can id already exists
+          {
+
+          }
+          else {
+
+          }
+        }
       }
     }.bind(this));
   }
