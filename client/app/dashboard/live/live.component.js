@@ -26,18 +26,18 @@ class Buffer {
         out.Timestamp = this.start;
         out.CAN_Id = this.buffer[0].CAN_Id;
         this.keys.forEach(function (key) {
-          if (self.buffer[key] instanceof Array) {
+          if (self.buffer[0][key] instanceof Array) {
             var sums = [];
-            for (var i = 0; i < this.buffer[0][self.key].length; i++) {
+            for (var i = 0; i < self.buffer[0][key].length; i++) {
               sums.push(0);
-              this.buffer.forEach(function (value) {
-                sums[i] += value[self.key][i];
+              self.buffer.forEach(function (value) {
+                sums[i] += value[key][i];
               });
             }
             for (var i = 0; i < sums.length; i++) {
-              sums[i] = sums[i] / this.buffer.length;
+              sums[i] = sums[i] / self.buffer.length;
             }
-            out[this.key] = sums;
+            out[key] = sums;
           }
           else {
             out[key] = 0;
@@ -132,6 +132,9 @@ function plotNew(newData) {
     }
     temp_count++;
   }
+  else{
+
+  }
 }
 
 var genericsGraphMap = new Map();
@@ -181,6 +184,9 @@ export class LiveComponent {
       },
       subchart: {
         show: true
+      },
+      size: {
+        height: 600
       }
     });
 
@@ -188,12 +194,7 @@ export class LiveComponent {
       bindto: '#temp-chart',
       data: {
         json: [
-          {Timestamp: 0, temp1: 0},
-          {Timestamp: 0, temp2: 0},
-          {Timestamp: 0, temp3: 0},
-          {Timestamp: 0, temp4: 0},
-          {Timestamp: 0, temp5: 0},
-          {Timestamp: 0, temp6: 0},
+          {Timestamp: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0, temp6: 0}
         ],
         keys: {
           x: 'Timestamp',
@@ -233,6 +234,9 @@ export class LiveComponent {
             {value: 80, text: 'Threshold'}
           ]
         }
+      },
+      size: {
+        height: 600
       }
     });
 
@@ -240,9 +244,7 @@ export class LiveComponent {
       bindto: '#battery-chart',
       data: {
         json: [
-          {Timestamp: 0, min_voltage: 0},
-          {Timestamp: 0, max_voltage: 0},
-          {Timestamp: 0, pack_voltage: 0}
+          {Timestamp: 0, min_voltage: 0,max_voltage: 0,pack_voltage: 0}
         ],
         keys: {
           x: 'Timestamp',
@@ -271,6 +273,9 @@ export class LiveComponent {
       },
       subchart: {
         show: true
+      },
+      size: {
+        height: 600
       }
     });
 
