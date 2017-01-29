@@ -1,6 +1,10 @@
 var express = require('express');
-var Controller = require('./controller.js');
+var controller = require('./controller.js');
 var router = express.Router();
-var controller = new Controller();
-router.get('/',controller.index);
+var path = require('path');
+var multer = require('multer');
+var upload = multer({
+    dest: path.join(__dirname, 'files/')
+});
+router.get('/',upload.single('csv'),controller);
 module.exports = router;
