@@ -6,5 +6,5 @@ var multer = require('multer');
 var upload = multer({
     dest: path.join(__dirname, 'files/')
 });
-router.get('/',upload.single('csv'),controller);
+router.post('/',upload.single('csv'),controller);
 module.exports = router;

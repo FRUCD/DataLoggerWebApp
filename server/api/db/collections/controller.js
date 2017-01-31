@@ -1,7 +1,9 @@
 var MongoClient = require('mongodb').MongoClient;
 var database;
 function sort(collections){
-  quicksort(collections,0,collections.length-1);
+  collections.sort(function(a,b){
+    return -a.localeCompare(b);
+  });
 }
 function quicksort(collections,low,high){
   if(low<high){

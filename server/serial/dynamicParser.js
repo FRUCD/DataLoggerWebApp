@@ -27,10 +27,10 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
     }
     getArray(data,map){
         var out = [];
-        for(var i=Math.floor(map.offset/8)+2;i<data.length;i+=map.array.subLength/8){
+        for(var i=0;i<map.length;i++){
             out.push(this.getValue(data.slice(),
                 {dataType:map.array.subDataType,
-                    offset:(i-2)*8,
+                    offset:map.offset+i*map.array.subLength,
                     length:map.array.subLength
                 }));
         }

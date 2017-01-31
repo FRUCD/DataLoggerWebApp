@@ -1,7 +1,9 @@
+<script src="ng-file-upload-shim.js"></script> <!-- for no html5 browsers support -->
+<script src="ng-file-upload.js"></script>
 <div>
   <div class="row">
     <div class="col-sm-8 col-md-10">
-      <h2 class="heading">BMS <small>Information about the battery</small></h2>
+      <h2 class="heading">Analysis <small>Upload Data for Analysis</small></h2>
     </div>
     <div class="col-sm-2 col-md-1">
       <a ui-sref="dashboard.overview" class="btn btn-primary btn-outline btn-rounded">Overview</a>
@@ -12,8 +14,10 @@
   </div>
 	<div class="jumbotron">
 		<div class="container">
-			<h1>DATA!</h1>
-			Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! <br /><br />
+      <form name="form">
+        <div ngf-select ng-model="file" name="file">Select</div>
+        <button type="submit" ng-click="submit()">submit</button>
+      </form>
 		</div>
 	</div>
 </div>
