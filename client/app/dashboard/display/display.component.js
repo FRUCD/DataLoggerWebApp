@@ -9,14 +9,17 @@ import routes from './display.routes';
 export class DisplayComponent {
   /*@ngInject*/
   constructor($scope, $http, Upload) {
-    $scope.submit = function(){
+    $scope.upload = function(theFile){
+      console.log(theFile);
       Upload.upload({
             url: '/api/upload',
-            data: {file: $scope.file}
+            data: {
+              file: theFile
+              }
         }).then(function (resp) {
             console.log(resp);
         }, function (resp) {
-            console.log('Error status: ' + resp);
+            console.log(resp);
         });
     }
   }
