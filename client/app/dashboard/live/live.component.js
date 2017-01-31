@@ -111,13 +111,8 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.temp_array) {
-      object.temp1 = newData.temp_array[0];
-      object.temp2 = newData.temp_array[1];
-      object.temp3 = newData.temp_array[2];
-      object.temp4 = newData.temp_array[3];
-      object.temp5 = newData.temp_array[4];
-      object.temp6 = newData.temp_array[5];
-
+      for(var i =0; i < newData.temp_array.length;i++)
+        object["temp"+i]=newData.temp_array[i];
     }
     if (temp_count < 100 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
@@ -132,7 +127,7 @@ function plotNew(newData) {
     }
     temp_count++;
   }
-  else{
+  else {
 
   }
 }
@@ -199,19 +194,19 @@ export class LiveComponent {
       bindto: '#temp-chart',
       data: {
         json: [
-          {Timestamp: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0, temp6: 0}
+          {Timestamp: 0, temp0:0,temp1:0,temp2:0,temp3:0,temp4:0,temp5:0}
         ],
         keys: {
           x: 'Timestamp',
-          value: ['temp1', 'temp2', 'temp3', 'temp4', 'temp5', 'temp6']
+          value: ['temp0','temp1','temp2','temp3','temp4','temp5']
         },
         names: {
-          'temp1': 'Temperature 1',
-          'temp2': 'Temperature 2',
-          'temp3': 'Temperature 3',
-          'temp4': 'Temperature 4',
-          'temp5': 'Temperature 5',
-          'temp6': 'Temperature 6',
+          'temp0': 'Temperature 1',
+          'temp1': 'Temperature 2',
+          'temp2': 'Temperature 3',
+          'temp3': 'Temperature 4',
+          'temp4': 'Temperature 5',
+          'temp5': 'Temperature 6',
 
         }
       },
@@ -252,7 +247,7 @@ export class LiveComponent {
       bindto: '#battery-chart',
       data: {
         json: [
-          {Timestamp: 0, min_voltage: 0,max_voltage: 0,pack_voltage: 0}
+          {Timestamp: 0, min_voltage: 0, max_voltage: 0, pack_voltage: 0}
         ],
         keys: {
           x: 'Timestamp',
@@ -317,63 +312,57 @@ export class LiveComponent {
       }
     }.bind(this));
     this.socket.syncUpdates('data', function (data) {
-      if (data) {
-        console.log(data.CAN_Id);
-        if (data.generics) {
-          if (genericsGraphMap.get(data.CAN_Id))//can id already exists
-          {
-            genericsBufferMap.get(data.CAN_Id,).push(data);
-          }
-          else {
-            var dataElements = new Array();
-            var descriptionArr = new Array();
-            data.generics.forEach(function (generic) {
-              if (generic.dataType == 'decimal') {
-                var simpleVal = new Object();
-                simpleVal.Timestamp = generic.Timestamp;
-                simpleVal[generic.description] = generic.value;
-                dataElements.push(simpleVal);
-                descriptionArr.push(generic.description);
-              }
-            });
-            genericsBufferMap.set(data.CAN_Id, new Buffer(1000, descriptionArr, plotNew));
-            genericsGraphMap.set(data.CAN_Id, c3.generate({
-              data: {
-                json: dataElements,
-                keys: {
-                  x: 'Timestamp',
-                  value: descriptionArr
-                }
-              },
-              axis: {
-                y: {
-                  tick: {
-                    format: d3.format(".3")
-                  }
-                }
-              },
-              tooltip: {
-                format: {
-                  title: function (d) {
-                    return 'Time ' + d;
-                  },
-                  value: d3.format('.3')
-                }
-              },
-              subchart: {
-                show: true
-              }
-            }));
-          }
+      if (data && data.generics) {
+        if (genericsBufferMap.get(data.CAN_Id))//can id already exists
+        {
+          genericsBufferMap.get(data.CAN_Id).push(data);
         }
-        if (generic.dataType = 'array') {
-          if (genericsGraphMap.get(data.CAN_Id))//can id already exists
-          {
+        else {
+          var descriptionArr = new Array();
+          var simpleVal = new Object();
+          simpleVal.Timestamp = data.generics.Timestamp;
+          data.generics.forEach(function (generic) {
+            if (generic.dataType == 'decimal') {
+              simpleVal[generic.description] = generic.value;
+              descriptionArr.push(generic.description);
+            }
+            else if(generic.dataType == 'array' && generic.value instanceof Array)
+            {
+              descriptionArr.push(generic.description);
+               for(var i = 0; i < generic.length;i++)
+                 simpleVal[generic.description + i] = generic.value[i];
+            }
+          });
+          console.log(descriptionArr);
 
-          }
-          else {
-
-          }
+          genericsBufferMap.set(data.CAN_Id, new Buffer(1000, descriptionArr, plotNew));
+          genericsGraphMap.set(data.CAN_Id, c3.generate({
+            data: {
+              json: simpleVal,
+              keys: {
+                x: 'Timestamp',
+                value: descriptionArr
+              }
+            },
+            axis: {
+              y: {
+                tick: {
+                  format: d3.format(".3")
+                }
+              }
+            },
+            tooltip: {
+              format: {
+                title: function (d) {
+                  return 'Time ' + d;
+                },
+                value: d3.format('.3')
+              }
+            },
+            subchart: {
+              show: true
+            }
+          }));
         }
       }
     }.bind(this));

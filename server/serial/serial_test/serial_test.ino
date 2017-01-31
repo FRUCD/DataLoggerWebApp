@@ -121,7 +121,7 @@ void loop() {
   Serial.write(0);
   Serial.write(0);
   Serial.write(0);
-  Serial.write(0));
+  Serial.write(0);
   Serial.write(0xFF);
   Serial.write('\n');
   voltage+=10;
