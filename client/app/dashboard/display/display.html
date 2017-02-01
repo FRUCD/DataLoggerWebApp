@@ -14,9 +14,15 @@
   </div>
 	<div class="jumbotron">
 		<div class="container">
-      <form name="form">
-        <div class="btn btn-primary btn-outline" name="csv" ngf-select="upload($file)">Upload on file select</div>
-      </form>
+      <div class="col-md-6 col-sm-12">
+        <form name="form">
+          <div class="btn btn-primary btn-outline" name="csv" ngf-select="upload($file)">Upload on file select</div>
+        </form>
+      </div>
+      <div class="col-md-6 col-sm-12">
+        <select ng-options="item for item in collections" ng-model="selected"></select>
+        <button class="btn btn-primary" name="lookup" ng-click="load()">Load from DB</button>
+      </div>
 		</div>
 	</div>
 </div>
