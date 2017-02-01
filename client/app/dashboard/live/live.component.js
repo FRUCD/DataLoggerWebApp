@@ -43,7 +43,6 @@ class Buffer {
             out[key] = 0;
             self.buffer.forEach(function (value) {
               out[key] += value[key];
-
             });
             out[key] /= self.buffer.length;
           }
@@ -111,8 +110,8 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.temp_array) {
-      for(var i =0; i < newData.temp_array.length;i++)
-        object["temp"+i]=newData.temp_array[i];
+      for (var i = 0; i < newData.temp_array.length; i++)
+        object["temp" + i] = newData.temp_array[i];
     }
     if (temp_count < 100 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
@@ -128,17 +127,32 @@ function plotNew(newData) {
     temp_count++;
   }
   else {
-
+    if (genericsGraphMap.get(newData.CAN_Id)) {
+      var graph = genericsGraphMap.get(newData.CAN_Id);
+      var canId = newData.CAN_Id;
+      delete newData.CAN_Id;
+      if (genericsBufferMap.get(canId).count < 100 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
+        json: newData,
+        length: 0
+      });
+      else {
+        graph.flow({
+          json: newData,
+          length: 1
+        });
+        genericsBufferMap.get(canId).firstPointRemoved = true;
+      }
+      genericsBufferMap.get(canId).count++;
+    }
   }
 }
-
 var genericsGraphMap = new Map();
 var genericsBufferMap = new Map();
+var genericsIds = [];
+var graphRenderQueue = [];
 export class LiveComponent {
   /*@ngInject*/
   constructor($scope, $timeout, socket) {
-    tb_count = 0;
-    tb_initialPointRemoved = false;
     this.socket = socket;
     this.throttleBuffer = new Buffer(1000, ['throttle'], plotNew);
     this.brakeBuffer = new Buffer(1000, ['brake'], plotNew);
@@ -146,8 +160,7 @@ export class LiveComponent {
     this.voltageBuffer = new Buffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
     $scope.genericsGraphMap = genericsGraphMap;
     $scope.genericsBufferMap = genericsBufferMap;
-
-
+    $scope.genericsIds = genericsIds;
     tb_chart = c3.generate({
       bindto: '#throttle-brake-chart',
       data: {
@@ -186,11 +199,11 @@ export class LiveComponent {
       bindto: '#temp-chart',
       data: {
         json: [
-          {Timestamp: 0, temp0:0,temp1:0,temp2:0,temp3:0,temp4:0,temp5:0}
+          {Timestamp: 0, temp0: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0}
         ],
         keys: {
           x: 'Timestamp',
-          value: ['temp0','temp1','temp2','temp3','temp4','temp5']
+          value: ['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5']
         },
         names: {
           'temp0': 'Temperature 1',
@@ -261,6 +274,38 @@ export class LiveComponent {
       }
     });
 
+    $scope.$on('updateGraphs', function () {
+      graphRenderQueue.forEach(function (graph) {
+        genericsGraphMap.set(graph.CAN_Id, c3.generate({
+          bindto: '#can' + graph.CAN_Id,
+          data: {
+            json: [graph.graphFormat],
+            keys: {
+              x: 'Timestamp',
+              value: graph.descriptionArr
+            }
+          },
+          axis: {
+            y: {
+              tick: {
+                format: d3.format(".3")
+              }
+            }
+          },
+          transition: {
+            duration: 0
+          },
+          subchart: {
+            show: true
+          },
+          size: {
+            height: 600
+          }
+        }));
+      });
+      graphRenderQueue = [];
+    });
+
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('temp');
       socket.unsyncUpdates('car');
@@ -275,11 +320,13 @@ export class LiveComponent {
         else if (data.CAN_Id == 513) this.brakeBuffer.push(data);
       }
     }.bind(this));
+
     this.socket.syncUpdates('temp', function (data) {
       if (data) {
         this.tempBuffer.push(data)
       }
     }.bind(this));
+
     this.socket.syncUpdates('bms', function (data) {
       if (data) {
         if (data.CAN_Id == 904) {
@@ -287,58 +334,44 @@ export class LiveComponent {
         }
       }
     }.bind(this));
+
     this.socket.syncUpdates('data', function (data) {
       if (data && data.generics) {
+        var descriptionArr = [];
+        var simpleVal = new Object();
+
+        simpleVal.Timestamp = data.Timestamp;
+        simpleVal.CAN_Id = data.CAN_Id;
+
+        data.generics.forEach(function (generic) {
+          if (generic.dataType == 'decimal') {
+            simpleVal[generic.description] = generic.value;
+            descriptionArr.push(generic.description);
+          }
+          else if (generic.dataType == 'array' && generic.value instanceof Array) {
+            descriptionArr.push(generic.description);
+            for (var i = 0; i < generic.length; i++)
+              simpleVal[generic.description + i] = generic.value[i];
+          }
+        });
         if (genericsBufferMap.get(data.CAN_Id))//can id already exists
         {
-          genericsBufferMap.get(data.CAN_Id).push(data);
+          genericsBufferMap.get(data.CAN_Id).buffer.push(simpleVal);
         }
         else {
-          var descriptionArr = new Array();
-          var simpleVal = new Object();
-          simpleVal.Timestamp = data.generics.Timestamp;
-          data.generics.forEach(function (generic) {
-            if (generic.dataType == 'decimal') {
-              simpleVal[generic.description] = generic.value;
-              descriptionArr.push(generic.description);
-            }
-            else if(generic.dataType == 'array' && generic.value instanceof Array)
-            {
-              descriptionArr.push(generic.description);
-               for(var i = 0; i < generic.length;i++)
-                 simpleVal[generic.description + i] = generic.value[i];
-            }
-          });
-          console.log(descriptionArr);
+          genericsIds.push(data.CAN_Id);
 
-          genericsBufferMap.set(data.CAN_Id, new Buffer(1000, descriptionArr, plotNew));
-          genericsGraphMap.set(data.CAN_Id, c3.generate({
-            data: {
-              json: simpleVal,
-              keys: {
-                x: 'Timestamp',
-                value: descriptionArr
-              }
-            },
-            axis: {
-              y: {
-                tick: {
-                  format: d3.format(".3")
-                }
-              }
-            },
-            tooltip: {
-              format: {
-                title: function (d) {
-                  return 'Time ' + d;
-                },
-                value: d3.format('.3')
-              }
-            },
-            subchart: {
-              show: true
-            }
-          }));
+          var bufferInfo = new Object();
+          bufferInfo.buffer = new Buffer(1000, descriptionArr, plotNew);
+          bufferInfo.count = 0;
+          bufferInfo.firstPointRemoved = false;
+          genericsBufferMap.set(data.CAN_Id, bufferInfo);
+
+          var graphData = new Object();
+          graphData.CAN_Id = data.CAN_Id;
+          graphData.descriptionArr = descriptionArr;
+          graphData.graphFormat = simpleVal;
+          graphRenderQueue.push(graphData);
         }
       }
     }.bind(this));
@@ -347,6 +380,18 @@ export class LiveComponent {
 
 export default angular.module('dataLoggerWebApp.live', [uiRouter])
   .config(routes)
+  .directive('onFinishRender', function ($timeout) {
+    return {
+      restrict: 'A',
+      link: function (scope, element, attr) {
+        if (scope.$last === true) {
+          $timeout(function () {
+            scope.$emit(attr.onFinishRender);
+          });
+        }
+      }
+    }
+  })
   .component('live', {
     template: require('./live.html'),
     controller: LiveComponent

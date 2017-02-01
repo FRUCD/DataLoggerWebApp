@@ -30,6 +30,9 @@
       <div class="graph">
         <div id="battery-chart"></div>
       </div>
-      <div ng-repeat='(key, value) in genericsGraphMap id={{key}}> </div>
+      <div class="row">
+        <h3>Generics</h3>
+      </div>
+      <div ng-repeat="value in genericsIds" on-finish-render="updateGraphs" id="can{{value}}">{{value}}</div>
 	</div>
 </div>
