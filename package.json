@@ -38,6 +38,7 @@
     "mongoose": "^4.1.2",
     "morgan": "~1.7.0",
     "multer": "^1.3.0",
+    "ng-file-upload": "^12.2.13",
     "serialport": "^4.0.5",
     "serve-favicon": "^2.3.0",
     "shrink-ray": "^0.1.3",

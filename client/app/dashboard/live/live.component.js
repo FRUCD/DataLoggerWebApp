@@ -171,14 +171,6 @@ export class LiveComponent {
           }
         }
       },
-      // tooltip: {
-      //   format: {
-      //     title: function (d) {
-      //       return 'Time ' + d;
-      //     },
-      //     value: d3.format('%')
-      //   }
-      // },
       transition: {
         duration: 0
       },
@@ -217,14 +209,6 @@ export class LiveComponent {
           }
         }
       },
-      // tooltip: {
-      //   format: {
-      //     title: function (d) {
-      //       return 'Time ' + d;
-      //     },
-      //     value: d3.format('.3')
-      //   }
-      // },
       transition: {
         duration: 0
       },
@@ -266,14 +250,6 @@ export class LiveComponent {
           }
         }
       },
-      // tooltip: {
-      //   format: {
-      //     title: function (d) {
-      //       return 'Time ' + d;
-      //     },
-      //     value: d3.format('.3')
-      //   }
-      // },
       transition: {
         duration: 0
       },
