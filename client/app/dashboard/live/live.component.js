@@ -74,14 +74,13 @@ function plotNew(newData) {
     object.Timestamp = newData.Timestamp;
     if (newData.throttle) object.throttle = newData.throttle / 0x7FF;
     if (newData.brake) object.brake = newData.brake / 0x7FF;
-    if (tb_count < 100 && tb_initialPointRemoved) tb_chart.flow({
+    if (tb_count < 50 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0
     });
     else {
       tb_chart.flow({
-        json: object,
-        length: 1
+        json: object
       });
       tb_initialPointRemoved = true;
     }
@@ -93,14 +92,13 @@ function plotNew(newData) {
     if (newData.min_voltage != undefined) object.min_voltage = newData.min_voltage;
     if (newData.max_voltage != undefined) object.max_voltage = newData.max_voltage;
     if (newData.pack_voltage != undefined) object.pack_voltage = newData.pack_voltage;
-    if (batt_count < 100 && batt_initialPointRemoved) batt_chart.flow({
+    if (batt_count < 50 && batt_initialPointRemoved) batt_chart.flow({
       json: object,
       length: 0
     });
     else {
       batt_chart.flow({
-        json: object,
-        length: 1
+        json: object
       });
       batt_initialPointRemoved = true;
     }
@@ -113,14 +111,13 @@ function plotNew(newData) {
       for (var i = 0; i < newData.temp_array.length; i++)
         object["temp" + i] = newData.temp_array[i];
     }
-    if (temp_count < 100 && temp_initialPointRemoved) temp_chart.flow({
+    if (temp_count < 50 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
       length: 0
     });
     else {
       temp_chart.flow({
-        json: object,
-        length: 1
+        json: object
       });
       temp_initialPointRemoved = true;
     }
@@ -131,14 +128,13 @@ function plotNew(newData) {
       var graph = genericsGraphMap.get(newData.CAN_Id);
       var canId = newData.CAN_Id;
       delete newData.CAN_Id;
-      if (genericsBufferMap.get(canId).count < 100 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
+      if (genericsBufferMap.get(canId).count < 50 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
         json: newData,
         length: 0
       });
       else {
         graph.flow({
-          json: newData,
-          length: 1
+          json: newData
         });
         genericsBufferMap.get(canId).firstPointRemoved = true;
       }
@@ -164,10 +160,11 @@ export class LiveComponent {
     tb_chart = c3.generate({
       bindto: '#throttle-brake-chart',
       data: {
-        json: [
+        /*json: [
           {Timestamp: 0, throttle: 0},
           {Timestamp: 0, brake: 0}
-        ],
+        ],*/
+        json:[],
         keys: {
           x: 'Timestamp',
           value: ['throttle', 'brake']
@@ -182,6 +179,10 @@ export class LiveComponent {
           tick: {
             format: d3.format("%")
           }
+        },
+        x: {
+          type: 'timeseries',
+          culling:true,
         }
       },
       transition: {
@@ -198,9 +199,10 @@ export class LiveComponent {
     temp_chart = c3.generate({
       bindto: '#temp-chart',
       data: {
-        json: [
+        /*json: [
           {Timestamp: 0, temp0: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0}
-        ],
+        ],*/
+        json:[],
         keys: {
           x: 'Timestamp',
           value: ['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5']
@@ -220,6 +222,10 @@ export class LiveComponent {
           tick: {
             format: d3.format(".3")
           }
+        },
+        x: {
+          type: 'timeseries',
+          culling:true,
         }
       },
       transition: {
@@ -243,9 +249,10 @@ export class LiveComponent {
     batt_chart = c3.generate({
       bindto: '#battery-chart',
       data: {
-        json: [
+        /*json: [
           {Timestamp: 0, min_voltage: 0, max_voltage: 0, pack_voltage: 0}
-        ],
+        ],*/
+        json:[],
         keys: {
           x: 'Timestamp',
           value: ['min_voltage', 'max_voltage', 'pack_voltage']
@@ -261,6 +268,10 @@ export class LiveComponent {
           tick: {
             format: d3.format(".3")
           }
+        },
+        x: {
+          type: 'timeseries',
+          culling:true,
         }
       },
       transition: {
@@ -279,7 +290,7 @@ export class LiveComponent {
         genericsGraphMap.set(graph.CAN_Id, c3.generate({
           bindto: '#can' + graph.CAN_Id,
           data: {
-            json: [graph.graphFormat],
+            json: [],
             keys: {
               x: 'Timestamp',
               value: graph.descriptionArr
@@ -290,6 +301,10 @@ export class LiveComponent {
               tick: {
                 format: d3.format(".3")
               }
+            },
+            x: {
+              type: 'timeseries',
+              culling:true,
             }
           },
           transition: {
