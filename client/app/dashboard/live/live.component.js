@@ -23,7 +23,10 @@ class Buffer {
       }
       else {
         var out = new Object();
-        out.Timestamp = this.start;
+        let seconds = Math.floor(this.start/(1000) % 60);
+        let minutes = Math.floor(this.start/(1000*60));
+        out.Timestamp = `${minutes}.${seconds}`;
+        console.log(out.Timestamp);
         out.CAN_Id = this.buffer[0].CAN_Id;
         this.keys.forEach(function (key) {
           if (self.buffer[0][key] instanceof Array) {
@@ -165,6 +168,7 @@ export class LiveComponent {
           {Timestamp: 0, brake: 0}
         ],*/
         json:[],
+        xFormat: '%M.%S',
         keys: {
           x: 'Timestamp',
           value: ['throttle', 'brake']
@@ -182,6 +186,9 @@ export class LiveComponent {
         },
         x: {
           type: 'timeseries',
+          tick: {
+            format: '%M:%S'
+          },
           culling:true,
         }
       },
@@ -203,6 +210,7 @@ export class LiveComponent {
           {Timestamp: 0, temp0: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0}
         ],*/
         json:[],
+        xFormat: '%M.%S',
         keys: {
           x: 'Timestamp',
           value: ['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5']
@@ -225,6 +233,9 @@ export class LiveComponent {
         },
         x: {
           type: 'timeseries',
+          tick: {
+            format: '%M:%S'
+          },
           culling:true,
         }
       },
@@ -253,6 +264,7 @@ export class LiveComponent {
           {Timestamp: 0, min_voltage: 0, max_voltage: 0, pack_voltage: 0}
         ],*/
         json:[],
+        xFormat: '%M.%S',
         keys: {
           x: 'Timestamp',
           value: ['min_voltage', 'max_voltage', 'pack_voltage']
@@ -271,6 +283,9 @@ export class LiveComponent {
         },
         x: {
           type: 'timeseries',
+          tick: {
+            format: '%M:%S'
+          },
           culling:true,
         }
       },
@@ -291,6 +306,7 @@ export class LiveComponent {
           bindto: '#can' + graph.CAN_Id,
           data: {
             json: [],
+            xFormat: '%M.%S',
             keys: {
               x: 'Timestamp',
               value: graph.descriptionArr
@@ -304,6 +320,9 @@ export class LiveComponent {
             },
             x: {
               type: 'timeseries',
+              tick: {
+                format: '%M:%S'
+              },
               culling:true,
             }
           },

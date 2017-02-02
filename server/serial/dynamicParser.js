@@ -21,7 +21,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             //console.log(value);
             this.push(JSON.stringify(value));
         }.bind(this)).catch(function(err){
-            if(process.NODE_ENV=="development"){
+            if(process.env.NODE_ENV=="development"){
                 if(err) console.error(err);
                 console.error("missing some parser");
             }
