@@ -7,6 +7,7 @@ int can[2] = {0x06,0x26};
 int generic[2] = {0x07,0x23};
 int throttle[2] = {0x02,0x00};
 int temp[2] = {0x04,0x88};
+int state[2] = {0x01,0x88};
 int tempDegrees[6] = {120,80,40,10,0,250};
 int x = 0;
 uint32_t voltage = 0;
@@ -127,5 +128,29 @@ void loop() {
   voltage+=10;
   if(voltage>12000) voltage = 0;
   Serial.flush();
+  
+  Serial.write(state[0]);
+  Serial.write(state[1]);
+  tick = millis();
+  time[0] = (unsigned int)((tick&0xFF000000)>>24);
+  time[1] = (unsigned int)((tick&0x00FF0000)>>16);
+  time[2] = (unsigned int)((tick&0x0000FF00)>>8);
+  time[3] = (unsigned int)(tick&0x000000FF);
+  Serial.write(time[0]);
+  Serial.write(time[1]);
+  Serial.write(time[2]);
+  Serial.write(time[3]);
+  Serial.write(0);
+  Serial.write(0);
+  Serial.write(0);
+  Serial.write(0);
+  Serial.write(0);
+  Serial.write(0);
+  Serial.write(0);
+  Serial.write(0);
+  Serial.write(0xFF);
+  Serial.write('\n');
+  Serial.flush();
+  
   delay(2);
 }
