@@ -71,6 +71,26 @@ var batt_initialPointRemoved = false;
 var batt_count = 0;
 var batt_chart;
 
+var state_initialPointRemoved = false;
+var state_count = 0;
+var state_chart;
+
+
+function createGraph(CAN_Id,descriptionArr,data)
+{
+  var bufferInfo = new Object();
+  bufferInfo.buffer = new Buffer(1000, descriptionArr, plotNew);
+  bufferInfo.count = 0;
+  bufferInfo.firstPointRemoved = false;
+  genericsBufferMap.set(CAN_Id, bufferInfo);
+
+  var graphData = new Object();
+  graphData.CAN_Id = CAN_Id;
+  graphData.descriptionArr = descriptionArr;
+  graphData.graphFormat = data;
+  graphRenderQueue.push(graphData);
+}
+
 function plotNew(newData) {
   if (newData.CAN_Id == 512 || newData.CAN_Id == 513) {
     var object = new Object();
@@ -88,6 +108,23 @@ function plotNew(newData) {
       tb_initialPointRemoved = true;
     }
     tb_count++;
+  }
+  else if (newData.CAN_Id == 1574) {
+    var object = new Object();
+    object.Timestamp = newData.Timestamp;
+    if (newData.state) object.state = newData.state;
+
+    if (state_count < 50 && state_initialPointRemoved) state_chart.flow({
+      json: object,
+      length: 0
+    });
+    else {
+      state_chart.flow({
+        json: object
+      });
+      state_initialPointRemoved = true;
+    }
+    state_count++;
   }
   else if (newData.CAN_Id == 904) {
     var object = new Object();
@@ -149,6 +186,7 @@ var genericsGraphMap = new Map();
 var genericsBufferMap = new Map();
 var genericsIds = [];
 var graphRenderQueue = [];
+
 export class LiveComponent {
   /*@ngInject*/
   constructor($scope, $timeout, socket) {
@@ -157,6 +195,9 @@ export class LiveComponent {
     this.brakeBuffer = new Buffer(1000, ['brake'], plotNew);
     this.tempBuffer = new Buffer(1000, ['temp_array'], plotNew);
     this.voltageBuffer = new Buffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
+    this.carStateBuffer = new Buffer(1000,['state'],plotNew);
+
+
     $scope.genericsGraphMap = genericsGraphMap;
     $scope.genericsBufferMap = genericsBufferMap;
     $scope.genericsIds = genericsIds;
@@ -202,7 +243,6 @@ export class LiveComponent {
         height: 600
       }
     });
-
     temp_chart = c3.generate({
       bindto: '#temp-chart',
       data: {
@@ -256,7 +296,6 @@ export class LiveComponent {
         height: 600
       }
     });
-
     batt_chart = c3.generate({
       bindto: '#battery-chart',
       data: {
@@ -299,6 +338,65 @@ export class LiveComponent {
         height: 600
       }
     });
+    state_chart = c3.generate({
+      bindto: '#state-chart',
+      data: {
+        json:[],
+        xFormat: '%M.%S',
+        keys: {
+          x: 'Timestamp',
+          value: ['state']
+        },
+        names: {
+          'state': 'State'
+        },
+        types: {
+          state: 'step'
+        }
+      },
+      axis: {
+        y: {
+          max: 5,
+          min: 0,
+          tick: {
+            format: function(d){
+              switch (d)
+              {
+                case 0:
+                  return "Startup";
+                case 1:
+                  return "LV";
+                case 2:
+                  return "Precharging";
+                case 3:
+                  return "HV Enabled";
+                case 4:
+                  return "Drive";
+                case 5:
+                  return "Fault";
+              }
+            }
+          }
+        },
+        x: {
+          type: 'timeseries',
+          tick: {
+            format: '%M:%S'
+          },
+          culling:true,
+        }
+      },
+      transition: {
+        duration: 0
+      },
+      subchart: {
+        show: true
+      },
+      size: {
+        height: 600
+      }
+    });
+
 
     $scope.$on('updateGraphs', function () {
       graphRenderQueue.forEach(function (graph) {
@@ -352,6 +450,7 @@ export class LiveComponent {
       if (data) {
         if (data.CAN_Id == 512) this.throttleBuffer.push(data);
         else if (data.CAN_Id == 513) this.brakeBuffer.push(data);
+        else if (data.CAN_Id == 1574) this.carStateBuffer.push(data);
       }
     }.bind(this));
 
@@ -365,6 +464,9 @@ export class LiveComponent {
       if (data) {
         if (data.CAN_Id == 904) {
           this.voltageBuffer.push(data);
+        }
+        if (data.CAN_Id == 392){
+
         }
       }
     }.bind(this));
@@ -394,6 +496,8 @@ export class LiveComponent {
         }
         else {
           genericsIds.push(data.CAN_Id);
+
+          createGraph(data.CAN_ID,descriptionArr,simpleVal);
 
           var bufferInfo = new Object();
           bufferInfo.buffer = new Buffer(1000, descriptionArr, plotNew);
