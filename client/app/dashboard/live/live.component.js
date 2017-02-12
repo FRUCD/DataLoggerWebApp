@@ -26,7 +26,6 @@ class Buffer {
         let seconds = Math.floor(this.start/(1000) % 60);
         let minutes = Math.floor(this.start/(1000*60));
         out.Timestamp = `${minutes}.${seconds}`;
-        console.log(out.Timestamp);
         out.CAN_Id = this.buffer[0].CAN_Id;
         this.keys.forEach(function (key) {
           if (self.buffer[0][key] instanceof Array) {
@@ -399,6 +398,7 @@ export class LiveComponent {
 
 
     $scope.$on('updateGraphs', function () {
+      console.log("Creating graphs");
       graphRenderQueue.forEach(function (graph) {
         genericsGraphMap.set(graph.CAN_Id, c3.generate({
           bindto: '#can' + graph.CAN_Id,
@@ -442,6 +442,18 @@ export class LiveComponent {
       socket.unsyncUpdates('temp');
       socket.unsyncUpdates('car');
       socket.unsyncUpdates('bms');
+      tb_initialPointRemoved = false;
+      tb_count = 0;
+      temp_initialPointRemoved = false;
+      temp_count = 0;
+      batt_initialPointRemoved = false;
+      batt_count = 0;
+      state_initialPointRemoved = false;
+      state_count = 0;
+      genericsBufferMap.clear();
+      genericsGraphMap.clear();
+      delete $scope.genericsIds;
+
     });
   }
 
@@ -495,7 +507,12 @@ export class LiveComponent {
           genericsBufferMap.get(data.CAN_Id).buffer.push(simpleVal);
         }
         else {
-          genericsIds.push(data.CAN_Id);
+          if( angular.element(document.querySelector('#can'+data.CAN_Id)).length ) {
+            console.log("div already exists");
+          }
+          else {
+            genericsIds.push(data.CAN_Id);
+          }
 
           createGraph(data.CAN_ID,descriptionArr,simpleVal);
 
