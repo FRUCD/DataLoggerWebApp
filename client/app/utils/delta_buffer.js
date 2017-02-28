@@ -5,69 +5,75 @@ export class DeltaBuffer {
     this.keys = keys;
     this.delta = 0;
     this.keys.forEach(function (key) {
-      this.push({time:NaN, point:NaN});
+      this.push({time: NaN, point: NaN});
     }.bind(this.lastPoints));
   }
-  stop(){
-    if(this.refresh) clearInterval(this.refresh);
+
+  stop() {
+    if (this.refresh) clearInterval(this.refresh);
     this.buffer.length = 0;
   }
+
   getKeys() {
     return this.keys;
   }
-  begin(){
-    this.refresh = setInterval(function(){
-      this.publishLast();  
-    }.bind(this),1000);
+
+  begin() {
+    this.refresh = setInterval(function () {
+      this.publishLast();
+    }.bind(this), 1000);
   }
-  aggregate(){
+
+  aggregate() {
     var out = [];
     for (let i = 0; i < this.keys.length; i++) {
       let object = new Object();
-      object.Timestamp = this.lastPoints[i].time; 
+      object.Timestamp = this.lastPoints[i].time;
       object[this.keys[i]] = this.lastPoints[i].point;
       out.push(object);
     }
     return out;
   }
+
   push(point) {
     var self = this;
     //console.log(point);
-    for (let i = 0; i < this.keys.length; i++) {
-		if(point[this.keys[i]] instanceof Array)//handle flags
-		{
-			for(let j = 0; j < point[this.keys[i]].length; j++) {
-				var currFlag = point[this.keys[i]][j];
-				var diffData = false;
-				if (!this.lastPoints[i] || currFlag != this.lastPoints[i].point[j])
-				{
-					diffData = true;
-					break;
-				}
-			}
-			if (diffData) {
-				var out = new Object();
-				out.Timestamp = point.Timestamp;
-				out[this.keys[i]] = point[this.keys[i]];
-				out.CAN_Id = point.CAN_Id;
-				this.callback(out);
-			}
-		}
-		else {
-			if (this.lastPoints[i].point != point[this.keys[i]]) {
-				console.log("new point");
-				var out = new Object();
-				out.Timestamp = point.Timestamp;
-				out[this.keys[i]] = point[this.keys[i]];
-				out.CAN_Id = point.CAN_Id;
-				this.callback(out);
-			}
-		}
-	}
-    this.lastPoints[i] = {time: point.Timestamp, CAN_Id: point.CAN_Id, point: point[this.keys[i]]};
+    for (var i = 0; i < this.keys.length; i++) {
+      if (point[this.keys[i]] instanceof Array)//handle flags
+      {
+        for (var j = 0; j < point[this.keys[i]].length; j++) {
+          var currFlag = point[this.keys[i]][j];
+          var diffData = false;
+          if (currFlag != this.lastPoints[i].point[j]) {
+            diffData = true;
+            break;
+          }
+        }
+        if (diffData) {
+          var out = new Object();
+          out.Timestamp = point.Timestamp;
+          out[this.keys[i]] = point[this.keys[i]];
+          out.CAN_Id = point.CAN_Id;
+          this.callback(out);
+        }
+      }
+      else {
+        if (this.lastPoints[i].point != point[this.keys[i]]) {
+          console.log("new point: " + point.CAN_Id);
+          var out = new Object();
+          out.Timestamp = point.Timestamp;
+          out[this.keys[i]] = point[this.keys[i]];
+          out.CAN_Id = point.CAN_Id;
+          this.callback(out);
+        }
+      }
+      this.lastPoints[i] = {time: point.Timestamp, CAN_Id: point.CAN_Id, point: point[this.keys[i]]};
+    }
+
   }
-  publishLast(){
-    for(let i=0; i<this.keys.length; i++){
+
+  publishLast() {
+    for (let i = 0; i < this.keys.length; i++) {
       var out = new Object();
       out.CAN_Id = this.lastPoints[i].CAN_Id;
       out.Timestamp = this.lastPoints[i].time;
