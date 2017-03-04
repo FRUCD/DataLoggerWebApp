@@ -56,12 +56,7 @@ function bindGenerics(data, type){
   simpleVal.Timestamp = data.Timestamp;
   simpleVal.CAN_Id = data.CAN_Id+type;
   data.generics.forEach(function (generic) {
-    if (generic.dataType == 'flag'){
-      descriptionArr.push(generic.description);
-      for (var i = 0; i < generic.length; i++)
-        simpleVal[generic.description + i] = generic.value[i];
-    }
-    else if (generic.dataType == type) {
+    if (generic.dataType == type) {
       simpleVal[generic.description] = generic.value;
       descriptionArr.push(generic.description);
     }
@@ -212,9 +207,9 @@ export class LiveComponent {
     this.voltageBuffer = new AverageBuffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
     this.carStateBuffer = new DeltaBuffer(['state'],plotNew);
     this.carStateBuffer.begin();
-	  this.bmsStateBuffer = new DeltaBuffer(['flag'],plotNew);
+	this.bmsStateBuffer = new DeltaBuffer(['flag'],plotNew);
     this.bmsStateBuffer.begin();
-
+    
     $scope.genericsGraphMap = genericsGraphMap;
     $scope.genericsBufferMap = genericsBufferMap;
     $scope.genericsIds = genericsIds;
@@ -563,8 +558,6 @@ export class LiveComponent {
       this.brakeBuffer.buffer.length = 0;
       this.tempBuffer.buffer.length = 0;
       this.voltageBuffer.buffer.length = 0;
-      this.bmsStateBuffer.buffer.length = 0;
-      delete this.bmsStateBuffer;
       delete this.carStateBuffer;
       delete this.throttleBuffer;
       delete this.brakeBuffer;
@@ -604,7 +597,6 @@ export class LiveComponent {
       if (data && data.generics) {
         bindGenerics(data, "decimal");
         bindGenerics(data, "state");
-        bindGenerics(data, "flag")
       }
     }.bind(this));
   }
