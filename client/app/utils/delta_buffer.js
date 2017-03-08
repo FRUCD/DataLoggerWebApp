@@ -24,17 +24,6 @@ export class DeltaBuffer {
     }.bind(this), 1000);
   }
 
-  aggregate() {
-    var out = [];
-    for (let i = 0; i < this.keys.length; i++) {
-      let object = new Object();
-      object.Timestamp = this.lastPoints[i].time;
-      object[this.keys[i]] = this.lastPoints[i].point;
-      out.push(object);
-    }
-    return out;
-  }
-
   push(point) {
     var self = this;
     //console.log(point);
@@ -42,7 +31,7 @@ export class DeltaBuffer {
       if (point[this.keys[i]] instanceof Array)//handle flags
       {
         for (var j = 0; j < point[this.keys[i]].length; j++) {
-          var currFlag = point[this.keys[i]][j];
+          let currFlag = point[this.keys[i]][j];
           var diffData = false;
           if (currFlag != this.lastPoints[i].point[j]) {
             diffData = true;
@@ -50,17 +39,19 @@ export class DeltaBuffer {
           }
         }
         if (diffData) {
-          var out = new Object();
+          let out = new Object();
           out.Timestamp = point.Timestamp;
-          out[this.keys[i]] = point[this.keys[i]];
+          for(var j=1; j < point[this.keys[i]].length; j++){
+            out[this.keys[i]+j] = point[this.keys[i]][j];
+          }
           out.CAN_Id = point.CAN_Id;
           this.callback(out);
         }
       }
       else {
         if (this.lastPoints[i].point != point[this.keys[i]]) {
-          console.log("new point: " + point.CAN_Id);
-          var out = new Object();
+          //console.log("new point: " + point.CAN_Id);
+          let out = new Object();
           out.Timestamp = point.Timestamp;
           out[this.keys[i]] = point[this.keys[i]];
           out.CAN_Id = point.CAN_Id;
@@ -74,10 +65,16 @@ export class DeltaBuffer {
 
   publishLast() {
     for (let i = 0; i < this.keys.length; i++) {
-      var out = new Object();
+      let out = new Object();
       out.CAN_Id = this.lastPoints[i].CAN_Id;
       out.Timestamp = this.lastPoints[i].time;
-      out[this.keys[i]] = this.lastPoints[i].point;
+      if(this.lastPoints[i].point instanceof Array){
+        for(let j = 1; j < this.lastPoints[i].point.length; j++){
+          if(this.lastPoints[i].point[j]) out[this.keys[i] + j] = j;
+        }
+      }
+      else out[this.keys[i]] = this.lastPoints[i].point;
+      console.log(out);
       this.callback(out);
     }
   }

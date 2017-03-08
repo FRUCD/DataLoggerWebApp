@@ -45,6 +45,7 @@ export class SettingsController {
       $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'PUT',data:edit}).then(function(data){
         console.log(data.data);
         alert("success");
+        // $scope.search();
       },function(msg){
         console.log(msg.data);
         alert(msg.data);

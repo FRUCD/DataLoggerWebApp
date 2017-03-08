@@ -41,6 +41,9 @@ function bindGenerics(message, type, ids, $scope){
         if(!$scope.messages.has(this))$scope.messages.set(this,[]);
         $scope.messages.get(this).push(object);
       }.bind(simpleVal.CAN_Id)));
+      else if(type=='flag') $scope.buffers.set(simpleVal.CAN_Id, new DeltaBuffer(descriptionArr, function(object){
+        
+      }));
       var graphData = new Object();
       graphData.CAN_Id = simpleVal.CAN_Id;
       graphData.descriptionArr = descriptionArr;
