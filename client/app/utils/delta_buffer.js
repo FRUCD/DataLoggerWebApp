@@ -30,9 +30,9 @@ export class DeltaBuffer {
     for (var i = 0; i < this.keys.length; i++) {
       if (point[this.keys[i]] instanceof Array)//handle flags
       {
+        var diffData = false;
         for (var j = 0; j < point[this.keys[i]].length; j++) {
           let currFlag = point[this.keys[i]][j];
-          var diffData = false;
           if (currFlag != this.lastPoints[i].point[j]) {
             diffData = true;
             break;
@@ -45,7 +45,7 @@ export class DeltaBuffer {
           out.Timestamp = `${minutes}.${seconds}`;          
           out.CAN_Id = point.CAN_Id + this.keys[i];
           for(var j=1; j < point[this.keys[i]].length; j++){
-            out[this.keys[i]+j] = point[this.keys[i]][j];
+            if(point[this.keys[i]][j]) out[this.keys[i]+j] = j;
           }
           this.callback(out);
         }
