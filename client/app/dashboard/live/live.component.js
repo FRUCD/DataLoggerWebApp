@@ -38,13 +38,12 @@ var graphRenderQueue = [];
 function createGraph(CAN_Id, descriptionArr, data, type){
   if(type == "flag"){
     genericsIds.pop();
+    let info = new Object();
+    info.buffer = new DeltaBuffer(descriptionArr, plotNew);
+    genericsBufferMap.set(CAN_Id, info);
     for(let description of descriptionArr){
-      let graphData = new Object();
       let bufferInfo = new Object();
-      bufferInfo.buffer = new DeltaBuffer([description], plotNew);
-      bufferInfo.count = 0;
-      bufferInfo.firstPointRemoved = false;
-      genericsBufferMap.set(CAN_Id + description, bufferInfo);
+      let graphData = new Object();
       graphData.CAN_Id = CAN_Id + description;
       graphData.flagArr = [];
       for(var i = 1; i < data[description].length; i++){
@@ -53,6 +52,9 @@ function createGraph(CAN_Id, descriptionArr, data, type){
       graphData.graphFormat = data;
       graphRenderQueue.push(graphData);
       genericsIds.push(CAN_Id + description);
+      bufferInfo.count = 0;
+      bufferInfo.firstPointRemoved = false;
+      genericsBufferMap.set(CAN_Id + description, bufferInfo);
     }
   }
   else{
@@ -103,6 +105,7 @@ function bindGenerics(data, type){
   }
 }
 function plotNew(newData) {
+  console.log(newData);
   if (newData.CAN_Id == 512 || newData.CAN_Id == 513) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
@@ -174,7 +177,7 @@ function plotNew(newData) {
     }
     temp_count++;
   }
-  else if (newData.CAN_Id == 392) {
+  else if (newData.CAN_Id == "392flag") {
     delete newData.CAN_Id;
     if (bmsFlag_count < 50 && bmsFlag_initialPointRemoved) bmsFlag_chart.flow({
       json: newData,
@@ -221,7 +224,7 @@ export class LiveComponent {
     this.voltageBuffer = new AverageBuffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
     this.carStateBuffer = new DeltaBuffer(['state'],plotNew);
     this.carStateBuffer.begin();
-	this.bmsStateBuffer = new DeltaBuffer(['flag'],plotNew);
+	  this.bmsStateBuffer = new DeltaBuffer(['flag'],plotNew);
     this.bmsStateBuffer.begin();
     
     $scope.genericsGraphMap = genericsGraphMap;
@@ -501,7 +504,8 @@ export class LiveComponent {
             y: {
               tick: {
                 format: d3.format(".3")
-              }
+              },
+              culling:false
             },
             x: {
               type: 'timeseries',

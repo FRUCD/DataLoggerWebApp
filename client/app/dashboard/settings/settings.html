@@ -36,11 +36,11 @@
               <label>offset: <input type="number" class="form-control" ng-model="map.offset" required /></label>
               <label>length: <input type="number" class="form-control" ng-model="map.length" required /></label>
               <label>dataType: <input type="text" class="form-control" ng-model="map.dataType" required /></label>
-              <input type="button" class="btn btn-danger" ng-click="new.map.pop()" value="Delete Map"/>
               <div ng-if="map.dataType=='array'">
                 <label>subLength: <input type="number" class="form-control" ng-model="map.array.subLength" required /></label>
                 <label>subDataType: <input type="text" class="form-control" ng-model="map.array.subDataType" required /></label>
               </div>
+              <input type="button" class="btn btn-danger" ng-click="new.map.pop()" value="Delete Map"/>
             </div>
             <input type="button" class="btn btn-secondary" ng-click="new.map.push({length:'',offset:'',description:'',dataType:''});" value="Add Map"/>
             <input type="submit" class="btn btn-primary" ng-click="createNew()" value="Save"/>

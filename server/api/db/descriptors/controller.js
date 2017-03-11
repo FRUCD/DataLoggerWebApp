@@ -68,7 +68,7 @@ export function updateDescriptor(req,res){
                 });
             }
             else{
-                model.create(doc,function(err,docs){
+                model.create(request,function(err,docs){
                     if(err){
                         console.log("error creating documents");
                         console.error(err);
@@ -99,7 +99,7 @@ export function deleteMap(req,res){
         };
         console.log(element);
         model.find({CAN_Id:req.params.descriptor,map:{$elemMatch:element}}).select({map:1,_id:0}).exec().then(function(doc){
-            console.log("we're here");
+            //console.log("we're here");
             if(doc && doc.length > 0){
                 delete element.key;
                 model.findOneAndUpdate({CAN_Id:req.params.descriptor},{$pull:{map:element}},{multi:false,upsert:false},function(err,doc){
