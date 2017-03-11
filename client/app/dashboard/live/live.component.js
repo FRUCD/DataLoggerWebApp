@@ -37,7 +37,6 @@ var graphRenderQueue = [];
 
 function createGraph(CAN_Id, descriptionArr, data, type){
   if(type == "flag"){
-    genericsIds.pop();
     let info = new Object();
     info.buffer = new DeltaBuffer(descriptionArr, plotNew);
     genericsBufferMap.set(CAN_Id, info);
@@ -52,7 +51,6 @@ function createGraph(CAN_Id, descriptionArr, data, type){
       }
       graphData.graphFormat = data;
       graphRenderQueue.push(graphData);
-      genericsIds.push(CAN_Id + description);
       bufferInfo.count = 0;
       bufferInfo.firstPointRemoved = false;
       genericsBufferMap.set(CAN_Id + description, bufferInfo);
@@ -96,13 +94,25 @@ function bindGenerics(data, type){
       genericsBufferMap.get(data.CAN_Id+type).buffer.push(simpleVal);
     }
     else {
-      genericsIds.push(data.CAN_Id+type);
+      if( angular.element(document.querySelector('#can'+data.CAN_Id+type)).length ) {
+        console.log("div already exists");
+      }
+      else{
+        for(let description of descriptionArr){
+          if( angular.element(document.querySelector('#can'+data.CAN_Id+type+description)).length ) {
+            console.log("div already exists");
+          }
+          else{
+              genericsIds.push(data.CAN_Id+type+description);
+          }
+        }
+      }
       createGraph(data.CAN_Id+type, descriptionArr, simpleVal, type);
     }
   }
 }
 function plotNew(newData) {
-  console.log(newData);
+  //console.log(newData);
   if (newData.CAN_Id == 512 || newData.CAN_Id == 513) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
