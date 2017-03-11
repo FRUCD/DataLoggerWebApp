@@ -159,7 +159,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 throw new Error(e);
             }
         }).catch(function(){
-            throw new Error("something went horribly wrong");
+            throw new Error("no parser for CAN_Id: "+data[0]);
         });
     }
     parse(data){

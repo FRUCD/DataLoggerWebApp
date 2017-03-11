@@ -19,7 +19,7 @@ export class DeltaBuffer {
   }
 
   begin() {
-    this.refresh = setInterval(function () {
+    if(!this.refresh) this.refresh = setInterval(function () {
       this.publishLast();
     }.bind(this), 1000);
   }

@@ -44,6 +44,7 @@ function createGraph(CAN_Id, descriptionArr, data, type){
     for(let description of descriptionArr){
       let bufferInfo = new Object();
       let graphData = new Object();
+      graphData.buffer = {CAN_Id: CAN_Id};
       graphData.CAN_Id = CAN_Id + description;
       graphData.flagArr = [];
       for(var i = 1; i < data[description].length; i++){
@@ -60,6 +61,7 @@ function createGraph(CAN_Id, descriptionArr, data, type){
   else{
     let bufferInfo = new Object();
     let graphData = new Object();
+    graphData.buffer.CAN_Id = CAN_Id;
     graphData.CAN_Id = CAN_Id;
     graphData.descriptionArr = descriptionArr;
     graphData.graphFormat = data;
@@ -94,12 +96,7 @@ function bindGenerics(data, type){
       genericsBufferMap.get(data.CAN_Id+type).buffer.push(simpleVal);
     }
     else {
-      if( angular.element(document.querySelector('#can'+data.CAN_Id+type)).length ) {
-        console.log("div already exists");
-      }
-      else {
-        genericsIds.push(data.CAN_Id+type);
-      }
+      genericsIds.push(data.CAN_Id+type);
       createGraph(data.CAN_Id+type, descriptionArr, simpleVal, type);
     }
   }
@@ -488,8 +485,8 @@ export class LiveComponent {
     $scope.$on('updateGraphs', function () {
       console.log("Creating graphs");
       graphRenderQueue.forEach(function (graph) {
-        console.log(genericsBufferMap.get(graph.CAN_Id));
-        genericsBufferMap.get(graph.CAN_Id).buffer.begin();
+        console.log(genericsBufferMap.get(graph.buffer.CAN_Id));
+        genericsBufferMap.get(graph.buffer.CAN_Id).buffer.begin();
         genericsGraphMap.set(graph.CAN_Id, c3.generate({
           bindto: '#can' + graph.CAN_Id,
           data: {
