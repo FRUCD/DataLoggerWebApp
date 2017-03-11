@@ -189,7 +189,7 @@ void loop() {
   Serial.write(time[1]);
   Serial.write(time[2]);
   Serial.write(time[3]);
-  Serial.write(x&0xFF00);
+  Serial.write(x&0xFF00 >> 8);
   Serial.write(x&0xFF);
   Serial.write(2);
   Serial.write(2);
