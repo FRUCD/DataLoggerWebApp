@@ -363,13 +363,15 @@ export class DisplayComponent {
             if (message && message.generics) {
               bindGenerics(message, "decimal", ids, $scope);
               bindGenerics(message, "state", ids, $scope);
+              bindGenerics(message, "flag", ids, $scope);
             }
         }
       }
+      // flush buffer to messages
       $scope.buffers.forEach(function(buffer,CAN_Id){
         if(buffer instanceof DeltaBuffer){
           buffer.aggregate().forEach(function(value){
-            $scope.messages.get(CAN_Id).push(value);
+            $scope.messages.get(value.CAN_Id).push(value);
           });
         }
         else if(buffer instanceof AverageBuffer){

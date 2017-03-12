@@ -57,7 +57,7 @@ export function download(req,res){
   }
   var collection = database.collection(name);
   if(fileType=="json"){
-    collection.find().project({_id:0,raw:0}).forEach(function(element)
+    collection.find().project({_id:0,raw:0}).sort({Timestamp:1, CAN_Id:1}).forEach(function(element)
     {
         res.write(JSON.stringify(element)+'\r\n');
     },function(err){
@@ -70,14 +70,14 @@ export function download(req,res){
     });
   }
   else if(fileType=="csv"){
-    collection.find().project({_id:0,CAN_Id:1,Timestamp:1,raw:1}).forEach(function(element){
+    collection.find().project({_id:0,CAN_Id:1,Timestamp:1,raw:1}).sort({Timestamp:1, CAN_Id:1}).forEach(function(element){
       var string = "";
-      string+=element.CAN_Id.toString();
+      string+=element.CAN_Id.toString(16);
       string+=",";
-      string+=element.Timestamp.toString();
+      string+=element.Timestamp.toString(16);
       string+=",";
       for(let data of element.raw){
-        string+=data.toString();
+        string+=data.toString(16);
         string+=","
       }
       string+="\n";
@@ -99,7 +99,7 @@ export function printData(req,res){
   if(req.query.start) start = parseInt(req.query.start);
   if(req.query.end) end = parseInt(req.query.end);
   var collection = database.collection(name);
-  if((start||start==0)&&end)collection.find().project({_id:0}).skip(start).limit(end-start).toArray(function(err,elements)
+  if((start||start==0)&&end)collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).skip(start).limit(end-start).toArray(function(err,elements)
   {
     if(err){
       console.error(err);
@@ -109,7 +109,7 @@ export function printData(req,res){
     res.status(200).send(elements);
   });
   else{
-    collection.find().project({_id:0}).toArray(function(err,elements){
+    collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).toArray(function(err,elements){
       if(err){
         console.error(err);
         res.status(404);

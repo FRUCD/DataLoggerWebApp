@@ -384,9 +384,6 @@ export class LiveComponent {
         },
         names: {
           'state': 'State'
-        },
-        types: {
-          state: 'step'
         }
       },
       axis: {

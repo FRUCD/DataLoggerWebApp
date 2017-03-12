@@ -84,7 +84,7 @@ class serialStream extends Readable
                 data = Buffer.from(data,'utf-8').slice(0,data.length-2);
                 array.push(data.readUInt16BE(0));
                 array.push(data.readUInt32BE(2));
-                for(var i=6;i<data.length;i++){
+                for(var i=6; i<data.length ;i++){
                     array.push(data.readUInt8(i));
                 }
                 if(!this.push(JSON.stringify(array))){

@@ -35,6 +35,7 @@ function processArray(elements) {
         elements[i].data.push(transform(elements[i][key]));
         delete elements[i][key];
       }
+      if(key == 'CAN_Id') elements[i].CAN_Id = "0x" + elements[i].CAN_Id.toString(16);
       else if(key == 'generics') {
         for(var element of elements[i][key]) {
           var transformed = transform(element);
