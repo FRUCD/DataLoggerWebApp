@@ -58,7 +58,10 @@ export class AverageBuffer {
         //console.log(this.buffer);
       if(Math.abs(point.Timestamp - this.start) > this.ms) {
         try{
-          this.callback(this.aggregate());
+          var value = this.aggregate();
+          this.start = undefined;
+          this.buffer = [];
+          this.callback(value);
         }
         catch(e){
           console.error(e);

@@ -116,8 +116,8 @@ function plotNew(newData) {
   if (newData.CAN_Id == 512 || newData.CAN_Id == 513) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
-    if (newData.throttle) object.throttle = newData.throttle / 0x7FF;
-    if (newData.brake) object.brake = newData.brake / 0x7FF;
+    if (newData.throttle || newData.throttle == 0) object.throttle = newData.throttle / 0x7FFF;
+    if (newData.brake || newData.brake == 0) object.brake = newData.brake / 0x7FFF;
     if (tb_count < 50 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0
@@ -255,9 +255,14 @@ export class LiveComponent {
           'brake': 'Brake'
         }
       },
+      line: {
+        connectNull: true
+      },
       axis: {
         y: {
           tick: {
+            min: 0,
+            max: 100,
             format: d3.format("%")
           }
         },
@@ -299,6 +304,9 @@ export class LiveComponent {
           'temp4': 'Temperature 5',
           'temp5': 'Temperature 6'
         }
+      },
+      line: {
+        connectNull: true
       },
       axis: {
         y: {
@@ -348,6 +356,9 @@ export class LiveComponent {
           'max_voltage': 'Max Voltage',
           'pack_voltage': 'Pack Voltage'
         }
+      },
+      line: {
+        connectNull: true
       },
       axis: {
         y: {

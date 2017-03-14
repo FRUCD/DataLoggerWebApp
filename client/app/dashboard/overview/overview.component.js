@@ -2,16 +2,16 @@ import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './overview.routes';
 
-function updateThrottleBrake(throttle,brake) {
-  if(throttle)
+function updateThrottleBrake(throttle, brake) {
+  if(throttle || throttle == 0)
   {
-    angular.element(document.querySelector('#throttle-bar')).html(Math.round(throttle / 0x7FF * 100) + "%");
-    document.getElementById("throttle-bar").style.height = (400 * throttle) / 0x7FF + "px";
+    angular.element(document.querySelector('#throttle-bar')).html(Math.round((throttle / 0x7FFF) * 100) + "%");
+    document.getElementById("throttle-bar").style.height = 400 * (throttle / 0x7FFF) + "px";
   }
-  if(brake)
+  if(brake || brake == 0)
   {
-    angular.element(document.querySelector('#brake-bar')).html(Math.round(brake / 0x7FF) + "%");
-    document.getElementById("brake-bar").style.height = (400 * brake) / 0x7FF + "px";
+    angular.element(document.querySelector('#brake-bar')).html(Math.round((brake / 0x7FFF) * 100) + "%");
+    document.getElementById("brake-bar").style.height = 400 * (brake / 0x7FFF) + "px";
   }
 }
 

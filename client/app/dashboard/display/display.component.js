@@ -89,9 +89,14 @@ export class DisplayComponent {
           'brake': 'Brake'
         }
       },
+      line: {
+        connectNull: true
+      },
       axis: {
         y: {
           tick: {
+            min: 0,
+            max: 100,
             format: d3.format("%")
           }
         },
@@ -138,6 +143,9 @@ export class DisplayComponent {
           'temp5': 'Temperature 6',
 
         }
+      },
+      line: {
+        connectNull: true
       },
       axis: {
         y: {
@@ -192,6 +200,9 @@ export class DisplayComponent {
           'pack_voltage': 'Pack Voltage'
         }
       },
+      line: {
+        connectNull: true
+      },
       tooltip:{
         show: false
       },
@@ -234,6 +245,9 @@ export class DisplayComponent {
         types: {
           state: 'step'
         }
+      },
+      line: {
+        connectNull: true
       },
       axis: {
         y: {
@@ -314,7 +328,7 @@ export class DisplayComponent {
           case 512:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            object.throttle = message.throttle / 0x7FF;
+            object.throttle = message.throttle / 0x7FFF;
             if(!$scope.buffers.has("throttle")) $scope.buffers.set("throttle",new AverageBuffer(1000, ['throttle'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,[]);
              $scope.messages.get(this).push(object);
@@ -324,7 +338,7 @@ export class DisplayComponent {
           case 513:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            object.brake = message.brake / 0x7FF;
+            object.brake = message.brake / 0x7FFF;
 
             if(!$scope.buffers.has("brake")) $scope.buffers.set("brake",new AverageBuffer(1000, ['brake'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,[]);
@@ -430,6 +444,9 @@ export class DisplayComponent {
               x: 'Timestamp',
               value: graph.descriptionArr
             }
+          },
+          line: {
+            connectNull: true
           },
           axis: {
             y: {
