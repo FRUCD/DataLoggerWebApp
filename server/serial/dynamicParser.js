@@ -25,7 +25,8 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 //if(err) console.error(err);
                 //console.error("missing some parser");
             }
-        }.bind(this));
+        }.bind(this))
+        .done();
         next();
     }
     getArray(data,map){

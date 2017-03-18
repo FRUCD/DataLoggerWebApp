@@ -4,16 +4,16 @@ var Parser = require('../../serial/dynamicParser.js');
 module.exports = function index(req,res){
     let file = req.file;
     let parser = new Parser();
-    let array = [];
+    var array = [];
     parser.on('data',function(data){
         array.push(JSON.parse(data));
     });
     let stream = fs.createReadStream(file.path);
     let headerSet = false;
-    csv()
+    csv({workerNum:4})
     .fromStream(stream)
     .on('csv',(csvRow)=>{
-        csvRow.pop();
+        csvRow = csvRow.slice(0,10);
         if(!headerSet){
             res.status(200);
             headerSet = true;
@@ -28,6 +28,7 @@ module.exports = function index(req,res){
     })
     .on('done',(error)=>{
         if(error) console.error(error);
+        console.log("done reading csv");
         console.log(`Processed ${array.length} from csv`);
         res.send(array);
     })

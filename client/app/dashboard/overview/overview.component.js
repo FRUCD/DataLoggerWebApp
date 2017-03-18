@@ -5,6 +5,7 @@ import routing from './overview.routes';
 function updateThrottleBrake(throttle, brake) {
   if(throttle || throttle == 0)
   {
+    console.log(throttle / 0x7FFF);
     angular.element(document.querySelector('#throttle-bar')).html(Math.round((throttle / 0x7FFF) * 100) + "%");
     document.getElementById("throttle-bar").style.height = 400 * (throttle / 0x7FFF) + "px";
   }

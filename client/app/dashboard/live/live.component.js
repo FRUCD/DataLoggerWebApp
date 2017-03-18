@@ -118,7 +118,7 @@ function plotNew(newData) {
     object.Timestamp = newData.Timestamp;
     if (newData.throttle || newData.throttle == 0) object.throttle = newData.throttle / 0x7FFF;
     if (newData.brake || newData.brake == 0) object.brake = newData.brake / 0x7FFF;
-    if (tb_count < 50 && tb_initialPointRemoved) tb_chart.flow({
+    if (tb_count < 10 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0
     });
@@ -135,7 +135,7 @@ function plotNew(newData) {
     object.Timestamp = newData.Timestamp;
     if (newData.state) object.state = newData.state;
 
-    if (state_count < 50 && state_initialPointRemoved) state_chart.flow({
+    if (state_count < 10 && state_initialPointRemoved) state_chart.flow({
       json: object,
       length: 0
     });
@@ -153,7 +153,7 @@ function plotNew(newData) {
     if (newData.min_voltage != undefined) object.min_voltage = newData.min_voltage;
     if (newData.max_voltage != undefined) object.max_voltage = newData.max_voltage;
     if (newData.pack_voltage != undefined) object.pack_voltage = newData.pack_voltage;
-    if (batt_count < 50 && batt_initialPointRemoved) batt_chart.flow({
+    if (batt_count < 10 && batt_initialPointRemoved) batt_chart.flow({
       json: object,
       length: 0
     });
@@ -172,7 +172,7 @@ function plotNew(newData) {
       for (var i = 0; i < newData.temp_array.length; i++)
         object["temp" + i] = newData.temp_array[i];
     }
-    if (temp_count < 50 && temp_initialPointRemoved) temp_chart.flow({
+    if (temp_count < 10 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
       length: 0
     });
@@ -186,7 +186,7 @@ function plotNew(newData) {
   }
   else if (newData.CAN_Id == "392flag") {
     delete newData.CAN_Id;
-    if (bmsFlag_count < 50 && bmsFlag_initialPointRemoved) bmsFlag_chart.flow({
+    if (bmsFlag_count < 10 && bmsFlag_initialPointRemoved) bmsFlag_chart.flow({
       json: newData,
       length: 0
     });
@@ -204,7 +204,7 @@ function plotNew(newData) {
       var graph = genericsGraphMap.get(newData.CAN_Id);
       var canId = newData.CAN_Id;
       delete newData.CAN_Id;
-      if (genericsBufferMap.get(canId).count < 50 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
+      if (genericsBufferMap.get(canId).count < 10 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
         json: newData,
         length: 0
       });
@@ -282,6 +282,9 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
     });
     temp_chart = c3.generate({
@@ -337,6 +340,9 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
     });
     batt_chart = c3.generate({
@@ -382,6 +388,9 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
     });
     state_chart = c3.generate({
@@ -437,8 +446,27 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
     });
+    let bmsvalues = ['Charge mode',
+              'Pack temp limit exceeded',
+              'Pack temp limit close',
+              'Pack temperature low limit',  
+              'Low SOC',
+              'Critical SOC',
+              'Imbalance',
+              'Internal Fault',
+              'Negative contactor closed',
+              'Positive contactor closed',
+              'Isolation fault',
+              'Cell too high',
+              'Cell too low',
+              'Charge halt',
+              'Full',
+              'Precharge contactor closed'];
     bmsFlag_chart = c3.generate({
       bindto: '#bms-flag-chart',
       data: {
@@ -460,23 +488,7 @@ export class LiveComponent {
           tick: {
             min:1, max:16,
             format: function(d){
-              let values = ['Charge mode',
-              'Pack temp limit exceeded',
-              'Pack temp limit close',
-              'Pack temperature low limit',  
-              'Low SOC',
-              'Critical SOC',
-              'Imbalance',
-              'Internal Fault',
-              'Negative contactor closed',
-              'Positive contactor closed',
-              'Isolation fault',
-              'Cell too high',
-              'Cell too low',
-              'Charge halt',
-              'Full',
-              'Precharge contactor closed'];
-              return values[d-1];
+              return bmsvalues[d-1];
             },
             culling: false
           }
@@ -497,6 +509,9 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
     });
 
@@ -538,6 +553,9 @@ export class LiveComponent {
           },
           size: {
             height: 600
+          },
+          tooltip:{
+            show: false
           }
         }));
       });

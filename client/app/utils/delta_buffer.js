@@ -15,6 +15,13 @@ export class DeltaBuffer {
   }
 
   getKeys() {
+    if(this.lastPoints[0].point instanceof Array){
+      var array = [];
+      for(var i=1; i < this.lastPoints[0].point.length; i++){
+        array.push(this.keys[0] + i);
+      }
+      return array;  
+    }
     return this.keys;
   }
 
@@ -66,8 +73,8 @@ export class DeltaBuffer {
     }
 
   }
-
-  publishLast() {
+  aggregate(){
+    var array = [];
     for(let i = 0; i < this.keys.length; i++) {
       if(this.lastPoints[i].point instanceof Array){
         //console.log(this.lastPoints[i].point);
@@ -79,7 +86,7 @@ export class DeltaBuffer {
         for(let j = 1; j < this.lastPoints[i].point.length; j++){
           if(this.lastPoints[i].point[j]) out[this.keys[i] + j] = j;
         }
-        this.callback(out);
+        array.push(out);
       }
       else {
         let out = new Object();
@@ -88,9 +95,15 @@ export class DeltaBuffer {
         out.Timestamp = `${minutes}.${seconds}`;
         out.CAN_Id = this.lastPoints[i].CAN_Id;
         out[this.keys[i]] = this.lastPoints[i].point;
-        this.callback(out);
+        array.push(out);
       }
     }
+    return array;
+  }
+  publishLast() {
+    this.aggregate().forEach(function(value){
+      this.callback(value);
+    });
   }
 }
 export default DeltaBuffer;

@@ -60,7 +60,7 @@ export class AverageBuffer {
         try{
           var value = this.aggregate();
           this.start = undefined;
-          this.buffer = [];
+          this.buffer.length = 0;
           this.callback(value);
         }
         catch(e){
@@ -68,7 +68,7 @@ export class AverageBuffer {
         }
         finally{
           this.start = undefined;
-          this.buffer = [];
+          this.buffer.length = 0;
         }
       }
     }
