@@ -7,7 +7,7 @@ import routes from './live.routes';
 import AverageBuffer from '../../utils/average_buffer.js'
 import DeltaBuffer from '../../utils/delta_buffer.js'
 
-import c3 from 'c3';
+import chart from '../../utils/chart.js';
 
 
 var tb_initialPointRemoved = false;
@@ -59,7 +59,7 @@ function createGraph(CAN_Id, descriptionArr, data, type){
   else{
     let bufferInfo = new Object();
     let graphData = new Object();
-    graphData.buffer.CAN_Id = CAN_Id;
+    graphData.buffer = {CAN_Id: CAN_Id};
     graphData.CAN_Id = CAN_Id;
     graphData.descriptionArr = descriptionArr;
     graphData.graphFormat = data;
@@ -94,8 +94,13 @@ function bindGenerics(data, type){
       genericsBufferMap.get(data.CAN_Id+type).buffer.push(simpleVal);
     }
     else {
-      if( angular.element(document.querySelector('#can'+data.CAN_Id+type)).length ) {
-        console.log("div already exists");
+      if(type == "decimal" || type == "state"){
+        if( angular.element(document.querySelector('#can'+data.CAN_Id+type)).length ) {
+          console.log("div already exists");
+        }
+        else{
+          genericsIds.push(data.CAN_Id+type);
+        }
       }
       else{
         for(let description of descriptionArr){
@@ -237,7 +242,7 @@ export class LiveComponent {
     $scope.genericsGraphMap = genericsGraphMap;
     $scope.genericsBufferMap = genericsBufferMap;
     $scope.genericsIds = genericsIds;
-    tb_chart = c3.generate({
+    tb_chart = chart.generate({
       bindto: '#throttle-brake-chart',
       data: {
         /*json: [
@@ -286,8 +291,8 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    });
-    temp_chart = c3.generate({
+    }, true);
+    temp_chart = chart.generate({
       bindto: '#temp-chart',
       data: {
         /*json: [
@@ -344,8 +349,8 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    });
-    batt_chart = c3.generate({
+    }, true);
+    batt_chart = chart.generate({
       bindto: '#battery-chart',
       data: {
         /*json: [
@@ -392,8 +397,8 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    });
-    state_chart = c3.generate({
+    }, true);
+    state_chart = chart.generate({
       bindto: '#state-chart',
       data: {
         json:[],
@@ -402,6 +407,7 @@ export class LiveComponent {
           x: 'Timestamp',
           value: ['state']
         },
+        type: "step",
         names: {
           'state': 'State'
         }
@@ -450,7 +456,7 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    });
+    }, true);
     let bmsvalues = ['Charge mode',
               'Pack temp limit exceeded',
               'Pack temp limit close',
@@ -467,7 +473,7 @@ export class LiveComponent {
               'Charge halt',
               'Full',
               'Precharge contactor closed'];
-    bmsFlag_chart = c3.generate({
+    bmsFlag_chart = chart.generate({
       bindto: '#bms-flag-chart',
       data: {
         /*json: [
@@ -479,9 +485,7 @@ export class LiveComponent {
           x: 'Timestamp',
           value: ['flag1','flag2','flag3','flag4','flag5','flag6','flag7','flag8','flag9','flag10','flag11','flag12','flag13','flag14','flag15','flag16']
         },
-        types: {
-          state: 'step'
-        }
+        type: "step"
       },
       axis: {
         y: {
@@ -513,14 +517,14 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    });
+    }, true);
 
     $scope.$on('updateGraphs', function () {
       console.log("Creating graphs");
       graphRenderQueue.forEach(function (graph) {
         console.log(genericsBufferMap.get(graph.buffer.CAN_Id));
         genericsBufferMap.get(graph.buffer.CAN_Id).buffer.begin();
-        genericsGraphMap.set(graph.CAN_Id, c3.generate({
+        genericsGraphMap.set(graph.CAN_Id, chart.generate({
           bindto: '#can' + graph.CAN_Id,
           data: {
             json: [graph.graphFormat],
@@ -558,7 +562,7 @@ export class LiveComponent {
             show: false
           }
         }));
-      });
+      }, true);
       graphRenderQueue = [];
     });
 
@@ -582,19 +586,12 @@ export class LiveComponent {
       genericsGraphMap.clear();
       delete $scope.genericsIds;
       this.carStateBuffer.stop();
-      this.carStateBuffer.buffer.length = 0;
       this.throttleBuffer.buffer.length = 0;
       this.brakeBuffer.buffer.length = 0;
       this.tempBuffer.buffer.length = 0;
       this.voltageBuffer.buffer.length = 0;
-      this.bmsStateBuffer.buffer.length = 0;
-      delete this.bmsStateBuffer;
-      delete this.carStateBuffer;
-      delete this.throttleBuffer;
-      delete this.brakeBuffer;
-      delete this.tempBuffer;
-      delete this.voltageBuffer;
-    });
+      this.bmsStateBuffer.stop();
+    }.bind(this));
   }
 
   $onInit() {

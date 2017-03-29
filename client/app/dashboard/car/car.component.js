@@ -2,7 +2,7 @@ import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './car.routes';
 
-import c3 from 'c3';
+import chart from '../../utils/chart.js';
 
 var carChart;
 var count = 0;
@@ -67,7 +67,7 @@ export class CarController {
     this.socket = socket;
     this.throttleBuffer = new Buffer(1000,'throttle',plotNew);
     this.brakeBuffer = new Buffer(1000,'brake',plotNew);
-    carChart = c3.generate({
+    carChart = chart.generate({
       bindto: '#car-chart',
       data: {
         json: [

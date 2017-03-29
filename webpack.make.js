@@ -55,6 +55,8 @@ module.exports = function makeWebpackConfig(options) {
                 'd3',
                 'c3',
                 'ng-file-upload',
+                'smoothie',
+                'jquery'
             ]
         };
     }

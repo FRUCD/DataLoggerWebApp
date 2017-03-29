@@ -16,9 +16,10 @@ export class AverageBuffer {
   }
   aggregate(){
     var out = new Object();
-    let seconds = Math.floor(this.start / (1000) % 60);
-    let minutes = Math.floor(this.start / (1000 * 60) % 60);
-    out.Timestamp = `${minutes}.${seconds}`;
+   /*let seconds = Math.floor(point.Timestamp / (1000) % 60);
+          let minutes = Math.floor(point.Timestamp / (1000 * 60) % 60);
+          out.Timestamp = `${minutes}.${seconds}`;*/
+    out.Timestamp = this.start;
     out.CAN_Id = this.buffer[0].CAN_Id;
     var self = this;
     this.keys.forEach(function (key) {
