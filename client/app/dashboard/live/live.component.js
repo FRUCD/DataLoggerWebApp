@@ -49,6 +49,7 @@ function createGraph(CAN_Id, descriptionArr, data, type){
       for(var i = 1; i < data[description].length; i++){
         graphData.flagArr.push(description + i);
       }
+      graphData.type = "step";
       graphData.graphFormat = data;
       graphRenderQueue.push(graphData);
       bufferInfo.count = 0;
@@ -63,9 +64,15 @@ function createGraph(CAN_Id, descriptionArr, data, type){
     graphData.CAN_Id = CAN_Id;
     graphData.descriptionArr = descriptionArr;
     graphData.graphFormat = data;
+    if(type == 'decimal'){
+      bufferInfo.buffer = new AverageBuffer(1000, descriptionArr, plotNew);
+      graphData.type = "line";
+    }
+    else if(type == 'state'){
+      bufferInfo.buffer = new DeltaBuffer(descriptionArr, plotNew);
+      graphData.type = "step";
+    }
     graphRenderQueue.push(graphData);
-    if(type == 'decimal')bufferInfo.buffer = new AverageBuffer(1000, descriptionArr, plotNew);
-    else if(type == 'state')bufferInfo.buffer = new DeltaBuffer(descriptionArr, plotNew);
     bufferInfo.count = 0;
     bufferInfo.firstPointRemoved = false;
     genericsBufferMap.set(CAN_Id, bufferInfo);
@@ -532,7 +539,8 @@ export class LiveComponent {
             keys: {
               x: 'Timestamp',
               value: graph.flagArr || graph.descriptionArr
-            }
+            },
+            type: graph.type
           },
           axis: {
             y: {

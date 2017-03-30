@@ -27,7 +27,6 @@ function timeFormatter(date){
 }
 class Chart{
     constructor(canvas, conf){
-        console.log(canvas);
         let config = conf;
         this._keys = config.data.keys;
         this._id = config.bindto;
