@@ -291,7 +291,7 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    }, true);
+    }, false);
     temp_chart = chart.generate({
       bindto: '#temp-chart',
       data: {
@@ -349,7 +349,7 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    }, true);
+    }, false);
     batt_chart = chart.generate({
       bindto: '#battery-chart',
       data: {
@@ -397,7 +397,7 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    }, true);
+    }, false);
     state_chart = chart.generate({
       bindto: '#state-chart',
       data: {
@@ -456,7 +456,7 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    }, true);
+    }, false);
     let bmsvalues = ['Charge mode',
               'Pack temp limit exceeded',
               'Pack temp limit close',
@@ -517,7 +517,7 @@ export class LiveComponent {
       tooltip:{
         show: false
       }
-    }, true);
+    }, false);
 
     $scope.$on('updateGraphs', function () {
       console.log("Creating graphs");
@@ -562,7 +562,7 @@ export class LiveComponent {
             show: false
           }
         }));
-      }, true);
+      }, false);
       graphRenderQueue = [];
     });
 
