@@ -3,6 +3,15 @@ class Controller{
     constructor(db,parser){
         this.db = db;
         this.parser = parser;
+        this.cache = new Map();
+        this.hookParser(this.parser);
+    }
+    hookParser(parser){
+        this.cache.clear();
+        parser.on('data',function(data){
+            data = JSON.parse(data);
+            this.cache.set(data.CAN_Id, data);
+        }.bind(this));
     }
     start(req,res){
         if(!this.parser.isPaused()){
@@ -12,6 +21,7 @@ class Controller{
         var database = new dbStream();
         this.parser.pipe(database);
         this.parser.resume();
+        this.hookParser(this.parser);
         database.ready(function(){
             res.status(200).send(database.collection.collectionName);
         });
@@ -28,6 +38,17 @@ class Controller{
         else if(this.db&&this.db.collection&&this.db.collection.collectionName) res.status(200).send(this.db.collection.collectionName);
         else{
             res.sendStatus(401);
+        }
+    }
+    last(req,res){
+        if(!req.query.CAN_Id){
+            res.sendStatus(404);
+            return;
+        }
+        req.query.CAN_Id = parseInt(req.query.CAN_Id);
+        if(!this.cache.has(req.query.CAN_Id)) res.sendStatus(404);
+        else{
+            res.send(this.cache.get(req.query.CAN_Id));
         }
     }
 }

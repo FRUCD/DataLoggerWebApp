@@ -150,6 +150,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         return Descriptor.model.findOne({CAN_Id:data[0]}).exec().then(function(doc){
         //TODO run validation
             try{
+                if(!doc) return out;
                 Validator(doc);
                 if(self.specification){
                     self.specification.push(doc);
@@ -160,7 +161,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 throw new Error(e);
             }
         }).catch(function(){
-            throw new Error("no parser for CAN_Id: "+data[0]);
+            throw new Error("invalid parser for CAN_Id: "+data[0]);
         });
     }
     parse(data){
