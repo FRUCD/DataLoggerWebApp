@@ -24,9 +24,11 @@ export class SettingsController {
       $http({url:`/api/db/descriptors/${$scope.selected}`,method:'GET'}).then(function(data){
         console.log(data);
         $scope.edit = data.data;
+        $scope.edit.CAN_Id = '0x' + $scope.edit.CAN_Id.toString(16);
       });
     };
     $scope.createNew = function(){
+      $scope.new.CAN_Id = parseInt($scope.new.CAN_Id, 16);
       $http({url:`/api/db/descriptors/${$scope.new.CAN_Id}`,method:'PUT',data:$scope.new}).then(function(data){
         console.log(data);
         $scope.search();
@@ -36,6 +38,7 @@ export class SettingsController {
     };
     $scope.submit = function(){
       var edit = $scope.edit;
+      edit.CAN_Id = parseInt(edit.CAN_Id, 16);
       for(var i=0;i<edit.map.length;i++){
         edit.map[i].offset = parseInt(edit.map[i].offset);
         edit.map[i].length = parseInt(edit.map[i].length);
@@ -44,7 +47,7 @@ export class SettingsController {
       }
       $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'PUT',data:edit}).then(function(data){
         console.log(data.data);
-        alert("success");
+        edit.CAN_Id = '0x' + edit.CAN_Id.toString(16);
         // $scope.search();
       },function(msg){
         console.log(msg.data);

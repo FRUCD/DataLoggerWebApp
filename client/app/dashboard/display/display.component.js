@@ -123,7 +123,7 @@ export class DisplayComponent {
           tick: {
             format: '%M:%S'
           },
-          culling:true,
+          culling:false,
         }
       },
       tooltip:{
@@ -176,7 +176,7 @@ export class DisplayComponent {
           tick: {
             format: '%M:%S'
           },
-          culling:true,
+          culling:false,
         }
       },
       transition: {
@@ -235,7 +235,7 @@ export class DisplayComponent {
           tick: {
             format: '%M:%S'
           },
-          culling:true,
+          culling:false,
         }
       },
       transition: {
@@ -296,7 +296,7 @@ export class DisplayComponent {
           tick: {
             format: '%M:%S'
           },
-          culling:true,
+          culling:false,
         }
       },
       tooltip:{
@@ -346,7 +346,7 @@ export class DisplayComponent {
           case 512:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            object.throttle = message.throttle / 0x7FFF;
+            object.throttle = message.throttle / 0x7FFF * 100;
             if(!$scope.buffers.has("throttle")) $scope.buffers.set("throttle",new AverageBuffer(1000, ['throttle'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,{buffer_Id:"throttle",array:[]});
              $scope.messages.get(this).array.push(object);
@@ -356,7 +356,7 @@ export class DisplayComponent {
           case 513:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            object.brake = message.brake / 0x7FFF;
+            object.brake = message.brake / 0x7FFF * 100;
 
             if(!$scope.buffers.has("brake")) $scope.buffers.set("brake",new AverageBuffer(1000, ['brake'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,{buffer_Id:"brake",array:[]});
@@ -481,7 +481,7 @@ export class DisplayComponent {
               tick: {
                 format: '%M:%S'
               },
-              culling:true,
+              culling:false,
             }
           },
           transition: {
