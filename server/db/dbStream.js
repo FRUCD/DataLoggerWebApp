@@ -42,5 +42,10 @@ class dbStream extends Writable {
     ready(callback){
         this.emitter.on("ready",callback);
     }
+    save(){
+        this.collection.find().toArray(function(err,docs){
+            this.collection.drop();
+        }.bind(this));
+    }
 }
 module.exports = dbStream;
