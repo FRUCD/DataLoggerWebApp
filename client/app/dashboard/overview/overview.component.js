@@ -1,17 +1,18 @@
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './overview.routes';
+import $ from 'jquery'
 
-function updateThrottleBrake(throttle,brake) {
-  if(throttle)
+function updateThrottleBrake(throttle, brake) {
+  if(throttle || throttle == 0)
   {
-    angular.element(document.querySelector('#throttle-bar')).html(Math.round(throttle / 0x7FF * 100) + "%");
-    document.getElementById("throttle-bar").style.height = (400 * throttle) / 0x7FF + "px";
+    angular.element(document.querySelector('#throttle-bar')).html(Math.round((throttle / 0x7FFF) * 100) + "%");
+    document.getElementById("throttle-bar").style.height = 400 * (throttle / 0x7FFF) + "px";
   }
-  if(brake)
+  if(brake || brake == 0)
   {
-    angular.element(document.querySelector('#brake-bar')).html(Math.round(brake / 0x7FF) + "%");
-    document.getElementById("brake-bar").style.height = (400 * brake) / 0x7FF + "px";
+    angular.element(document.querySelector('#brake-bar')).html(Math.round((brake / 0x7FFF) * 100) + "%");
+    document.getElementById("brake-bar").style.height = 400 * (brake / 0x7FFF) + "px";
   }
 }
 
@@ -85,7 +86,7 @@ function updateStates(bms,car)
 
 export class OverviewController {
   /*@ngInject*/
-  constructor($scope, socket) {
+  constructor($scope, $http, socket) {
     this.socket = socket;
     this.scope = $scope;
     $scope.$on('$destroy', function () {
@@ -96,6 +97,41 @@ export class OverviewController {
     });
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('bms');
+    });
+    $http.get('/api/run/last',{params:{CAN_Id:1574}}).then(function(res){
+      if(res.data && res.data.CAN_Id == 1574){
+        if($("#car-state").text()=="Car State: "){
+          updateStates(null, res.data);
+        }
+      }
+    });
+    $http.get('/api/run/last',{params:{CAN_Id:512}}).then(function(res){
+      if(res.data && res.data.CAN_Id == 512){
+        if($("#throttle-bar").text()==""){
+          updateThrottleBrake(res.data.throttle,null);
+        }
+      }
+    });
+    $http.get('/api/run/last',{params:{CAN_Id:513}}).then(function(res){
+      if(res.data && res.data.CAN_Id == 513){
+        if($("#brake-bar").text()==""){
+          updateThrottleBrake(null,res.data.brake);
+        }
+      }
+    });
+    $http.get('/api/run/last',{params:{CAN_Id:392}}).then(function(res){
+      if(res.data && res.data.CAN_Id == 392){
+        if($("#bms-state").text()==""){
+          updateStates(res.data,null);
+        }
+      }
+    });
+    $http.get('/api/run/last',{params:{CAN_Id:1160}}).then(function(res){
+      if(res.data && res.data.CAN_Id == 1160){
+        if($("#t0").text()==""){
+          updateTemperatures($scope,res.data);
+        }
+      }
     });
   }
 

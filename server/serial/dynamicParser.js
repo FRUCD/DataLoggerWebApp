@@ -22,10 +22,11 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             this.push(JSON.stringify(value));
         }.bind(this)).catch(function(err){
             if(process.env.NODE_ENV=="development"){
-                if(err) console.error(err);
-                console.error("missing some parser");
+                //if(err) console.error(err);
+                //console.error("missing some parser");
             }
-        }.bind(this));
+        }.bind(this))
+        .done();
         next();
     }
     getArray(data,map){
@@ -120,6 +121,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 var object = new Object();
                 object.description = value.description;
                 object.dataType = value.dataType;
+                if(value.dataType == 'array') object.subDataType = value.array.subDataType;
                 object.value = self.getValue(data.slice(),value);
                 out.generics.push(object);
             }
@@ -148,6 +150,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         return Descriptor.model.findOne({CAN_Id:data[0]}).exec().then(function(doc){
         //TODO run validation
             try{
+                if(!doc) return out;
                 Validator(doc);
                 if(self.specification){
                     self.specification.push(doc);
@@ -158,7 +161,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 throw new Error(e);
             }
         }).catch(function(){
-            throw new Error("something went horribly wrong");
+            throw new Error("invalid parser for CAN_Id: "+data[0]);
         });
     }
     parse(data){

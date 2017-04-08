@@ -36,6 +36,7 @@ var model = mongoose.model('Descriptor',canDescription);
 function load(){
     fs.readFile(`${local}/defaults.conf`,function(err,data){
         var defaults = JSON.parse(data);
+        console.log(defaults);
         Object.keys(defaults).forEach(function(key,index,array){
             model.count({"CAN_Id":defaults[key].CAN_Id},function(err,countr){
                 if(countr==0){

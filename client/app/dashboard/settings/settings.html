@@ -40,6 +40,7 @@
                 <label>subLength: <input type="number" class="form-control" ng-model="map.array.subLength" required /></label>
                 <label>subDataType: <input type="text" class="form-control" ng-model="map.array.subDataType" required /></label>
               </div>
+              <input type="button" class="btn btn-danger" ng-click="new.map.pop()" value="Delete Map"/>
             </div>
             <input type="button" class="btn btn-secondary" ng-click="new.map.push({length:'',offset:'',description:'',dataType:''});" value="Add Map"/>
             <input type="submit" class="btn btn-primary" ng-click="createNew()" value="Save"/>
@@ -52,7 +53,7 @@
               <select class="form-control" ng-options= "option.CAN_Id as option.PDO_Description for option in list" ng-model="selected" ng-change="loadForEdit()"></select>
               <input type="button" class="btn btn-danger" ng-click="delete()" value="Delete CAN"/>
             </div>
-            <div class="form-group"><label>CAN ID: <input type="number" class="form-control" ng-model="edit.CAN_Id"/></label></div>
+            <div class="form-group"><label>CAN ID: <input type="text" class="form-control" ng-model="edit.CAN_Id"/></label></div>
             <div class="form-group"><label>Description: <input type="text" class="form-control" ng-model="edit.PDO_Description"/></label></div>
             <h2>Mapping</h2>
             <div class="form-group" ng-repeat="map in edit.map">

@@ -7,7 +7,7 @@ import routes from './live.routes';
 import AverageBuffer from '../../utils/average_buffer.js'
 import DeltaBuffer from '../../utils/delta_buffer.js'
 
-import c3 from 'c3';
+import chart from '../../utils/chart.js';
 
 
 var tb_initialPointRemoved = false;
@@ -26,29 +26,111 @@ var state_initialPointRemoved = false;
 var state_count = 0;
 var state_chart;
 
+var bmsFlag_initialPointRemoved = false;
+var bmsFlag_count = 0;
+var bmsFlag_chart;
 
-function createGraph(CAN_Id,descriptionArr,data)
-{
-  var bufferInfo = new Object();
-  bufferInfo.buffer = new AverageBuffer(1000, descriptionArr, plotNew);
-  bufferInfo.count = 0;
-  bufferInfo.firstPointRemoved = false;
-  genericsBufferMap.set(CAN_Id, bufferInfo);
+var genericsGraphMap = new Map();
+var genericsBufferMap = new Map();
+var genericsIds = [];
+var graphRenderQueue = [];
 
-  var graphData = new Object();
-  graphData.CAN_Id = CAN_Id;
-  graphData.descriptionArr = descriptionArr;
-  graphData.graphFormat = data;
-  graphRenderQueue.push(graphData);
+function createGraph(CAN_Id, descriptionArr, data, type){
+  if(type == "flag"){
+    let info = new Object();
+    info.buffer = new DeltaBuffer(descriptionArr, plotNew);
+    genericsBufferMap.set(CAN_Id, info);
+    for(let description of descriptionArr){
+      let bufferInfo = new Object();
+      let graphData = new Object();
+      graphData.buffer = {CAN_Id: CAN_Id};
+      graphData.CAN_Id = CAN_Id + description;
+      graphData.flagArr = [];
+      for(var i = 1; i < data[description].length; i++){
+        graphData.flagArr.push(description + i);
+      }
+      graphData.type = "step";
+      graphData.graphFormat = data;
+      graphRenderQueue.push(graphData);
+      bufferInfo.count = 0;
+      bufferInfo.firstPointRemoved = false;
+      genericsBufferMap.set(CAN_Id + description, bufferInfo);
+    }
+  }
+  else{
+    let bufferInfo = new Object();
+    let graphData = new Object();
+    graphData.buffer = {CAN_Id: CAN_Id};
+    graphData.CAN_Id = CAN_Id;
+    graphData.descriptionArr = descriptionArr;
+    graphData.graphFormat = data;
+    if(type == 'decimal'){
+      bufferInfo.buffer = new AverageBuffer(1000, descriptionArr, plotNew);
+      graphData.type = "line";
+    }
+    else if(type == 'state'){
+      bufferInfo.buffer = new DeltaBuffer(descriptionArr, plotNew);
+      graphData.type = "step";
+    }
+    graphRenderQueue.push(graphData);
+    bufferInfo.count = 0;
+    bufferInfo.firstPointRemoved = false;
+    genericsBufferMap.set(CAN_Id, bufferInfo);
+    console.log(genericsBufferMap);
+  }
 }
-
+function bindGenerics(data, type){
+  var descriptionArr = [];
+  var simpleVal = new Object();
+  simpleVal.Timestamp = data.Timestamp;
+  simpleVal.CAN_Id = data.CAN_Id+type;
+  data.generics.forEach(function (generic) {
+    if (generic.dataType == type) {
+      simpleVal[generic.description] = generic.value;
+      descriptionArr.push(generic.description);
+    }
+    else if (generic.dataType == 'array' && generic.subDataType == type && generic.value instanceof Array) {
+      descriptionArr.push(generic.description);
+      for (var i = 0; i < generic.length; i++)
+        simpleVal[generic.description + i] = generic.value[i];
+     }
+  });
+  if(descriptionArr.length>0){
+    if (genericsBufferMap.get(data.CAN_Id+type))//can id already exists
+    {
+      genericsBufferMap.get(data.CAN_Id+type).buffer.push(simpleVal);
+    }
+    else {
+      if(type == "decimal" || type == "state"){
+        if( angular.element(document.querySelector('#can'+data.CAN_Id+type)).length ) {
+          console.log("div already exists");
+        }
+        else{
+          genericsIds.push(data.CAN_Id+type);
+        }
+      }
+      else{
+        for(let description of descriptionArr){
+          if( angular.element(document.querySelector('#can'+data.CAN_Id+type+description)).length ) {
+            console.log("div already exists");
+          }
+          else{
+              genericsIds.push(data.CAN_Id+type+description);
+          }
+        }
+      }
+      createGraph(data.CAN_Id+type, descriptionArr, simpleVal, type);
+    }
+  }
+}
 function plotNew(newData) {
+  //console.log(newData);
   if (newData.CAN_Id == 512 || newData.CAN_Id == 513) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
-    if (newData.throttle) object.throttle = newData.throttle / 0x7FF;
-    if (newData.brake) object.brake = newData.brake / 0x7FF;
-    if (tb_count < 50 && tb_initialPointRemoved) tb_chart.flow({
+    if (newData.throttle || newData.throttle == 0) object.throttle = newData.throttle / 0x7FFF;
+    if (newData.brake || newData.brake == 0) object.brake = newData.brake / 0x7FFF;
+    if (tb_count < 10 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0
     });
@@ -65,7 +147,7 @@ function plotNew(newData) {
     object.Timestamp = newData.Timestamp;
     if (newData.state) object.state = newData.state;
 
-    if (state_count < 50 && state_initialPointRemoved) state_chart.flow({
+    if (state_count < 10 && state_initialPointRemoved) state_chart.flow({
       json: object,
       length: 0
     });
@@ -83,7 +165,7 @@ function plotNew(newData) {
     if (newData.min_voltage != undefined) object.min_voltage = newData.min_voltage;
     if (newData.max_voltage != undefined) object.max_voltage = newData.max_voltage;
     if (newData.pack_voltage != undefined) object.pack_voltage = newData.pack_voltage;
-    if (batt_count < 50 && batt_initialPointRemoved) batt_chart.flow({
+    if (batt_count < 10 && batt_initialPointRemoved) batt_chart.flow({
       json: object,
       length: 0
     });
@@ -102,7 +184,7 @@ function plotNew(newData) {
       for (var i = 0; i < newData.temp_array.length; i++)
         object["temp" + i] = newData.temp_array[i];
     }
-    if (temp_count < 50 && temp_initialPointRemoved) temp_chart.flow({
+    if (temp_count < 10 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
       length: 0
     });
@@ -114,12 +196,27 @@ function plotNew(newData) {
     }
     temp_count++;
   }
+  else if (newData.CAN_Id == "392flag") {
+    delete newData.CAN_Id;
+    if (bmsFlag_count < 10 && bmsFlag_initialPointRemoved) bmsFlag_chart.flow({
+      json: newData,
+      length: 0
+    });
+    else {
+      bmsFlag_chart.flow({
+        json: newData
+      });
+      bmsFlag_initialPointRemoved = true;
+    }
+    bmsFlag_count++;
+
+  }
   else {
     if (genericsGraphMap.get(newData.CAN_Id)) {
       var graph = genericsGraphMap.get(newData.CAN_Id);
       var canId = newData.CAN_Id;
       delete newData.CAN_Id;
-      if (genericsBufferMap.get(canId).count < 50 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
+      if (genericsBufferMap.get(canId).count < 10 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
         json: newData,
         length: 0
       });
@@ -133,10 +230,6 @@ function plotNew(newData) {
     }
   }
 }
-var genericsGraphMap = new Map();
-var genericsBufferMap = new Map();
-var genericsIds = [];
-var graphRenderQueue = [];
 
 export class LiveComponent {
   /*@ngInject*/
@@ -149,11 +242,14 @@ export class LiveComponent {
     this.tempBuffer = new AverageBuffer(1000, ['temp_array'], plotNew);
     this.voltageBuffer = new AverageBuffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
     this.carStateBuffer = new DeltaBuffer(['state'],plotNew);
+    this.carStateBuffer.begin();
+	  this.bmsStateBuffer = new DeltaBuffer(['flag'],plotNew);
+    this.bmsStateBuffer.begin();
 
     $scope.genericsGraphMap = genericsGraphMap;
     $scope.genericsBufferMap = genericsBufferMap;
     $scope.genericsIds = genericsIds;
-    tb_chart = c3.generate({
+    tb_chart = chart.generate({
       bindto: '#throttle-brake-chart',
       data: {
         /*json: [
@@ -171,9 +267,14 @@ export class LiveComponent {
           'brake': 'Brake'
         }
       },
+      line: {
+        connectNull: true
+      },
       axis: {
         y: {
           tick: {
+            min: 0,
+            max: 100,
             format: d3.format("%")
           }
         },
@@ -193,9 +294,12 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
-    });
-    temp_chart = c3.generate({
+    }, false);
+    temp_chart = chart.generate({
       bindto: '#temp-chart',
       data: {
         /*json: [
@@ -213,9 +317,11 @@ export class LiveComponent {
           'temp2': 'Temperature 3',
           'temp3': 'Temperature 4',
           'temp4': 'Temperature 5',
-          'temp5': 'Temperature 6',
-
+          'temp5': 'Temperature 6'
         }
+      },
+      line: {
+        connectNull: true
       },
       axis: {
         y: {
@@ -246,9 +352,12 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
-    });
-    batt_chart = c3.generate({
+    }, false);
+    batt_chart = chart.generate({
       bindto: '#battery-chart',
       data: {
         /*json: [
@@ -265,6 +374,9 @@ export class LiveComponent {
           'max_voltage': 'Max Voltage',
           'pack_voltage': 'Pack Voltage'
         }
+      },
+      line: {
+        connectNull: true
       },
       axis: {
         y: {
@@ -288,9 +400,12 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
-    });
-    state_chart = c3.generate({
+    }, false);
+    state_chart = chart.generate({
       bindto: '#state-chart',
       data: {
         json:[],
@@ -299,11 +414,9 @@ export class LiveComponent {
           x: 'Timestamp',
           value: ['state']
         },
+        type: "step",
         names: {
           'state': 'State'
-        },
-        types: {
-          state: 'step'
         }
       },
       axis: {
@@ -346,28 +459,95 @@ export class LiveComponent {
       },
       size: {
         height: 600
+      },
+      tooltip:{
+        show: false
       }
-    });
-
+    }, false);
+    let bmsvalues = ['Charge mode',
+              'Pack temp limit exceeded',
+              'Pack temp limit close',
+              'Pack temperature low limit',  
+              'Low SOC',
+              'Critical SOC',
+              'Imbalance',
+              'Internal Fault',
+              'Negative contactor closed',
+              'Positive contactor closed',
+              'Isolation fault',
+              'Cell too high',
+              'Cell too low',
+              'Charge halt',
+              'Full',
+              'Precharge contactor closed'];
+    bmsFlag_chart = chart.generate({
+      bindto: '#bms-flag-chart',
+      data: {
+        /*json: [
+         {Timestamp: 0, temp0: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0}
+         ],*/
+        json:[],
+        xFormat: '%M.%S',
+        keys: {
+          x: 'Timestamp',
+          value: ['flag1','flag2','flag3','flag4','flag5','flag6','flag7','flag8','flag9','flag10','flag11','flag12','flag13','flag14','flag15','flag16']
+        },
+        type: "step"
+      },
+      axis: {
+        y: {
+          tick: {
+            min:1, max:16,
+            format: function(d){
+              return bmsvalues[d-1];
+            },
+            culling: false
+          }
+        },
+        x: {
+          type: 'timeseries',
+          tick: {
+            format: '%M:%S'
+          },
+          culling:true
+        }
+      },
+      transition: {
+        duration: 0
+      },
+      subchart: {
+        show: true
+      },
+      size: {
+        height: 600
+      },
+      tooltip:{
+        show: false
+      }
+    }, false);
 
     $scope.$on('updateGraphs', function () {
       console.log("Creating graphs");
       graphRenderQueue.forEach(function (graph) {
-        genericsGraphMap.set(graph.CAN_Id, c3.generate({
+        console.log(genericsBufferMap.get(graph.buffer.CAN_Id));
+        genericsBufferMap.get(graph.buffer.CAN_Id).buffer.begin();
+        genericsGraphMap.set(graph.CAN_Id, chart.generate({
           bindto: '#can' + graph.CAN_Id,
           data: {
-            json: [],
+            json: [graph.graphFormat],
             xFormat: '%M.%S',
             keys: {
               x: 'Timestamp',
-              value: graph.descriptionArr
-            }
+              value: graph.flagArr || graph.descriptionArr
+            },
+            type: graph.type
           },
           axis: {
             y: {
               tick: {
                 format: d3.format(".3")
-              }
+              },
+              culling:false
             },
             x: {
               type: 'timeseries',
@@ -385,13 +565,17 @@ export class LiveComponent {
           },
           size: {
             height: 600
+          },
+          tooltip:{
+            show: false
           }
         }));
-      });
+      }, false);
       graphRenderQueue = [];
     });
 
     $scope.$on('$destroy', function () {
+      console.log("destroy called");
       socket.unsyncUpdates('temp');
       socket.unsyncUpdates('car');
       socket.unsyncUpdates('bms');
@@ -403,11 +587,19 @@ export class LiveComponent {
       batt_count = 0;
       state_initialPointRemoved = false;
       state_count = 0;
+      genericsBufferMap.forEach(function(value, key, map){
+        value.buffer.stop();
+      });
       genericsBufferMap.clear();
       genericsGraphMap.clear();
       delete $scope.genericsIds;
-
-    });
+      this.carStateBuffer.stop();
+      this.throttleBuffer.buffer.length = 0;
+      this.brakeBuffer.buffer.length = 0;
+      this.tempBuffer.buffer.length = 0;
+      this.voltageBuffer.buffer.length = 0;
+      this.bmsStateBuffer.stop();
+    }.bind(this));
   }
 
   $onInit() {
@@ -415,7 +607,9 @@ export class LiveComponent {
       if (data) {
         if (data.CAN_Id == 512) this.throttleBuffer.push(data);
         else if (data.CAN_Id == 513) this.brakeBuffer.push(data);
-        else if (data.CAN_Id == 1574) this.carStateBuffer.push(data);
+        else if (data.CAN_Id == 1574){
+           this.carStateBuffer.push(data);
+        }
       }
     }.bind(this));
 
@@ -431,56 +625,15 @@ export class LiveComponent {
           this.voltageBuffer.push(data);
         }
         if (data.CAN_Id == 392){
-
+			    this.bmsStateBuffer.push(data);
         }
       }
     }.bind(this));
-
     this.socket.syncUpdates('data', function (data) {
       if (data && data.generics) {
-        var descriptionArr = [];
-        var simpleVal = new Object();
-
-        simpleVal.Timestamp = data.Timestamp;
-        simpleVal.CAN_Id = data.CAN_Id;
-
-        data.generics.forEach(function (generic) {
-          if (generic.dataType == 'decimal') {
-            simpleVal[generic.description] = generic.value;
-            descriptionArr.push(generic.description);
-          }
-          else if (generic.dataType == 'array' && generic.value instanceof Array) {
-            descriptionArr.push(generic.description);
-            for (var i = 0; i < generic.length; i++)
-              simpleVal[generic.description + i] = generic.value[i];
-          }
-        });
-        if (genericsBufferMap.get(data.CAN_Id))//can id already exists
-        {
-          genericsBufferMap.get(data.CAN_Id).buffer.push(simpleVal);
-        }
-        else {
-          if( angular.element(document.querySelector('#can'+data.CAN_Id)).length ) {
-            console.log("div already exists");
-          }
-          else {
-            genericsIds.push(data.CAN_Id);
-          }
-
-          createGraph(data.CAN_ID,descriptionArr,simpleVal);
-
-          var bufferInfo = new Object();
-          bufferInfo.buffer = new AverageBuffer(1000, descriptionArr, plotNew);
-          bufferInfo.count = 0;
-          bufferInfo.firstPointRemoved = false;
-          genericsBufferMap.set(data.CAN_Id, bufferInfo);
-
-          var graphData = new Object();
-          graphData.CAN_Id = data.CAN_Id;
-          graphData.descriptionArr = descriptionArr;
-          graphData.graphFormat = simpleVal;
-          graphRenderQueue.push(graphData);
-        }
+        bindGenerics(data, "decimal");
+        bindGenerics(data, "state");
+        bindGenerics(data, "flag");
       }
     }.bind(this));
   }

@@ -343,7 +343,7 @@ gulp.task('serve', cb => {
     runSequence(
         [
             'clean:tmp',
-            'lint:scripts',
+            //'lint:scripts',
             'inject',
             'copy:fonts:dev',
             'env:all'
@@ -478,6 +478,7 @@ gulp.task('build', cb => {
         [
             'copy:extras',
             'copy:assets',
+            'copy:root',
             'copy:defaults',
             'copy:fonts:dist',
             'copy:server',
@@ -515,6 +516,12 @@ gulp.task('copy:defaults', () => {
     return gulp.src([
         `${serverPath}/api/db/defaults.conf`
     ]).pipe(gulp.dest(`${paths.dist}/${serverPath}/api/db`));
+})
+gulp.task('copy:root', () => {
+    return gulp.src([
+        './README.md',
+        './start.bat'
+    ]).pipe(gulp.dest(`${paths.dist}`));
 })
 gulp.task('copy:extras', () => {
     return gulp.src([

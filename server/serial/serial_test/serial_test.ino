@@ -3,13 +3,16 @@ void setup() {
   Serial.begin(9600);
 }
 int battery[2] = {0x03,0x88};
+int pack[2] = {0x01,0x88};
 int can[2] = {0x06,0x26};
 int generic[2] = {0x07,0x23};
 int throttle[2] = {0x02,0x00};
 int temp[2] = {0x04,0x88};
-int state[2] = {0x01,0x88};
+int state[2] = {0x01,0x87};
+int flag[2] = {0x02,0x45};
 int tempDegrees[6] = {120,80,40,10,0,250};
 int x = 0;
+int state_inc = 0;
 uint32_t voltage = 0;
 void loop() {
   // put your main code here, to run repeatedly:
@@ -128,7 +131,9 @@ void loop() {
   voltage+=10;
   if(voltage>12000) voltage = 0;
   Serial.flush();
-  
+
+  if(x%100 == 0) state_inc++;
+  if(state_inc>5) state_inc = 0;
   Serial.write(state[0]);
   Serial.write(state[1]);
   tick = millis();
@@ -140,17 +145,60 @@ void loop() {
   Serial.write(time[1]);
   Serial.write(time[2]);
   Serial.write(time[3]);
-  Serial.write(0);
-  Serial.write(0);
-  Serial.write(0);
-  Serial.write(0);
-  Serial.write(0);
-  Serial.write(0);
-  Serial.write(0);
-  Serial.write(0);
+  Serial.write(state_inc & 0xFF);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
   Serial.write(0xFF);
   Serial.write('\n');
   Serial.flush();
-  
-  delay(2);
+  Serial.write(pack[0]);
+  Serial.write(pack[1]);
+  tick = millis();
+  time[0] = (unsigned int)((tick&0xFF000000)>>24);
+  time[1] = (unsigned int)((tick&0x00FF0000)>>16);
+  time[2] = (unsigned int)((tick&0x0000FF00)>>8);
+  time[3] = (unsigned int)(tick&0x000000FF);
+  Serial.write(time[0]);
+  Serial.write(time[1]);
+  Serial.write(time[2]);
+  Serial.write(time[3]);
+  Serial.write(state_inc & 0xFF);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(x&0xFF);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(0xFF);
+  Serial.write('\n');
+  Serial.flush();
+  Serial.write(flag[0]);
+  Serial.write(flag[1]);
+  tick = millis();
+  time[0] = (unsigned int)((tick&0xFF000000)>>24);
+  time[1] = (unsigned int)((tick&0x00FF0000)>>16);
+  time[2] = (unsigned int)((tick&0x0000FF00)>>8);
+  time[3] = (unsigned int)(tick&0x000000FF);
+  Serial.write(time[0]);
+  Serial.write(time[1]);
+  Serial.write(time[2]);
+  Serial.write(time[3]);
+  Serial.write(x&0xFF00 >> 8);
+  Serial.write(x&0xFF);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(2);
+  Serial.write(0xFF);
+  Serial.write('\n');
+  Serial.flush();
+  delay(100);
 }

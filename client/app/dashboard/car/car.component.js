@@ -2,7 +2,7 @@ import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './car.routes';
 
-import c3 from 'c3';
+import chart from '../../utils/chart.js';
 
 var carChart;
 var count = 0;
@@ -42,8 +42,8 @@ function plotNew(newData) {
   if(newData.CAN_Id==512||newData.CAN_Id==513){
     var object = new Object();
     object.Timestamp = newData.Timestamp;
-    if(newData.throttle)object.throttle = newData.throttle/0x7FF;
-    if(newData.brake)object.brake = newData.brake/0x7FF;
+    if(newData.throttle || newData.throttle == 0)object.throttle = newData.throttle/0x7FFF;
+    if(newData.brake || newData.brake == 0)object.brake = newData.brake/0x7FFF;
     if(count<100&&initialPointRemoved)carChart.flow({
       json: object,
       length:0
@@ -67,7 +67,7 @@ export class CarController {
     this.socket = socket;
     this.throttleBuffer = new Buffer(1000,'throttle',plotNew);
     this.brakeBuffer = new Buffer(1000,'brake',plotNew);
-    carChart = c3.generate({
+    carChart = chart.generate({
       bindto: '#car-chart',
       data: {
         json: [
