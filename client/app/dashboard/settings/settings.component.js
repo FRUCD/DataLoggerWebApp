@@ -47,8 +47,7 @@ export class SettingsController {
       }
       $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'PUT',data:edit}).then(function(data){
         console.log(data.data);
-        edit.CAN_Id = '0x' + edit.CAN_Id.toString(16);
-        // $scope.search();
+        $scope.search();
       },function(msg){
         console.log(msg.data);
         alert(msg.data);
