@@ -112,7 +112,8 @@ export class BMSController {
           }
         },
         x: {
-          type: 'timeseries',
+          type: 'timeseries'
+          ,
           tick: {
             format: '%M:%S'
           },
@@ -128,17 +129,19 @@ export class BMSController {
       grid: {
         y: {
           lines: [
-            {value: 80, text: 'Threshold'}
+            {
+              value: 80,
+              text: 'Threshold'}
           ]
         }
-      },
-      size: {
+      }
+      , size: {
         height: 600
       },
       tooltip:{
         show: false
       }
-    });
+    }, REPLACE, PEPLACE, REPLACE, REPLACE, REPLACE);
     this.batt_chart = chart.generate({
       bindto: '#battery-chart',
       data: {
@@ -167,7 +170,8 @@ export class BMSController {
           }
         },
         x: {
-          type: 'timeseries',
+          type: 'timeseries'
+          ,
           tick: {
             format: '%M:%S'
           },
@@ -182,15 +186,14 @@ export class BMSController {
       },
       size: {
         height: 600
-      },
-      tooltip:{
+      }, tooltip:{
         show: false
       }
-    });
+    }, REPLACE, PEPLACE, REPLACE, REPLACE, REPLACE);
     let bmsvalues = ['Charge mode',
               'Pack temp limit exceeded',
               'Pack temp limit close',
-              'Pack temperature low limit',  
+              'Pack temperature low limit',
               'Low SOC',
               'Critical SOC',
               'Imbalance',
@@ -213,7 +216,7 @@ export class BMSController {
         xFormat: '%M.%S',
         keys: {
           x: 'Timestamp',
-          value: ['flag1','flag2','flag3','flag4','flag5','flag6','flag7','flag8','flag9','flag10','flag11','flag12','flag13','flag14','flag15','flag16']
+          value: ['flag1', 'flag2', 'flag3', 'flag4', 'flag5', 'flag6', 'flag7', 'flag8', 'flag9', 'flag10', 'flag11', 'flag12', 'flag13', 'flag14', 'flag15','flag16']
         },
         type: "step"
       },
@@ -222,7 +225,9 @@ export class BMSController {
           tick: {
             min:1, max:16,
             format: function(d){
-              return bmsvalues[d-1];
+              return
+                bmsvalues[d-1]
+                ;
             },
             culling: false
           }
@@ -237,17 +242,14 @@ export class BMSController {
       },
       transition: {
         duration: 0
-      },
-      subchart: {
+      }, subchart: {
         show: true
-      },
-      size: {
+      }, size: {
         height: 600
-      },
-      tooltip:{
+      }, tooltip:{
         show: false
       }
-    });
+    }, REPLACE, PEPLACE, REPLACE, REPLACE, REPLACE);
 
   $scope.$on('$destroy', function () {
       console.log("destroy called");

@@ -71,12 +71,12 @@ export class CarController {
       bindto: '#car-chart',
       data: {
         json: [
-          {Timestamp:0,throttle:0},
-          {Timestamp:0,brake:0}
+          {Timestamp: 0, throttle: 0},
+          {Timestamp: 0, brake: 0}
         ],
-        keys:{
-          x:'Timestamp',
-          value:['throttle','brake']
+        keys: {
+          x: 'Timestamp',
+          value: ['throttle', 'brake']
         },
         names: {
           'throttle': 'Throttle',
@@ -92,14 +92,16 @@ export class CarController {
       },
       tooltip: {
         format: {
-          title: function (d) { return 'Time ' + d; },
+          title: function (d) {
+            return 'Time ' + d;
+          },
           value: d3.format('%')
         }
       },
       subchart: {
         show: true
       }
-    });
+    }, REPLACE, PEPLACE, REPLACE, REPLACE, REPLACE);
     $scope.$on('$destroy', function() {
       socket.unsyncUpdates('car');
     });

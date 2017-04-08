@@ -10,6 +10,7 @@ import c3 from 'c3';
 import routes from './display.routes';
 import AverageBuffer from '../../utils/average_buffer.js';
 import DeltaBuffer from '../../utils/delta_buffer.js';
+import generate from '../../utils/chart.js'
 
 function bindGenerics(message, type, ids, $scope){
   var descriptionArr = [];
@@ -45,7 +46,7 @@ function bindGenerics(message, type, ids, $scope){
         $scope.buffers.set(simpleVal.CAN_Id, new DeltaBuffer(descriptionArr, function(object){
             if(!$scope.messages.has(object.CAN_Id))$scope.messages.set(object.CAN_Id,{buffer_Id:simpleVal.CAN_Id,array:[]});
             $scope.messages.get(object.CAN_Id).array.push(object);
-          })); 
+          }));
         if(type == "flag"){
           for(let description of descriptionArr){
             ids.push(simpleVal.CAN_Id + description);
@@ -89,229 +90,75 @@ export class DisplayComponent {
     this.batt_initialPointRemoved = false;
     this.batt_count = 0;
 
-    this.tb_chart = c3.generate({
-      bindto: '#throttle-brake-chart',
-      data: {
-        /*json: [
-          {Timestamp: 0, throttle: 0},
-          {Timestamp: 0, brake: 0}
-        ],*/
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['throttle', 'brake']
-        },
-        names: {
-          'throttle': 'Throttle',
-          'brake': 'Brake'
+    this.tb_chart = generate('#throttle-brake-chart',[],'Timestamp',['throttle', 'brake'],'line',
+      {
+      'throttle': 'Throttle',
+      'brake': 'Brake'
+      },
+      {
+        min: 0,
+        max: 100,
+        tick: {
+          format: d3.format("%")
         }
-      },
-      line: {
-        connectNull: true
-      },
-      axis: {
-        y: {
-          tick: {
-            min: 0,
-            max: 100,
-            format: d3.format("%")
-          }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:false,
-        }
-      },
-      tooltip:{
-        show: false
-      },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      size: {
-        height: 600
-      }
-    });
+      },false);
 
-    this.temp_chart = c3.generate({
-      bindto: '#temp-chart',
-      data: {
-        /*json: [
-          {Timestamp: 0, temp0: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0}
-        ],*/
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5']
-        },
-        names: {
-          'temp0': 'Temperature 1',
-          'temp1': 'Temperature 2',
-          'temp2': 'Temperature 3',
-          'temp3': 'Temperature 4',
-          'temp4': 'Temperature 5',
-          'temp5': 'Temperature 6',
 
+    this.temp_chart = generate('#temp-chart',[],'Timestamp',['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5'],'line',
+      {
+        'temp0': 'Temperature 1',
+        'temp1': 'Temperature 2',
+        'temp2': 'Temperature 3',
+        'temp3': 'Temperature 4',
+        'temp4': 'Temperature 5',
+        'temp5': 'Temperature 6',
+      },
+      {
+        tick: {
+          format: d3.format(".2")
         }
-      },
-      line: {
-        connectNull: true
-      },
-      axis: {
-        y: {
-          tick: {
-            format: d3.format(".3")
-          }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:false,
-        }
-      },
-      transition: {
-        duration: 0
-      },
-      tooltip:{
-        show: false
-      },
-      subchart: {
-        show: true
-      },
-      grid: {
-        y: {
-          lines: [
-            {value: 80, text: 'Threshold'}
-          ]
-        }
-      },
-      size: {
-        height: 600
-      }
-    });
+      },false);
 
-    this.batt_chart = c3.generate({
-      bindto: '#battery-chart',
-      data: {
-        /*json: [
-          {Timestamp: 0, min_voltage: 0, max_voltage: 0, pack_voltage: 0}
-        ],*/
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['min_voltage', 'max_voltage', 'pack_voltage']
-        },
-        names: {
-          'min_voltage': 'Min Voltage',
-          'max_voltage': 'Max Voltage',
-          'pack_voltage': 'Pack Voltage'
+
+    this.batt_chart = generate('#battery-chart',[],'Timestamp',['min_voltage', 'max_voltage', 'pack_voltage'],'line',
+      {
+        'min_voltage': 'Min Voltage',
+        'max_voltage': 'Max Voltage',
+        'pack_voltage': 'Pack Voltage'
+      },
+      {
+        tick: {
+          format: d3.format(".2")
         }
+      },false);
+
+    this.state_chart = generate('#state-chart',[],'Timestamp',['state'],'step',
+      {
+        'state': 'State'
       },
-      line: {
-        connectNull: true
-      },
-      tooltip:{
-        show: false
-      },
-      axis: {
-        y: {
-          tick: {
-            format: d3.format(".3")
-          }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:false,
-        }
-      },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      size: {
-        height: 600
-      }
-    });
-    this.state_chart = c3.generate({
-      bindto: '#state-chart',
-      data: {
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['state']
-        },
-        names: {
-          'state': 'State'
-        },
-        types: {
-          state: 'step'
-        }
-      },
-      line: {
-        connectNull: true
-      },
-      axis: {
-        y: {
-          max: 5,
-          min: 0,
-          tick: {
-            format: function(d){
-              switch (d)
-              {
-                case 0:
-                  return "Startup";
-                case 1:
-                  return "LV";
-                case 2:
-                  return "Precharging";
-                case 3:
-                  return "HV Enabled";
-                case 4:
-                  return "Drive";
-                case 5:
-                  return "Fault";
-              }
+      {
+        max: 5,
+        min: 0,
+        tick: {
+          format: function (d) {
+            switch (d) {
+              case 0:
+                return "Startup";
+              case 1:
+                return "LV";
+              case 2:
+                return "Precharging";
+              case 3:
+                return "HV Enabled";
+              case 4:
+                return "Drive";
+              case 5:
+                return "Fault";
             }
           }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:false,
         }
-      },
-      tooltip:{
-        show: false
-      },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      size: {
-        height: 600
-      }
-    });
+      },false);
+
     $http({url: '/api/db/collections', method: 'GET', ignoreLoadingBar: true}).then(function(collections) { //collections is a sorted array of strings
       $scope.collections = collections.data;
       $scope.selected = collections.data[0];
@@ -456,49 +303,13 @@ export class DisplayComponent {
     $scope.$on('updateGraphs', function () {
       console.log("Creating graphs");
       $scope.graphRenderQueue.forEach(function (graph) {
-        if(!$scope.genericsGraphMap.has(graph.CAN_Id)) $scope.genericsGraphMap.set(graph.CAN_Id, c3.generate({
-          bindto: '#can' + graph.CAN_Id,
-          data: {
-            json: [],
-            xFormat: '%M.%S',
-            keys: {
-              x: 'Timestamp',
-              value: graph.flagArr || graph.descriptionArr
-            },
-            type: graph.type || 'line'
-          },
-          line: {
-            connectNull: graph.connectNull || false
-          },
-          axis: {
-            y: {
-              tick: {
-                format: d3.format(".3")
-              }
-            },
-            x: {
-              type: 'timeseries',
-              tick: {
-                format: '%M:%S'
-              },
-              culling:false,
+        if(!$scope.genericsGraphMap.has(graph.CAN_Id)) $scope.genericsGraphMap.set(graph.CAN_Id, generate('#can' + graph.CAN_Id,[],'Timestamp',
+          graph.flagArr ? graph.flagArr : graph.descriptionArr,'line'
+        ,{},{
+            tick: {
+              format: d3.format(".3")
             }
-          },
-          transition: {
-            duration: 0
-          },
-          subchart: {
-            show: true
-          },
-          size: {
-            height: 600
-          },
-          line:{
-            step:{
-              type:'step-after'
-            }
-          }
-        }));
+          },false));
         $scope.genericsGraphMap.get(graph.CAN_Id).flow({
           json: $scope.messages.get(graph.CAN_Id).array,
           keys: {
@@ -507,7 +318,7 @@ export class DisplayComponent {
           }
         })
       });
-      
+
       $scope.graphRenderQueue.length = 0;
     });
   }
