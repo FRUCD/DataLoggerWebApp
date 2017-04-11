@@ -55,17 +55,55 @@ class Chart{
         }
     }
 }
-module.exports.generate = function(config, smoothie){
+module.exports = function (bindTo, dataJson, xKey, xValue, type, names, yTick, smoothie){
     if(smoothie){
         let canvas = document.createElement("canvas");
         canvas.style.height = "600px";
         canvas.height = 600;
-        canvas.width = $(config.bindto).innerWidth();
+        canvas.width = $(dataJson.bindto).innerWidth();
         canvas.style.width = "100%";
-        $(config.bindto).append(canvas);
-        return new Chart(canvas, config);
+        $(dataJson.bindto).append(canvas);
+        return new Chart(canvas, dataJson);
     }
     else{
+        let config  = {
+          bindto: bindTo,
+          data: {
+            json: dataJson,
+            xFormat: '%M.%S',
+            keys: {
+              x: xKey,
+              value: xValue
+            },
+            names: names,
+            type: type
+          },
+          line: {
+            connectNull: true
+          },
+          axis: {
+            y: yTick,
+            x: {
+              type: 'timeseries',
+              tick: {
+                format: '%M:%S'
+              },
+              culling:true,
+            }
+          },
+          transition: {
+            duration: 0
+          },
+          subchart: {
+            show: true
+          },
+          size: {
+            height: 600
+          },
+          tooltip:{
+            show: false
+          }
+        };
         let chart = c3.generate(config);
         return new C3Chart(chart);
     }
