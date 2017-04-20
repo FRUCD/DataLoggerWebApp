@@ -149,7 +149,7 @@
         "id-blacklist": 0,                                          //blacklist certain identifiers to prevent them being used
         "id-length": 0,                                             //this option enforces minimum and maximum identifier lengths (variable names, property names etc.)
         "id-match": 0,                                              //require identifiers to match the provided regular expression
-        "indent": ["error", 2],                                     //specify tab or space width for your code
+        "indent": ["error", 4],                                     //specify tab or space width for your code
         "jsx-quotes": 0,                                            //specify whether double or single quotes should be used in JSX attributes
         "key-spacing": 2,                                           //enforce spacing between keys and values in object literal properties
         "keyword-spacing": [2, {
@@ -162,7 +162,7 @@
                 "catch": {"after": false}
             }
         }],                                                         //enforce spacing before and after keywords
-        "linebreak-style": 2,                                       //disallow mixed 'LF' and 'CRLF' as linebreaks
+        "linebreak-style": 0,                                       //disallow mixed 'LF' and 'CRLF' as linebreaks
         "lines-around-comment": 0,                                  //enforce empty lines around comments
         "max-depth": 1,                                             //specify the maximum depth that blocks can be nested
         "max-len": [1, 200],                                        //specify the maximum length of a line in your program
