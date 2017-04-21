@@ -9,4 +9,11 @@ router.get('/descriptors',descriptors.listDescriptor);
 router.get('/descriptors/:descriptor',descriptors.getDescriptor);
 router.put('/descriptors/:descriptor',descriptors.updateDescriptor);
 router.delete('/descriptors/:descriptor',descriptors.deleteMap);
-module.exports = router;
+router.delete('/collections/:collection',collections.deleteCollection);
+module.exports.router = router;
+module.exports.collections = collections;
+module.exports.bind = function(activeCallback){
+    activeCallback(function(collection){
+        collections.setActive(collection);
+    });    
+};

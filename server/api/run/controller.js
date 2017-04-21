@@ -6,6 +6,11 @@ class Controller{
         this.cache = new Map();
         this.hookParser(this.parser);
     }
+    getActive(cb){
+        this.db.ready(function(){
+            cb(this.db.collection);
+        }.bind(this));
+    }
     hookParser(parser){
         this.cache.clear();
         parser.on('data',function(data){

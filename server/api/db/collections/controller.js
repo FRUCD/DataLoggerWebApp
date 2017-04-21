@@ -1,5 +1,6 @@
 var MongoClient = require('mongodb').MongoClient;
 var database;
+var activeCollection;
 function sort(collections){
   collections.sort(function(a,b){
     return -a.localeCompare(b);
@@ -92,6 +93,23 @@ export function download(req,res){
       console.log("Download of data complete");
     });
   }
+}
+export function setActive(collection){
+  activeCollection = collection;
+}
+export function deleteCollection(req,res){
+  var name = req.params.collection;
+  var collection = database.collection(name);
+  if(!collection){
+    res.sendStatus(404);
+    return;
+  }
+  if(collection.collectionName == activeCollection.collectionName){
+    res.status(401).send("can't delete active collection");
+    return;
+  }
+  collection.drop();
+  res.sendStatus(200);
 }
 export function printData(req,res){
   var start, end;
