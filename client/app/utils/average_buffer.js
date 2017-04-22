@@ -26,13 +26,13 @@ export class AverageBuffer {
       this.keys.forEach(function (key) {
         if (self.buffer[0][key] instanceof Array) {
           var sums = [];
-          for (var i = 0; i < self.buffer[i][key].length; i++) {
+          for (let i = 0; i < self.buffer[0][key].length; i++) {
             sums.push(0);
             self.buffer.forEach(function (value) {
               if (value[key]) sums[i] += value[key][i];
             });
           }
-          for (var i = 0; i < sums.length; i++) {
+          for (let i = 0; i < sums.length; i++) {
             sums[i] = sums[i] / self.buffer.length;
           }
           out[key] = sums;
