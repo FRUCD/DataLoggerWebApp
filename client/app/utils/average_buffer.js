@@ -15,7 +15,7 @@ export class AverageBuffer {
 
   }
   aggregate(){
-    if(this.buffer.length > 0){
+    if(this.buffer.length > 0) {
       var out = new Object();
     /*let seconds = Math.floor(point.Timestamp / (1000) % 60);
             let minutes = Math.floor(point.Timestamp / (1000 * 60) % 60);

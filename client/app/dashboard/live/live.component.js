@@ -131,7 +131,7 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.throttle || newData.throttle == 0) object.throttle = newData.throttle / 0x7FFF;
-    if (newData.brake || newData.brake == 0) object.brake = newData.brake / 0x7FFF;
+    if (newData.brake || newData.brake == 0) object.brake = (newData.brake - 0x190) / (0x3FF - 0x190);
     if (tb_count < 10 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0

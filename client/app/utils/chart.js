@@ -2,15 +2,18 @@ import c3 from 'c3'
 import smoothie from 'smoothie'
 import $ from 'jquery'
 class C3Chart{
-    constructor(chart){
+    constructor(chart) {
         this._chart = chart;
     }
-    flow(object){
-        if(object.json instanceof Array)
-        for(let data of object.json){
-            data.Timestamp = timeFormatter(data.Timestamp);
+    flow(object) {
+        if(object.json instanceof Array) {
+            for(let data of object.json){
+                data.Timestamp = timeFormatter(data.Timestamp);
+            }
         }
-        else object.json.Timestamp = timeFormatter(object.json.Timestamp);
+        else {
+            object.json.Timestamp = timeFormatter(object.json.Timestamp);
+        }
         this._chart.flow(object);
     }
     load(object){
@@ -75,8 +78,8 @@ module.exports = function (bindTo, dataJson, xKey, xValue, type, names, yTick, s
               x: xKey,
               value: xValue
             },
-            names: names,
-            type: type
+            names: names || null,
+            type: type || 'line'
           },
           line: {
             connectNull: true

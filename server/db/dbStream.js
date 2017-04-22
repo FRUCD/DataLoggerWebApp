@@ -1,6 +1,7 @@
 const Writable = require('stream').Writable;
 var mongo = require("mongodb").MongoClient;
 var EventEmitter = require('events');
+var logger = require('../console/log.js');
 class dbStream extends Writable {
     constructor(options) {
         super(options);
@@ -14,10 +15,10 @@ class dbStream extends Writable {
             self.collection = db.collection(d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
             self.collection.createIndex("Timestamp");
             self.collection.createIndex("CAN_Id");
-            console.log(self.collection.collectionName);
+            logger.log(self.collection.collectionName);
             if(self.buffer.length>0){
                 self.collection.insertMany(self.buffer);
-                console.log("write many");
+                logger.log("write many");
             }
             self.emitter.emit("ready");
             delete self.buffer;

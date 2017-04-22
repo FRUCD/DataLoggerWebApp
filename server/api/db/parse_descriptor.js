@@ -6,6 +6,8 @@ var local = path.resolve(__dirname);
 var fs = require('fs');
 var assert = require('assert');
 var mongoose = Mongoose.createConnection("mongodb://localhost/data");
+var logger = require('../../console/log.js');
+
 var canDescription  = new Mongoose.Schema({
     CAN_Id: {
         type:Number,
@@ -36,7 +38,7 @@ var model = mongoose.model('Descriptor',canDescription);
 function load(){
     fs.readFile(`${local}/defaults.conf`,function(err,data){
         var defaults = JSON.parse(data);
-        console.log(defaults);
+        logger.log(defaults);
         Object.keys(defaults).forEach(function(key,index,array){
             model.count({"CAN_Id":defaults[key].CAN_Id},function(err,countr){
                 if(countr==0){

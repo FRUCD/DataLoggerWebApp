@@ -1,5 +1,7 @@
 var model = require('../parse_descriptor.js').model;
 var Validator = require('../validator.js');
+var logger = require('../../../console/log.js');
+
 export function listDescriptor(req,res){
     model.find({},{_id:0,CAN_Id:1, PDO_Description:1},function(err,result){
         if(err) {
@@ -7,7 +9,7 @@ export function listDescriptor(req,res){
             res.sendStatus(401);
             return;
         }
-        console.log(result);
+        logger.log(result);
         res.send(result);
     });
 }
@@ -45,11 +47,11 @@ export function updateDescriptor(req,res){
                     });
                     if(request.map[i].dataType!="array") unset[`map.${i}.array`]="";
                 }
-                console.log("set");
-                console.log(set);
+                logger.log("set");
+                logger.log(set);
                 var add = request.map.slice(count,request.map.length);
-                console.log("add");
-                console.log(add);
+                logger.log("add");
+                logger.log(add);
                 model.findOneAndUpdate({CAN_Id:req.params.descriptor},{$set:set,$unset:unset},{upsert:false, new:true},function(err,doc){
                     if(err) {
                         console.error(err);
@@ -70,7 +72,7 @@ export function updateDescriptor(req,res){
             else{
                 model.create(request,function(err,docs){
                     if(err){
-                        console.log("error creating documents");
+                        logger.log("error creating documents");
                         console.error(err);
                         return;
                     }
@@ -84,22 +86,22 @@ export function updateDescriptor(req,res){
         .done();
     }
     catch(e){
-        console.log(e);
+        logger.log(e);
         res.status(402).send("invalid formatting");
     }
 }
 export function deleteMap(req,res){
     if(req.query.offset&&req.query.length&&req.query.description&&req.query.dataType){
-        console.log(req.query);
+        logger.log(req.query);
         var element = {offset:parseInt(req.query.offset),
             description:req.query.description,
             length:parseInt(req.query.length),
             dataType:req.query.dataType,
             key:{$exists:false}
         };
-        console.log(element);
+        logger.log(element);
         model.find({CAN_Id:req.params.descriptor,map:{$elemMatch:element}}).select({map:1,_id:0}).exec().then(function(doc){
-            //console.log("we're here");
+            //logger.log("we're here");
             if(doc && doc.length > 0){
                 delete element.key;
                 model.findOneAndUpdate({CAN_Id:req.params.descriptor},{$pull:{map:element}},{multi:false,upsert:false},function(err,doc){
@@ -122,11 +124,11 @@ export function deleteMap(req,res){
     }
     else{
         model.find({CAN_Id:req.params.descriptor,"map.key":{$exists:true}}).exec().then(function(doc){
-            console.log(doc);
+            logger.log(doc);
             if(!doc || (doc instanceof Array && doc.length==0)){
                 model.remove({CAN_Id:req.params.descriptor},function(err){
                     if(err){
-                        console.log(err);
+                        logger.log(err);
                         res.status(501).send("invalid delete procedure");
                         return;
                     }

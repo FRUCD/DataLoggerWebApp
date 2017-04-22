@@ -1,5 +1,7 @@
 const SerialPort = require("serialport");
 const Readable = require('stream').Readable;
+var logger = require('../console/log.js');
+
 class serialStream extends Readable
 {
     constructor(options)
@@ -12,7 +14,7 @@ class serialStream extends Readable
         if(this.arduinoPort && this.arduinoPort.resume)this.arduinoPort.resume();
     }
     connect(){
-        console.log("connect called");
+        logger.log("connect called");
         var self = this;
         this.findArduino(function(err,port){
             if(err) console.error(err);
@@ -23,7 +25,7 @@ class serialStream extends Readable
                 if(!self.arduinoPort){ 
                     //console.log("reconnecting to Arduino Serial"); 
                     self.findArduino(function(err,port){
-                        if(err) console.err(err); 
+                        if(err) console.error(err); 
                         if(port)self.setPort(port); 
                     }); 
                 }  
@@ -42,13 +44,10 @@ class serialStream extends Readable
         SerialPort.list(function (err, ports) {
             if(err){
                 console.error(err);
-                console.log("error in listing ports");
+                logger.log("error in listing ports");
                 callback(err,null);
             }
             ports.forEach(function (port) {
-                console.log(port.comName);
-                console.log(port.pnpId);
-                console.log(port.manufacturer);
                 if (port.manufacturer&&port.manufacturer.includes("Arduino"))
                 {
                     callback(null,port);
@@ -60,21 +59,24 @@ class serialStream extends Readable
         var self = this;
         if(!(this.arduinoPort&&this.arduinoPort.path==found.comName)){
             try{
+                logger.log(found.comName);
+                logger.log(found.pnpId);
+                logger.log(found.manufacturer);
                 var port = new SerialPort(found.comName, {
-                    parser: SerialPort.parsers.byteDelimiter([0xFF,10])
+                    parser: SerialPort.parsers.byteDelimiter([0xFF, 10])
                 });
                 port.on('data',this._data.bind(self));
                 port.on("close",this._closePort.bind(self));
                 this.arduinoPort = port;
             }
             catch(e){
-                console.log("error attaching to port");
+                logger.log("error attaching to port");
                 console.error(e);
             }
         }
     }
     _closePort(){
-        console.log("closing");
+        logger.log("closing");
         this.arduinoPort = undefined;
     }
     _data(data){

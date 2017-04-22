@@ -1,6 +1,8 @@
 var MongoClient = require('mongodb').MongoClient;
 var database;
 var activeCollection;
+var logger = require('../../../console/log.js');
+
 function sort(collections){
   collections.sort(function(a,b){
     return -a.localeCompare(b);
@@ -41,7 +43,7 @@ export function list(req,res){
       collections.push(value.name);
     });
     sort(collections);
-    console.log(`Found ${collections.length} collections`);
+    logger.log(`Found ${collections.length} collections`);
     res.status(200).send(collections);
   });
 }
@@ -90,7 +92,7 @@ export function download(req,res){
         return;
       }
       res.status(200).send();
-      console.log("Download of data complete");
+      logger.log("Download of data complete");
     });
   }
 }
@@ -123,7 +125,7 @@ export function printData(req,res){
       console.error(err);
       res.status(404);
     }
-    console.log("Sent "+elements.length+" elements from db");
+    logger.log("Sent "+elements.length+" elements from db");
     res.status(200).send(elements);
   });
   else{

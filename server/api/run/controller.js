@@ -37,6 +37,7 @@ class Controller{
         this.parser.pause();
         this.parser.specification = [];
         this.db.save();
+        this.cache.clear();
         res.status(200).send("Stopped");
     }
     current(req,res){

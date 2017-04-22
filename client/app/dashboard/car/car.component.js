@@ -1,49 +1,24 @@
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './car.routes';
-
-import chart from '../../utils/chart.js';
+import AverageBuffer from '../../utils/average_buffer';
+import DeltaBuffer from '../../utils/delta_buffer';
+import generate from '../../utils/chart.js';
 
 var carChart;
 var count = 0;
-class Buffer{
-  constructor(ms,key,callback){
-    this.ms = ms;
-    this.buffer = [];
-    this.callback = callback;
-    this.key = key;
-  }
-  push(point){
-    var self = this;
-    if(point instanceof Object){
-      if(!this.start) this.start = point.Timestamp;
-      if(point.Timestamp - this.start < this.ms){
-        this.buffer.push(point);
-      }
-      else{
-        var out = new Object();
-        out.Timestamp = this.start;
-        out.CAN_Id = this.buffer[0].CAN_Id;
-        var sum=0;
-        this.buffer.forEach(function(value){
-          sum+=value[self.key];
-        });
-        sum = sum/this.buffer.length;
-        out[this.key] = sum;
-        this.start = undefined;
-        this.buffer = [];
-        this.callback(out);
-      }
-    }
-  }
-}
 var initialPointRemoved = false;
+
+var state_chart;
+var state_count = 0;
+var state_initialPointRemoved = false;
+
 function plotNew(newData) {
   if(newData.CAN_Id==512||newData.CAN_Id==513){
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if(newData.throttle || newData.throttle == 0)object.throttle = newData.throttle/0x7FFF;
-    if(newData.brake || newData.brake == 0)object.brake = newData.brake/0x7FFF;
+    if(newData.brake || newData.brake == 0)object.brake = (newData.brake - 0x190) / (0x3FF - 0x190);
     if(count<100&&initialPointRemoved)carChart.flow({
       json: object,
       length:0
@@ -57,6 +32,24 @@ function plotNew(newData) {
     }
     count++;
   }
+  else if(newData.CAN_Id==1574){
+    console.log("data");
+    var object = new Object();
+    object.Timestamp = newData.Timestamp;
+    if (newData.state) object.state = newData.state;
+
+    if (state_count < 100 && state_initialPointRemoved) state_chart.flow({
+      json: object,
+      length: 0
+    });
+    else {
+      state_chart.flow({
+        json: object
+      });
+      state_initialPointRemoved = true;
+    }
+    state_count++;
+  }
 }
 
 export class CarController {
@@ -65,43 +58,49 @@ export class CarController {
     count = 0;
     initialPointRemoved = false;
     this.socket = socket;
-    this.throttleBuffer = new Buffer(1000,'throttle',plotNew);
-    this.brakeBuffer = new Buffer(1000,'brake',plotNew);
-    carChart = chart.generate({
-      bindto: '#car-chart',
-      data: {
-        json: [
-          {Timestamp: 0, throttle: 0},
-          {Timestamp: 0, brake: 0}
-        ],
-        keys: {
-          x: 'Timestamp',
-          value: ['throttle', 'brake']
-        },
-        names: {
-          'throttle': 'Throttle',
-          'brake': 'Brake'
-        }
+    this.throttleBuffer = new AverageBuffer(1000,['throttle'],plotNew);
+    this.brakeBuffer = new AverageBuffer(1000,['brake'],plotNew);
+    this.carStateBuffer = new DeltaBuffer(['state'],plotNew);
+    //this.carStateBuffer.begin();
+
+    carChart = generate('#car-chart',[],'Timestamp',['throttle', 'brake'],'line',
+      {
+        'throttle': 'Throttle',
+        'brake': 'Brake'
       },
-      axis: {
-        y: {
-          tick: {
-            format: d3.format("%")
+      {
+        tick: {
+          format: d3.format("%")
+        }
+      },false);
+
+    state_chart = generate('#state-chart',[],'Timestamp',['state'],'step',
+      {
+        'state': 'State'
+      },
+      {
+        max: 5,
+        min: 0,
+        tick: {
+          format: function (d) {
+            switch (d) {
+              case 0:
+                return "Startup";
+              case 1:
+                return "LV";
+              case 2:
+                return "Precharging";
+              case 3:
+                return "HV Enabled";
+              case 4:
+                return "Drive";
+              case 5:
+                return "Fault";
+            }
           }
         }
-      },
-      tooltip: {
-        format: {
-          title: function (d) {
-            return 'Time ' + d;
-          },
-          value: d3.format('%')
-        }
-      },
-      subchart: {
-        show: true
-      }
-    }, REPLACE, PEPLACE, REPLACE, REPLACE, REPLACE);
+      },false);
+
     $scope.$on('$destroy', function() {
       socket.unsyncUpdates('car');
     });
@@ -112,6 +111,7 @@ export class CarController {
       if(data){
         if(data.CAN_Id==512) this.throttleBuffer.push(data);
         else if(data.CAN_Id==513) this.brakeBuffer.push(data);
+        else if(data.CAN_Id==1574) this.carStateBuffer.push(data);
       }
     }.bind(this));
   }

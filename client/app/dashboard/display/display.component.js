@@ -203,7 +203,7 @@ export class DisplayComponent {
           case 513:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            object.brake = message.brake / 0x7FFF * 100;
+            object.brake = (message.brake - 0x190) / (0x3FF - 0x190) * 100;
 
             if(!$scope.buffers.has("brake")) $scope.buffers.set("brake",new AverageBuffer(1000, ['brake'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,{buffer_Id:"brake",array:[]});
