@@ -14,7 +14,7 @@ class serialStream extends Readable
         if(this.arduinoPort && this.arduinoPort.resume)this.arduinoPort.resume();
     }
     connect(){
-        logger.log("connect called");
+        console.log("connect called");
         var self = this;
         this.findArduino(function(err,port){
             if(err) console.error(err);
@@ -44,7 +44,7 @@ class serialStream extends Readable
         SerialPort.list(function (err, ports) {
             if(err){
                 console.error(err);
-                logger.log("error in listing ports");
+                console.log("error in listing ports");
                 callback(err,null);
             }
             ports.forEach(function (port) {
@@ -59,9 +59,9 @@ class serialStream extends Readable
         var self = this;
         if(!(this.arduinoPort&&this.arduinoPort.path==found.comName)){
             try{
-                logger.log(found.comName);
-                logger.log(found.pnpId);
-                logger.log(found.manufacturer);
+                console.log(found.comName);
+                console.log(found.pnpId);
+                console.log(found.manufacturer);
                 var port = new SerialPort(found.comName, {
                     parser: SerialPort.parsers.byteDelimiter([0xFF, 10])
                 });
@@ -70,13 +70,13 @@ class serialStream extends Readable
                 this.arduinoPort = port;
             }
             catch(e){
-                logger.log("error attaching to port");
+                console.log("error attaching to port");
                 console.error(e);
             }
         }
     }
     _closePort(){
-        logger.log("closing");
+        console.log("closing");
         this.arduinoPort = undefined;
     }
     _data(data){

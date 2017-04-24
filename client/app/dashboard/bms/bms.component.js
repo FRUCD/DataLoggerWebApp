@@ -47,6 +47,7 @@ export class BMSController {
         object.Timestamp = newData.Timestamp;
         if (newData.temp_array) {
           for (var i = 0; i < newData.temp_array.length; i++)
+            newData.temp_array[i] = parseInt(newData.temp_array[i].toString(16), 8);
             object["temp" + i] = newData.temp_array[i];
         }
         if (this.temp_count < 100 && this.temp_initialPointRemoved) this.temp_chart.flow({

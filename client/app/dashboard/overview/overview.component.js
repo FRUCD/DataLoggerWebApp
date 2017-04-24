@@ -19,6 +19,7 @@ function updateThrottleBrake(throttle, brake) {
 function updateTemperatures($scope, temp) {
   var arrayLength = temp.temp_array.length;
   for (var i = 0; i < arrayLength; i++) {
+    temp.temp_array[i] = parseInt(temp.temp_array[i].toString(16), 8);
     angular.element(document.querySelector('#t'+ i)).html(temp.temp_array[i] + "&degC");
     if(temp.temp_array[i]>150) temp.temp_array[i] = 150;
     document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - temp.temp_array[i] / 150 * 120) + ", 75%, 50%)"

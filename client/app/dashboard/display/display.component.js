@@ -5,8 +5,6 @@ const uiRouter = require('angular-ui-router');
 
 const fileUpload = require('ng-file-upload');
 
-import c3 from 'c3';
-
 import routes from './display.routes';
 import AverageBuffer from '../../utils/average_buffer.js';
 import DeltaBuffer from '../../utils/delta_buffer.js';
@@ -97,7 +95,7 @@ export class DisplayComponent {
       },
       {
         min: 0,
-        max: 100,
+        max: 1,
         tick: {
           format: d3.format("%")
         }
@@ -115,10 +113,9 @@ export class DisplayComponent {
       },
       {
         tick: {
-          format: d3.format(".2")
+          format: d3.format(".3f")
         }
       },false);
-
 
     this.batt_chart = generate('#battery-chart',[],'Timestamp',['min_voltage', 'max_voltage', 'pack_voltage'],'line',
       {
@@ -128,7 +125,7 @@ export class DisplayComponent {
       },
       {
         tick: {
-          format: d3.format(".2")
+          format: function(d){return d/1000 + "V"}
         }
       },false);
 
@@ -183,17 +180,18 @@ export class DisplayComponent {
             var object = new Object();
             object.Timestamp = message.Timestamp;
             object.state = message.state;
-            if(!$scope.messages.has(message.CAN_Id))$scope.messages.set(message.CAN_Id,{buffer_Id:message.CAN_Id, array:[]});
-            let array = $scope.messages.get(message.CAN_Id).array;
-            if(array.length>1 && array[array.length-1].state==object.state) array.pop();
-            array.push(object);
+            if(!$scope.buffers.has(message.CAN_Id)) $scope.buffers.set(message.CAN_Id, new DeltaBuffer(['state'], function(data){
+              if(!$scope.messages.has(message.CAN_Id)) $scope.messages.set(message.CAN_Id,{buffer_Id:message.CAN_Id, array:[]});
+              $scope.messages.get(message.CAN_Id).array.push(data);
+            }));
+            $scope.buffers.get(message.CAN_Id).push(object);
             //let array =$scope.messages.get(message.CAN_Id);
             //if(array.length>0 && array[array.length-1]!=object.state) array.push(object);
             break;
           case 512:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            object.throttle = message.throttle / 0x7FFF * 100;
+            object.throttle = message.throttle / 0x7FFF;
             if(!$scope.buffers.has("throttle")) $scope.buffers.set("throttle",new AverageBuffer(1000, ['throttle'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,{buffer_Id:"throttle",array:[]});
              $scope.messages.get(this).array.push(object);
@@ -203,7 +201,7 @@ export class DisplayComponent {
           case 513:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            object.brake = (message.brake - 0x190) / (0x3FF - 0x190) * 100;
+            object.brake = (message.brake - 0x190) / (0x3FF - 0x190);
 
             if(!$scope.buffers.has("brake")) $scope.buffers.set("brake",new AverageBuffer(1000, ['brake'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,{buffer_Id:"brake",array:[]});
@@ -219,20 +217,22 @@ export class DisplayComponent {
             if (message.pack_voltage != undefined) object.pack_voltage = message.pack_voltage;
             if(!$scope.buffers.has(message.CAN_Id)) $scope.buffers.set(message.CAN_Id,new AverageBuffer(1000, ['min_voltage','max_voltage','pack_voltage'], function(object){
               if(!$scope.messages.has(this))$scope.messages.set(this,{buffer_Id:message.CAN_Id,array:[]});
-             $scope.messages.get(this).array.push(object);
+              $scope.messages.get(this).array.push(object);
             }.bind(message.CAN_Id)));
             $scope.buffers.get(message.CAN_Id).push(object);
             break;
           case 1160:
             var object = new Object();
             object.Timestamp = message.Timestamp;
-            if(!$scope.buffers.has(message.CAN_Id)) $scope.buffers.set(message.CAN_Id,new AverageBuffer(1000, ['temp_array'], function(object){
+            object.temp_array = message.temp_array;
+            if(!$scope.buffers.has(message.CAN_Id)) $scope.buffers.set(message.CAN_Id,new AverageBuffer(1000, ['temp_array'], function(buffer){
+              let point = new Object();
+              point.Timestamp = buffer.Timestamp;
               if(!$scope.messages.has(this))$scope.messages.set(this,{buffer_Id:message.CAN_Id,array:[]});
-              if (message.temp_array) {
-              for (var i = 0; i < message.temp_array.length; i++)
-                object["temp" + i] = message.temp_array[i];
+              for (var i = 0; i < message.temp_array.length; i++) {
+                point['temp'+i] = parseInt(message.temp_array[i].toString(16), 8);
               }
-             $scope.messages.get(this).array.push(object);
+              $scope.messages.get(this).array.push(point);
             }.bind(message.CAN_Id)));
             $scope.buffers.get(message.CAN_Id).push(object);
             break;
@@ -251,7 +251,8 @@ export class DisplayComponent {
         if(buffer instanceof DeltaBuffer){
           let value = buffer.aggregate();
           if(value) value.forEach(function(value){
-            $scope.messages.get(value.CAN_Id).array.push(value);
+            console.log(value);
+            $scope.messages.get(CAN_Id).array.push(value);
           });
         }
         else if(buffer instanceof AverageBuffer){
@@ -277,7 +278,7 @@ export class DisplayComponent {
         x:'Timestamp',
         value:['min_voltage','max_voltage','pack_voltage']
       }
-      });
+    });
       self.temp_chart.load({json:$scope.messages.get(1160).array,keys:{
         x:'Timestamp',
         value:['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5']

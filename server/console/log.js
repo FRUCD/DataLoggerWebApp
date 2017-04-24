@@ -46,9 +46,9 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 left.focus();
 
 // Render the screen.
-screen.render();
+//screen.render();
 module.exports.log = function(input) {
     if(!(input instanceof String)) input = util.inspect(input);
     left.insertLine(1, input);
-    screen.render();
+    //screen.render();
 };

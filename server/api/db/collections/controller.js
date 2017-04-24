@@ -43,7 +43,7 @@ export function list(req,res){
       collections.push(value.name);
     });
     sort(collections);
-    logger.log(`Found ${collections.length} collections`);
+    console.log(`Found ${collections.length} collections`);
     res.status(200).send(collections);
   });
 }
@@ -92,7 +92,7 @@ export function download(req,res){
         return;
       }
       res.status(200).send();
-      logger.log("Download of data complete");
+      console.log("Download of data complete");
     });
   }
 }
@@ -125,7 +125,7 @@ export function printData(req,res){
       console.error(err);
       res.status(404);
     }
-    logger.log("Sent "+elements.length+" elements from db");
+    console.log("Sent "+elements.length+" elements from db");
     res.status(200).send(elements);
   });
   else{

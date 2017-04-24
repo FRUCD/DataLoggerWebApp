@@ -91,7 +91,7 @@ module.exports = function (bindTo, dataJson, xKey, xValue, type, names, yTick, s
               tick: {
                 format: '%M:%S'
               },
-              culling:true,
+              culling:false,
             }
           },
           transition: {
@@ -104,7 +104,7 @@ module.exports = function (bindTo, dataJson, xKey, xValue, type, names, yTick, s
             height: 600
           },
           tooltip:{
-            show: false
+            show: true
           }
         };
         let chart = c3.generate(config);

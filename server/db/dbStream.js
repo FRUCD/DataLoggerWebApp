@@ -15,10 +15,10 @@ class dbStream extends Writable {
             self.collection = db.collection(d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
             self.collection.createIndex("Timestamp");
             self.collection.createIndex("CAN_Id");
-            logger.log(self.collection.collectionName);
+            console.log(self.collection.collectionName);
             if(self.buffer.length>0){
                 self.collection.insertMany(self.buffer);
-                logger.log("write many");
+                console.log("write many");
             }
             self.emitter.emit("ready");
             delete self.buffer;

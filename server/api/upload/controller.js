@@ -29,8 +29,8 @@ module.exports = function index(req,res){
     })
     .on('done',(error)=>{
         if(error) console.error(error);
-        logger.log("done reading csv");
-        logger.log(`Processed ${array.length} from csv`);
+        console.log("done reading csv");
+        console.log(`Processed ${array.length} from csv`);
         res.send(array);
     })
 }
