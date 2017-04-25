@@ -8,6 +8,7 @@ class dbStream extends Writable {
         this.buffer = [];
         this.emitter = new EventEmitter();
         var self = this;
+        this.empty = true;
         mongo.connect('mongodb://localhost/data',function(err,db){
             if(err)console.error.bind(console,"connection error");
             var d = new Date();
@@ -40,6 +41,7 @@ class dbStream extends Writable {
         if(this.collection){
             //console.log("writing");
             this.collection.insert(JSON.parse(chunk));
+            this.empty = false;
         }
         else if(!this.collection){
             this.buffer.push(JSON.parse(chunk));
@@ -50,13 +52,11 @@ class dbStream extends Writable {
         this.emitter.on("ready",callback);
     }
     save(){
-        this.collection.find().toArray(function(err,docs){
-            if(err) console.error(err);
-            if(!docs || docs.length < 1) this.collection.drop(function(err, reply){
+        if(this.empty) {
+            this.collection.drop(function(err){
                 if(err) console.error(err);
-                console.log(reply);
             });
-        }.bind(this));
+        }
     }
 }
 module.exports = dbStream;
