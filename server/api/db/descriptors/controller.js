@@ -1,5 +1,7 @@
 var model = require('../parse_descriptor.js').model;
 var Validator = require('../validator.js');
+var logger = require('../../../console/log.js');
+
 export function listDescriptor(req,res){
     model.find({},{_id:0,CAN_Id:1, PDO_Description:1},function(err,result){
         if(err) {

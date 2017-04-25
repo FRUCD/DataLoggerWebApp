@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 mongoose.Promise = require('bluebird');
 import config from './config/environment';
 import http from 'http';
+import logger from './console/log';
 
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
@@ -32,38 +33,38 @@ var arduinoListener;
 var parser = new Parser();
 var database = new dbStream();
 parser.on('data',function(data){
-  data = JSON.parse(data);
-    switch(data.CAN_Id){
-      case 1574:
-      case 512:
-      case 513:
-        socketio.emit("car",data);
+    data = JSON.parse(data);
+    switch (data.CAN_Id) {
+    case 1574:
+    case 512:
+    case 513:
+        socketio.emit("car", data);
         break;
-      case 1160:
-        socketio.emit("temp",data);
+    case 1160:
+        socketio.emit("temp", data);
         break;
-      case 392:
-      case 904:
-        socketio.emit("bms",data);
+    case 392:
+    case 904:
+        socketio.emit("bms", data);
         break;
-      default:
-        socketio.emit("data",data);
+    default:
+        socketio.emit("data", data);
     }
 });
 require('./config/socketio').default(socketio);
 require('./config/express').default(app);
-require('./routes').default(app,parser,database);
+require('./routes').default(app, parser, database);
 // Start server
 function startServer() {
-  app.angularFullstack = server.listen(config.port, config.ip, function() {
-    console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
-  });
+    app.angularFullstack = server.listen(config.port, config.ip, function() {
+        console.log(`Express server listening on ${config.port}, in ${app.get('env')} mode`);
+    });
 }
 
 setImmediate(startServer);
-setImmediate(function(){
-  arduinoListener = new Serial();
-  arduinoListener.pipe(parser).pipe(database);
+setImmediate(function() {
+    arduinoListener = new Serial();
+    arduinoListener.pipe(parser).pipe(database);
 });
 // Expose app
 exports = module.exports = app;

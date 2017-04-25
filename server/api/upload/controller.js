@@ -1,6 +1,7 @@
 var fs = require('fs');
 var csv = require('csvtojson');
 var Parser = require('../../serial/dynamicParser.js');
+var logger = require('../../console/log.js');
 module.exports = function index(req,res){
     let file = req.file;
     let parser = new Parser();
@@ -12,7 +13,7 @@ module.exports = function index(req,res){
     let headerSet = false;
     csv({workerNum:4})
     .fromStream(stream)
-    .on('csv',(csvRow)=>{
+    .on('csv', (csvRow)=>{
         csvRow = csvRow.slice(0,10);
         if(!headerSet){
             res.status(200);

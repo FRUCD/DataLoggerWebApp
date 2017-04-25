@@ -1,5 +1,7 @@
 const SerialPort = require("serialport");
 const Readable = require('stream').Readable;
+var logger = require('../console/log.js');
+
 class serialStream extends Readable
 {
     constructor(options)
@@ -23,7 +25,7 @@ class serialStream extends Readable
                 if(!self.arduinoPort){ 
                     //console.log("reconnecting to Arduino Serial"); 
                     self.findArduino(function(err,port){
-                        if(err) console.err(err); 
+                        if(err) console.error(err); 
                         if(port)self.setPort(port); 
                     }); 
                 }  
@@ -46,9 +48,6 @@ class serialStream extends Readable
                 callback(err,null);
             }
             ports.forEach(function (port) {
-                console.log(port.comName);
-                console.log(port.pnpId);
-                console.log(port.manufacturer);
                 if (port.manufacturer&&port.manufacturer.includes("Arduino"))
                 {
                     callback(null,port);
@@ -60,8 +59,11 @@ class serialStream extends Readable
         var self = this;
         if(!(this.arduinoPort&&this.arduinoPort.path==found.comName)){
             try{
+                console.log(found.comName);
+                console.log(found.pnpId);
+                console.log(found.manufacturer);
                 var port = new SerialPort(found.comName, {
-                    parser: SerialPort.parsers.byteDelimiter([0xFF,10])
+                    parser: SerialPort.parsers.byteDelimiter([0xFF, 10])
                 });
                 port.on('data',this._data.bind(self));
                 port.on("close",this._closePort.bind(self));

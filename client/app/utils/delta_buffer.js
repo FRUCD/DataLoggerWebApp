@@ -38,7 +38,7 @@ export class DeltaBuffer {
       if (point[this.keys[i]] instanceof Array)//handle flags
       {
         var diffData = false;
-        for (var j = 0; j < point[this.keys[i]].length; j++) {
+        for (var j = 0; j < point[this.keys[i]].length && !diffData; j++) {
           let currFlag = point[this.keys[i]][j];
           if (currFlag != this.lastPoints[i].point[j]) {
             diffData = true;
@@ -46,6 +46,7 @@ export class DeltaBuffer {
           }
         }
         if (diffData) {
+          this.publishLast();
           let out = new Object();
           /*let seconds = Math.floor(point.Timestamp / (1000) % 60);
           let minutes = Math.floor(point.Timestamp / (1000 * 60) % 60);
@@ -59,21 +60,21 @@ export class DeltaBuffer {
         }
       }
       else {
-        if (this.lastPoints[i].point != point[this.keys[i]]) {
+          if(this.lastPoints[i].point != point[this.keys[i]]) {
+            this.publishLast();
           //console.log("new point: " + point.CAN_Id);
-          let out = new Object();
-          /*let seconds = Math.floor(point.Timestamp / (1000) % 60);
-          let minutes = Math.floor(point.Timestamp / (1000 * 60) % 60);
-          out.Timestamp = `${minutes}.${seconds}`;*/
-          out.Timestamp = point.Timestamp;
-          out[this.keys[i]] = point[this.keys[i]];
-          out.CAN_Id = point.CAN_Id;
-          this.callback(out);
-        }
+            let out = new Object();
+            /*let seconds = Math.floor(point.Timestamp / (1000) % 60);
+            let minutes = Math.floor(point.Timestamp / (1000 * 60) % 60);
+            out.Timestamp = `${minutes}.${seconds}`;*/
+            out.Timestamp = point.Timestamp;
+            out[this.keys[i]] = point[this.keys[i]];
+            out.CAN_Id = point.CAN_Id;
+            this.callback(out);
+          }
       }
       this.lastPoints[i] = {time: point.Timestamp, CAN_Id: point.CAN_Id, point: point[this.keys[i]]};
     }
-
   }
   aggregate(){
     var array = [];

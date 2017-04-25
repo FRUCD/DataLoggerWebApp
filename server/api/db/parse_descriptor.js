@@ -6,6 +6,8 @@ var local = path.resolve(__dirname);
 var fs = require('fs');
 var assert = require('assert');
 var mongoose = Mongoose.createConnection("mongodb://localhost/data");
+var logger = require('../../console/log.js');
+
 var canDescription  = new Mongoose.Schema({
     CAN_Id: {
         type:Number,

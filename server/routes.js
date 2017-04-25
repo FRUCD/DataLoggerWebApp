@@ -7,11 +7,15 @@
 import errors from './components/errors';
 import path from 'path';
 var Run = require('./api/run/routes.js');
+var logger = require('./console/log.js');
 export default function(app,parser,db) {
   // Insert routes below
-  app.use('/api/db',require('./api/db/routes.js'));
   var run = new Run(db,parser);
   app.use('/api/run',run.router);
+  var dbRoutes = require('./api/db/routes.js');
+  logger.log(run.callback);
+  dbRoutes.bind(run.callback);
+  app.use('/api/db',dbRoutes.router);
   app.use('/api/upload',require('./api/upload/routes.js'));
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|bower_components|assets)/*')

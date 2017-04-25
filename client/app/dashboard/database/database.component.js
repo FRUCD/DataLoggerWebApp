@@ -81,6 +81,17 @@ export class DatabaseController {
     $scope.download = function(type) {
       $http({url: `/api/db/collections/${$scope.selected}/download/${type}`, method: 'GET'});
     };
+    $scope.delete = function(){
+      $http({url: `/api/db/collections/${$scope.selected}`, method: 'DELETE'}).then(function(res){
+        $http({url: '/api/db/collections', method: 'GET'}).then(function(collections) { //collections is a sorted array of strings
+        $scope.collections = collections.data;
+        $scope.selected = collections.data[0];
+      });
+      },function(err){
+          console.log(err);
+          alert(err.data);
+        });
+    }
   }
 
   $onInit() {

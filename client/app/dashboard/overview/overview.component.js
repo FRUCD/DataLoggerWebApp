@@ -11,23 +11,26 @@ function updateThrottleBrake(throttle, brake) {
   }
   if(brake || brake == 0)
   {
-    angular.element(document.querySelector('#brake-bar')).html(Math.round((brake / 0x7FFF) * 100) + "%");
-    document.getElementById("brake-bar").style.height = 400 * (brake / 0x7FFF) + "px";
+    angular.element(document.querySelector('#brake-bar')).html(Math.round(((brake - 0x190) / (0x3FF - 0x190)) * 100) + "%");
+    document.getElementById("brake-bar").style.height = 400 * ((brake - 0x190) / (0x3FF - 0x190)) + "px";
   }
 }
 
-function updateTemperatures($scope,temp) {
+function updateTemperatures($scope, temp) {
   var arrayLength = temp.temp_array.length;
   for (var i = 0; i < arrayLength; i++) {
-    angular.element(document.querySelector('#t'+ i)).html(temp.temp_array[i]+"&degC");
+    temp.temp_array[i] = parseInt(temp.temp_array[i].toString(16), 8);
+    angular.element(document.querySelector('#t'+ i)).html(temp.temp_array[i] + "&degC");
     if(temp.temp_array[i]>150) temp.temp_array[i] = 150;
-    document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - (temp.temp_array[i]/150*120)) +", 75%, 50%)"
+    document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - temp.temp_array[i] / 150 * 120) + ", 75%, 50%)"
   }
 
 }
 
 function updateStates(bms,car)
 {
+  console.log(bms);
+  console.log(car);
   var flagStrs = ["No error",
     "Charge mode",
     "Pack temperature limit exceeded",

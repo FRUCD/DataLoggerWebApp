@@ -7,7 +7,7 @@ import routes from './live.routes';
 import AverageBuffer from '../../utils/average_buffer.js'
 import DeltaBuffer from '../../utils/delta_buffer.js'
 
-import chart from '../../utils/chart.js';
+import generate from '../../utils/chart.js';
 
 
 var tb_initialPointRemoved = false;
@@ -29,6 +29,8 @@ var state_chart;
 var bmsFlag_initialPointRemoved = false;
 var bmsFlag_count = 0;
 var bmsFlag_chart;
+
+var bmsvalues;
 
 var genericsGraphMap = new Map();
 var genericsBufferMap = new Map();
@@ -129,7 +131,7 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.throttle || newData.throttle == 0) object.throttle = newData.throttle / 0x7FFF;
-    if (newData.brake || newData.brake == 0) object.brake = newData.brake / 0x7FFF;
+    if (newData.brake || newData.brake == 0) object.brake = (newData.brake - 0x190) / (0x3FF - 0x190);
     if (tb_count < 10 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0
@@ -181,9 +183,10 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.temp_array) {
-      for (var i = 0; i < newData.temp_array.length; i++)
-        object["temp" + i] = newData.temp_array[i];
-    }
+        for (var i = 0; i < newData.temp_array.length; i++)
+          newData.temp_array[i] = parseInt(newData.temp_array[i].toString(16), 8);
+          object["temp" + i] = newData.temp_array[i];
+      }
     if (temp_count < 10 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
       length: 0
@@ -249,225 +252,79 @@ export class LiveComponent {
     $scope.genericsGraphMap = genericsGraphMap;
     $scope.genericsBufferMap = genericsBufferMap;
     $scope.genericsIds = genericsIds;
-    tb_chart = chart.generate({
-      bindto: '#throttle-brake-chart',
-      data: {
-        /*json: [
-          {Timestamp: 0, throttle: 0},
-          {Timestamp: 0, brake: 0}
-        ],*/
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['throttle', 'brake']
-        },
-        names: {
-          'throttle': 'Throttle',
-          'brake': 'Brake'
+
+    tb_chart = generate('#throttle-brake-chart',[],'Timestamp',['throttle', 'brake'],'line',
+      {
+        'throttle': 'Throttle',
+        'brake': 'Brake'
+      },
+      {
+        tick: {
+          format: d3.format("%")
         }
+      },false);
+
+
+    temp_chart = generate('#temp-chart',[],'Timestamp',['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5'],'line',
+      {
+        'temp0': 'Temperature 1',
+        'temp1': 'Temperature 2',
+        'temp2': 'Temperature 3',
+        'temp3': 'Temperature 4',
+        'temp4': 'Temperature 5',
+        'temp5': 'Temperature 6',
       },
-      line: {
-        connectNull: true
-      },
-      axis: {
-        y: {
-          tick: {
-            min: 0,
-            max: 100,
-            format: d3.format("%")
-          }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:true,
+      {
+        tick: {
+          format: d3.format(".2")
         }
+      },false);
+
+
+    batt_chart = generate('#battery-chart',[],'Timestamp',['min_voltage', 'max_voltage', 'pack_voltage'],'line',
+      {
+        'min_voltage': 'Min Voltage',
+        'max_voltage': 'Max Voltage',
+        'pack_voltage': 'Pack Voltage'
       },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      size: {
-        height: 600
-      },
-      tooltip:{
-        show: false
-      }
-    }, false);
-    temp_chart = chart.generate({
-      bindto: '#temp-chart',
-      data: {
-        /*json: [
-          {Timestamp: 0, temp0: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0}
-        ],*/
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5']
-        },
-        names: {
-          'temp0': 'Temperature 1',
-          'temp1': 'Temperature 2',
-          'temp2': 'Temperature 3',
-          'temp3': 'Temperature 4',
-          'temp4': 'Temperature 5',
-          'temp5': 'Temperature 6'
+      {
+        tick: {
+          format: d3.format(".2")
         }
+      },false);
+
+    state_chart = generate('#state-chart',[],'Timestamp',['state'],'step',
+      {
+        'state': 'State'
       },
-      line: {
-        connectNull: true
-      },
-      axis: {
-        y: {
-          tick: {
-            format: d3.format(".3")
-          }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:true,
-        }
-      },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      grid: {
-        y: {
-          lines: [
-            {value: 80, text: 'Threshold'}
-          ]
-        }
-      },
-      size: {
-        height: 600
-      },
-      tooltip:{
-        show: false
-      }
-    }, false);
-    batt_chart = chart.generate({
-      bindto: '#battery-chart',
-      data: {
-        /*json: [
-          {Timestamp: 0, min_voltage: 0, max_voltage: 0, pack_voltage: 0}
-        ],*/
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['min_voltage', 'max_voltage', 'pack_voltage']
-        },
-        names: {
-          'min_voltage': 'Min Voltage',
-          'max_voltage': 'Max Voltage',
-          'pack_voltage': 'Pack Voltage'
-        }
-      },
-      line: {
-        connectNull: true
-      },
-      axis: {
-        y: {
-          tick: {
-            format: d3.format(".3")
-          }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:true,
-        }
-      },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      size: {
-        height: 600
-      },
-      tooltip:{
-        show: false
-      }
-    }, false);
-    state_chart = chart.generate({
-      bindto: '#state-chart',
-      data: {
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['state']
-        },
-        type: "step",
-        names: {
-          'state': 'State'
-        }
-      },
-      axis: {
-        y: {
-          max: 5,
-          min: 0,
-          tick: {
-            format: function(d){
-              switch (d)
-              {
-                case 0:
-                  return "Startup";
-                case 1:
-                  return "LV";
-                case 2:
-                  return "Precharging";
-                case 3:
-                  return "HV Enabled";
-                case 4:
-                  return "Drive";
-                case 5:
-                  return "Fault";
-              }
+      {
+        max: 5,
+        min: 0,
+        tick: {
+          format: function (d) {
+            switch (d) {
+              case 0:
+                return "Startup";
+              case 1:
+                return "LV";
+              case 2:
+                return "Precharging";
+              case 3:
+                return "HV Enabled";
+              case 4:
+                return "Drive";
+              case 5:
+                return "Fault";
             }
           }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
-          },
-          culling:true,
         }
-      },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      size: {
-        height: 600
-      },
-      tooltip:{
-        show: false
-      }
-    }, false);
-    let bmsvalues = ['Charge mode',
+      },false);
+
+
+     bmsvalues = ['Charge mode',
               'Pack temp limit exceeded',
               'Pack temp limit close',
-              'Pack temperature low limit',  
+              'Pack temperature low limit',
               'Low SOC',
               'Critical SOC',
               'Imbalance',
@@ -480,96 +337,32 @@ export class LiveComponent {
               'Charge halt',
               'Full',
               'Precharge contactor closed'];
-    bmsFlag_chart = chart.generate({
-      bindto: '#bms-flag-chart',
-      data: {
-        /*json: [
-         {Timestamp: 0, temp0: 0, temp1: 0, temp2: 0, temp3: 0, temp4: 0, temp5: 0}
-         ],*/
-        json:[],
-        xFormat: '%M.%S',
-        keys: {
-          x: 'Timestamp',
-          value: ['flag1','flag2','flag3','flag4','flag5','flag6','flag7','flag8','flag9','flag10','flag11','flag12','flag13','flag14','flag15','flag16']
-        },
-        type: "step"
-      },
-      axis: {
-        y: {
-          tick: {
-            min:1, max:16,
-            format: function(d){
-              return bmsvalues[d-1];
-            },
-            culling: false
-          }
-        },
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%M:%S'
+
+
+    bmsFlag_chart = generate('#bms-flag-chart',[],'Timestamp',['flag1', 'flag2', 'flag3', 'flag4', 'flag5', 'flag6', 'flag7', 'flag8', 'flag9', 'flag10', 'flag11', 'flag12', 'flag13', 'flag14', 'flag15','flag16']
+      ,'step', {},
+      {
+        tick: {
+          min:1, max:16,
+          format: function(d){
+            return bmsvalues[d-1];
           },
-          culling:true
+          culling: false
         }
-      },
-      transition: {
-        duration: 0
-      },
-      subchart: {
-        show: true
-      },
-      size: {
-        height: 600
-      },
-      tooltip:{
-        show: false
-      }
-    }, false);
+      },false);
 
     $scope.$on('updateGraphs', function () {
       console.log("Creating graphs");
       graphRenderQueue.forEach(function (graph) {
         console.log(genericsBufferMap.get(graph.buffer.CAN_Id));
         genericsBufferMap.get(graph.buffer.CAN_Id).buffer.begin();
-        genericsGraphMap.set(graph.CAN_Id, chart.generate({
-          bindto: '#can' + graph.CAN_Id,
-          data: {
-            json: [graph.graphFormat],
-            xFormat: '%M.%S',
-            keys: {
-              x: 'Timestamp',
-              value: graph.flagArr || graph.descriptionArr
-            },
-            type: graph.type
-          },
-          axis: {
-            y: {
-              tick: {
-                format: d3.format(".3")
-              },
-              culling:false
-            },
-            x: {
-              type: 'timeseries',
-              tick: {
-                format: '%M:%S'
-              },
-              culling:true,
+        genericsGraphMap.set(graph.CAN_Id, generate('#can' + graph.CAN_Id,[],'Timestamp',
+          graph.flagArr ? graph.flagArr : graph.descriptionArr,'line'
+          ,{},{
+            tick: {
+              format: d3.format(".3")
             }
-          },
-          transition: {
-            duration: 0
-          },
-          subchart: {
-            show: true
-          },
-          size: {
-            height: 600
-          },
-          tooltip:{
-            show: false
-          }
-        }));
+          },false));
       }, false);
       graphRenderQueue = [];
     });
@@ -615,6 +408,7 @@ export class LiveComponent {
 
     this.socket.syncUpdates('temp', function (data) {
       if (data) {
+        console.log(data);
         this.tempBuffer.push(data)
       }
     }.bind(this));
