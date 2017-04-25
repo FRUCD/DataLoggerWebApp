@@ -11,8 +11,14 @@ class dbStream extends Writable {
         mongo.connect('mongodb://localhost/data',function(err,db){
             if(err)console.error.bind(console,"connection error");
             var d = new Date();
+            let formatter = new Intl.NumberFormat('en-US', {minimumIntegerDigits: 2});
             self.db = db;
-            self.collection = db.collection(d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
+            self.collection = db.collection(d.getFullYear() + "."
+                + formatter.format(d.getMonth() + 1) + "." + formatter.format(d.getDate())
+                + "-" + formatter.format(d.getHours()) + "."
+                + formatter.format(d.getMinutes())+ "."
+                + formatter.format(d.getSeconds()));
+
             self.collection.createIndex("Timestamp");
             self.collection.createIndex("CAN_Id");
             console.log(self.collection.collectionName);
@@ -45,7 +51,11 @@ class dbStream extends Writable {
     }
     save(){
         this.collection.find().toArray(function(err,docs){
-            this.collection.drop();
+            if(err) console.error(err);
+            if(!docs || docs.length < 1) this.collection.drop(function(err, reply){
+                if(err) console.error(err);
+                console.log(reply);
+            });
         }.bind(this));
     }
 }

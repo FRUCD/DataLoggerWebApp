@@ -1,6 +1,6 @@
 var MongoClient = require('mongodb').MongoClient;
 var database;
-var activeCollection;
+var activeCallback;
 var logger = require('../../../console/log.js');
 
 function sort(collections){
@@ -96,45 +96,47 @@ export function download(req,res){
     });
   }
 }
-export function setActive(collection){
-  activeCollection = collection;
+export function setActive(callback) {
+    activeCallback = callback;
 }
 export function deleteCollection(req,res){
-  var name = req.params.collection;
-  var collection = database.collection(name);
-  if(!collection){
-    res.sendStatus(404);
-    return;
-  }
-  if(collection.collectionName == activeCollection.collectionName){
-    res.status(401).send("can't delete active collection");
-    return;
-  }
-  collection.drop();
-  res.sendStatus(200);
+    var name = req.params.collection;
+    var collection = database.collection(name);
+    var activeCollection = activeCallback();
+    if(!collection) {
+        res.sendStatus(404);
+        return;
+    }
+    if(collection.collectionName == activeCollection.collectionName){
+        res.status(401).send("can't delete active collection");
+        return;
+    }
+    collection.drop();
+    res.sendStatus(200);
 }
 export function printData(req,res){
-  var start, end;
-  var name = req.params.collection;
-  if(req.query.start) start = parseInt(req.query.start);
-  if(req.query.end) end = parseInt(req.query.end);
-  var collection = database.collection(name);
-  if((start||start==0)&&end)collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).skip(start).limit(end-start).toArray(function(err,elements)
-  {
-    if(err){
-      console.error(err);
-      res.status(404);
+    var start;
+    var end;
+    var name = req.params.collection;
+    if(req.query.start) start = parseInt(req.query.start);
+    if(req.query.end) end = parseInt(req.query.end);
+    var collection = database.collection(name);
+    if((start||start==0)&&end)collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).skip(start).limit(end-start).toArray(function(err,elements)
+    {
+        if(err) {
+            console.error(err);
+            res.status(404);
+        }
+        console.log("Sent "+elements.length+" elements from db");
+        res.status(200).send(elements);
+    });
+    else{
+        collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).toArray(function(err, elements) {
+            if(err){
+                console.error(err);
+                res.status(404);
+            }
+            res.status(200).send(elements);
+    });
     }
-    console.log("Sent "+elements.length+" elements from db");
-    res.status(200).send(elements);
-  });
-  else{
-    collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).toArray(function(err,elements){
-      if(err){
-        console.error(err);
-        res.status(404);
-      }
-      res.status(200).send(elements);
-  });
-  }
 }

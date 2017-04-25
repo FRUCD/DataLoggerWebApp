@@ -12,8 +12,6 @@ router.delete('/descriptors/:descriptor',descriptors.deleteMap);
 router.delete('/collections/:collection',collections.deleteCollection);
 module.exports.router = router;
 module.exports.collections = collections;
-module.exports.bind = function(activeCallback){
-    activeCallback(function(collection){
-        collections.setActive(collection);
-    });    
+module.exports.bind = function(activeCallback) {
+    collections.setActive(activeCallback);
 };
