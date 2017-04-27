@@ -5,11 +5,12 @@ class Controller{
         this.parser = parser;
         this.cache = new Map();
         this.hookParser(this.parser);
-    }
-    getActive(cb){
         this.db.ready(function(){
-            cb(this.db.collection);
+            this.collection = this.db.collection;
         }.bind(this));
+    }
+    getActive() {
+        return this.collection;
     }
     hookParser(parser){
         this.cache.clear();
@@ -28,11 +29,12 @@ class Controller{
         this.parser.resume();
         this.hookParser(this.parser);
         database.ready(function(){
+            this.collection = database.collection;            
             res.status(200).send(database.collection.collectionName);
-        });
+        }.bind(this));
         this.db = database;
     }
-    stop(req,res){
+    stop(req, res) {
         this.parser.unpipe();
         this.parser.pause();
         this.parser.specification = [];
