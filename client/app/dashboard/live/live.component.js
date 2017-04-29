@@ -350,6 +350,7 @@ export class LiveComponent {
           culling: false
         }
       },false);
+    socket.emit("log","done making graphs");
 
     $scope.$on('updateGraphs', function () {
       console.log("Creating graphs");
