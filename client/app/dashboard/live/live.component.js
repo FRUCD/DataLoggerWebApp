@@ -183,10 +183,10 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.temp_array) {
-        for (var i = 0; i < newData.temp_array.length; i++)
-          newData.temp_array[i] = parseInt(newData.temp_array[i].toString(16), 8);
+        for (let i = 0; i < newData.temp_array.length; i++)
           object["temp" + i] = newData.temp_array[i];
       }
+
     if (temp_count < 10 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
       length: 0
@@ -408,7 +408,6 @@ export class LiveComponent {
 
     this.socket.syncUpdates('temp', function (data) {
       if (data) {
-        console.log(data);
         this.tempBuffer.push(data)
       }
     }.bind(this));
