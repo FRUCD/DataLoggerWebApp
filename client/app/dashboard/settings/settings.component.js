@@ -20,6 +20,15 @@ export class SettingsController {
       });
     };
     $scope.search();
+    $scope.reset = function(){
+      if(confirm("Are you sure you want to reset parser to defaults? This cannot be undone.")) {
+        $http.get('/api/db/descriptors/reset').then(function(){
+          $scope.search();
+        }, function(err){
+          alert(err);
+        });
+      }
+    }
     $scope.loadForEdit = function(){
       $http({url:`/api/db/descriptors/${$scope.selected}`,method:'GET'}).then(function(data){
         console.log(data);
@@ -47,7 +56,7 @@ export class SettingsController {
       }
       $http({url:`/api/db/descriptors/${$scope.selected}/`,method:'PUT',data:edit}).then(function(data){
         console.log(data.data);
-        $scope.search();
+        $scope.loadForEdit();
       },function(msg){
         console.log(msg.data);
         alert(msg.data);

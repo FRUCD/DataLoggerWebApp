@@ -34,23 +34,50 @@ var canDescription  = new Mongoose.Schema({
         }
         }]
 });
-var model = mongoose.model('Descriptor',canDescription);
-function load(){
-    fs.readFile(`${local}/defaults.conf`,function(err,data){
+var model = mongoose.model('Descriptor', canDescription);
+(function load() {
+    fs.readFile(`${local}/defaults.conf`, function(err, data) {
         var defaults = JSON.parse(data);
         console.log(defaults);
-        Object.keys(defaults).forEach(function(key,index,array){
-            model.count({"CAN_Id":defaults[key].CAN_Id},function(err,countr){
-                if(countr==0){
+        Object.keys(defaults).forEach(function(key) {
+            model.count({"CAN_Id": defaults[key].CAN_Id}, function(err, countr){
+                if(countr == 0) {
                     if(defaults[key]){
-                        model.create(defaults[key],function(err,doc){
+                        model.create(defaults[key], function(err) {
                             if(err) console.error(err);
-                        })
+                        });
                     }
                 }
             })
         });
     });
-}
-load();
+}());
 module.exports.model = model;
+module.exports.reset = function(cb) {
+    fs.readFile(`${local}/defaults.conf`, function(err, data) {
+        if(err) {
+            console.error("error reading file");
+            cb(err);
+            return;
+        }
+        var defaults = JSON.parse(data);
+        let error = null;
+        model.remove({}, function(err) {
+            if(err) {
+                cb(err);
+                return;
+            }
+            Object.keys(defaults).forEach(function(key) {
+                let CAN = new model(defaults[key]);
+                CAN.save(function(err) {
+                    if(err) {
+                        console.error("error saving doc");
+                        error = err;
+                        return;
+                    }
+                });
+            });
+            cb(error); // done
+        });
+    });
+};

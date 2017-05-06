@@ -95,7 +95,7 @@ class SOCGauge {
             json: [],
             keys: {
               x: 'Timestamp',
-              value: ['soc']
+              value: ['SOC']
             },
             names: 'SOC Percent',
             type: 'gauge'

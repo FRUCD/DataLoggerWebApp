@@ -137,7 +137,7 @@
         //Stylistic Issues
         "array-bracket-spacing": [2, "never"],                      //enforce spacing inside array brackets
         "block-spacing": 0,                                         //disallow or enforce spaces inside of single line blocks
-        "brace-style": 2,                                           //enforce one true brace style
+        "brace-style": [2, "stroustrup"],                           //enforce stroustrup style
         "camelcase": 1,                                             //require camel case names
         "comma-spacing": [2, {"before": false, "after": true}],     //enforce spacing before and after comma
         "comma-style": 2,                                           //enforce one true comma style
