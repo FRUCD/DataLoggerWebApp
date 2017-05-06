@@ -1,6 +1,7 @@
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  randomSeed(analogRead(0));
 }
 int battery[2] = {0x03,0x88};
 int pack[2] = {0x01,0x88};
@@ -28,7 +29,7 @@ void loop() {
   Serial.write(time[1]);
   Serial.write(time[2]);
   Serial.write(time[3]);
-  Serial.write(1);
+  Serial.write(random(6));
   Serial.write(1);
   Serial.write(1);
   Serial.write(1);
@@ -50,7 +51,7 @@ void loop() {
   Serial.write(time[1]);
   Serial.write(time[2]);
   Serial.write(time[3]);
-  Serial.write((x&0xFF00)>>8);
+  Serial.write(random(2));
   Serial.write(x&0xFF);
   Serial.write(1);
   Serial.write(1);

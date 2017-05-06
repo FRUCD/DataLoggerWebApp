@@ -1,18 +1,19 @@
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './overview.routes';
-import $ from 'jquery'
+import $ from 'jquery';
+import c3 from 'c3';
 
 function updateThrottleBrake(throttle, brake) {
   if(throttle || throttle == 0)
   {
     angular.element(document.querySelector('#throttle-bar')).html(Math.round((throttle / 0x7FFF) * 100) + "%");
-    document.getElementById("throttle-bar").style.height = 400 * (throttle / 0x7FFF) + "px";
+    document.getElementById("throttle-bar").style.height = 300 * (throttle / 0x7FFF) + "px";
   }
   if(brake || brake == 0)
   {
     angular.element(document.querySelector('#brake-bar')).html(Math.round(((brake - 0x190) / (0x3FF - 0x190)) * 100) + "%");
-    document.getElementById("brake-bar").style.height = 400 * ((brake - 0x190) / (0x3FF - 0x190)) + "px";
+    document.getElementById("brake-bar").style.height = 300 * ((brake - 0x190) / (0x3FF - 0x190)) + "px";
   }
 }
 
@@ -86,12 +87,46 @@ function updateStates(bms,car)
   }
 }
 
+class SOCGauge {
+    constructor() {
+        this.gauge = c3.generate({
+          bindto: "#soc-gauge",
+          data: {
+            json: [],
+            keys: {
+              x: 'Timestamp',
+              value: ['soc']
+            },
+            names: 'SOC Percent',
+            type: 'gauge'
+          },
+          axis:{
+            x:{
+              label: "SOC Percent"
+            }
+          },
+          transition: {
+            duration: 0
+          },
+          gauge:{
+            units: '%',
+            width: 40
+          }
+        });
+    }
+    updateSOC(soc) {
+        this.gauge.load(
+          {json: soc}
+        );
+    }
+}
 
 export class OverviewController {
   /*@ngInject*/
   constructor($scope, $http, socket) {
     this.socket = socket;
     this.scope = $scope;
+    this.soc = new SOCGauge();
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('car');
     });
@@ -154,6 +189,7 @@ export class OverviewController {
     this.socket.syncUpdates('bms', function (data) {
       if (data && data.CAN_Id == 392) {
         updateStates(data,null);
+        this.soc.updateSOC(data);
       }
     }.bind(this));
   }

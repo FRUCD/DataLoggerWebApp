@@ -89,6 +89,9 @@ class serialStream extends Readable
                 for(var i=6; i<data.length ;i++){
                     array.push(data.readUInt8(i));
                 }
+                if(array[0] == 1160) console.log(array);
+                if(array[0] == 1574) console.log(array);
+                if(array[0] == 392) console.log(array);
                 if(!this.push(JSON.stringify(array))){
                     //console.log("pausing because the read has stopped");
                 }

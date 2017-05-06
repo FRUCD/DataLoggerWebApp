@@ -8,7 +8,7 @@
   <div class="container">
     <div style="display: flex">
       <div class="throttle-brake">
-        <div style="display: inline-flex; align-items: flex-end; max-height: 400px; height: 400px; text-align: center;margin-top: 40px">
+        <div style="display: inline-flex; align-items: flex-end; max-height: 300px; height: 300px; text-align: center;margin-top: 40px">
           <div>
             <div id="throttle-bar" style="width: 100px;height: 1px;background-color: darkgreen;margin-right: 10px; text-align:center; padding-top: 5px;margin-bottom: 15px; color: white"></div>
               <font size="4">Throttle</font>
@@ -19,7 +19,7 @@
           </div>
         </div>
       </div>
-      <div  class="temperature-table" style="margin-left: 10%;display: inline-flex; flex-direction: column; align-items: flex-start;">
+      <div class="temperature-table" style="margin-left: 10%;display: inline-flex; flex-direction: column; align-items: flex-start;">
         <div style="text-align: center">
           <table>
             <tr>
@@ -37,11 +37,15 @@
         </div>
       </div>
 
-      <div class="info" style="margin-left: 10%; font-size:20px">
+      <div class="info" style="margin-left: 10%; font-size:16px">
         BMS State:
         <div id="bms-state"></div>
         <br>
         <div id="car-state">Car State: </div>
       </div>
+    </div>
+    <div class="gauge">
+      <div id="soc-gauge"></div>
+      <div>SOC</div>
     </div>
 </div>
