@@ -12,15 +12,15 @@ function updateThrottleBrake(throttle, brake) {
   }
   if(brake || brake == 0)
   {
-    angular.element(document.querySelector('#brake-bar')).html(Math.round(((brake - 0x190) / (0x3FF - 0x190)) * 100) + "%");
-    document.getElementById("brake-bar").style.height = 300 * ((brake - 0x190) / (0x3FF - 0x190)) + "px";
+    angular.element(document.querySelector('#brake-bar')).html(Math.round(((brake - 0x195) / (0x3FF - 0x195)) * 100) + "%");
+    document.getElementById("brake-bar").style.height = 300 * ((brake - 0x195) / (0x3FF - 0x195)) + "px";
   }
 }
 
 function updateTemperatures($scope, temp) {
   var arrayLength = temp.temp_array.length;
   for (var i = 0; i < arrayLength; i++) {
-    temp.temp_array[i] = parseInt(temp.temp_array[i].toString(16), 8);
+    temp.temp_array[i] = temp.temp_array[i]
     angular.element(document.querySelector('#t'+ i)).html(temp.temp_array[i] + "&degC");
     if(temp.temp_array[i]>150) temp.temp_array[i] = 150;
     document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - temp.temp_array[i] / 150 * 120) + ", 75%, 50%)"

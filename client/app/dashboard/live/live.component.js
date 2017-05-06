@@ -131,7 +131,7 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.throttle || newData.throttle == 0) object.throttle = newData.throttle / 0x7FFF;
-    if (newData.brake || newData.brake == 0) object.brake = (newData.brake - 0x190) / (0x3FF - 0x190);
+    if (newData.brake || newData.brake == 0) object.brake = (newData.brake - 0x195) / (0x3FF - 0x195);
     if (tb_count < 10 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0
@@ -184,7 +184,6 @@ function plotNew(newData) {
     object.Timestamp = newData.Timestamp;
     if (newData.temp_array) {
         for (var i = 0; i < newData.temp_array.length; i++)
-          newData.temp_array[i] = parseInt(newData.temp_array[i].toString(16), 8);
           object["temp" + i] = newData.temp_array[i];
       }
     if (temp_count < 10 && temp_initialPointRemoved) temp_chart.flow({

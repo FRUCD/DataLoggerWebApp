@@ -13,6 +13,7 @@ export class SettingsController {
         $scope.selected = $scope.list[0].CAN_Id;
         $scope.new = new Object();
         $scope.new.CAN_Id = 0;
+        $scope.new.CAN_Id = '0x' + $scope.new.CAN_Id.toString(16);
         $scope.new.PDO_Description = '';
         $scope.new.map = [];
         $scope.new.map.push({description:'',length:0,offset:0,dataType:''});

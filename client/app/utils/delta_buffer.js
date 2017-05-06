@@ -5,7 +5,7 @@ export class DeltaBuffer {
     this.keys = keys;
     this.delta = 0;
     this.keys.forEach(function (key) {
-      this.push({time: NaN, point: NaN});
+      this.push({time: null, point: null});
     }.bind(this.lastPoints));
   }
 
@@ -35,6 +35,9 @@ export class DeltaBuffer {
     var self = this;
     //console.log(point);
     for (var i = 0; i < this.keys.length; i++) {
+      if(!this.lastPoints[i].time) {
+          this.lastPoints[i] = {time: point.Timestamp, CAN_Id: point.CAN_Id, point: point[this.keys[i]]};
+      }
       if (point[this.keys[i]] instanceof Array)//handle flags
       {
         var diffData = false;
