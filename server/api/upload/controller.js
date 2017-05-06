@@ -19,7 +19,7 @@ module.exports = function index(req,res){
             res.status(200);
             headerSet = true;
         }
-        csvRow[0] = parseInt(csvRow[0],16);
+        csvRow[0] = parseInt(csvRow[0], 16);
         let radix = 16;
         if(csvRow[0] == 1160) radix = 10;
         csvRow[1] = parseInt(csvRow[1]);
