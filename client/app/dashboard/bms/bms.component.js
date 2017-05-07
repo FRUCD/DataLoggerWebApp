@@ -47,8 +47,7 @@ export class BMSController {
         object.Timestamp = newData.Timestamp;
         if (newData.temp_array) {
           for (var i = 0; i < newData.temp_array.length; i++)
-            newData.temp_array[i] = parseInt(newData.temp_array[i].toString(16), 8);
-            object["temp" + i] = newData.temp_array[i];
+            object["temp" + i] = parseInt(newData.temp_array[i].toString(16), 10);
         }
         if (this.temp_count < 100 && this.temp_initialPointRemoved) this.temp_chart.flow({
           json: object,
@@ -80,7 +79,7 @@ export class BMSController {
     this.voltageBuffer = new AverageBuffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], this.plotNew);
     this.tempBuffer = new AverageBuffer(1000, ['temp_array'], this.plotNew);
     this.bmsStateBuffer = new DeltaBuffer(['flag'],this.plotNew);
-    //this.bmsStateBuffer.begin();
+    this.bmsStateBuffer.begin();
 
     this.temp_chart = generate('#temp-chart',[],'Timestamp',['temp0', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5'],'line',
       {
@@ -105,7 +104,7 @@ export class BMSController {
       },
       {
         tick: {
-          format: d3.format(".2")
+          format: function(d){return d/1000 + "V"}
         }
       },false);
 

@@ -30,6 +30,10 @@ module.exports = function index(req,res){
             }
             csvRow[i] = val;
         }
+        if(csvRow[2] == 255 && csvRow[3] == 255 && csvRow[4] == 255 && csvRow[5] == 255 && csvRow[6] == 255 && csvRow[7] == 255 && csvRow[8] == 255 && csvRow[9] == 255) {
+            //crap data, return;
+            return;
+        }
         parser.write(JSON.stringify(csvRow));
         // csvRow is an array
     })

@@ -20,7 +20,7 @@ function updateThrottleBrake(throttle, brake) {
 function updateTemperatures($scope, temp) {
   var arrayLength = temp.temp_array.length;
   for (var i = 0; i < arrayLength; i++) {
-    temp.temp_array[i] = temp.temp_array[i]
+    temp.temp_array[i] = parseInt(temp.temp_array[i].toString(16), 10);
     angular.element(document.querySelector('#t'+ i)).html(temp.temp_array[i] + "&degC");
     if(temp.temp_array[i]>150) temp.temp_array[i] = 150;
     document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - temp.temp_array[i] / 150 * 120) + ", 75%, 50%)"
@@ -92,32 +92,23 @@ class SOCGauge {
         this.gauge = c3.generate({
           bindto: "#soc-gauge",
           data: {
-            json: [],
-            keys: {
-              x: 'Timestamp',
-              value: ['SOC']
-            },
-            names: 'SOC Percent',
+            columns: [['data', 0]],
             type: 'gauge'
-          },
-          axis:{
-            x:{
-              label: "SOC Percent"
-            }
           },
           transition: {
             duration: 0
           },
           gauge:{
-            units: '%',
             width: 40
           }
         });
     }
     updateSOC(soc) {
-        this.gauge.load(
-          {json: soc}
-        );
+      console.log(soc);
+        soc.SOC = soc.SOC / 100;
+        this.gauge.load({
+            columns: [['data', soc.SOC]]
+        });
     }
 }
 
@@ -127,6 +118,7 @@ export class OverviewController {
     this.socket = socket;
     this.scope = $scope;
     this.soc = new SOCGauge();
+    var self = this;
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('car');
     });
@@ -162,6 +154,7 @@ export class OverviewController {
         if($("#bms-state").text()==""){
           updateStates(res.data,null);
         }
+        self.soc.updateSOC(res.data);
       }
     });
     $http.get('/api/run/last',{params:{CAN_Id:1160}}).then(function(res){
