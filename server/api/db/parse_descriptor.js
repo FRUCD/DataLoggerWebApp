@@ -6,7 +6,6 @@ var local = path.resolve(__dirname);
 var fs = require('fs');
 var assert = require('assert');
 var mongoose = Mongoose.createConnection("mongodb://localhost/data");
-var logger = require('../../console/log.js');
 
 var canDescription  = new Mongoose.Schema({
     CAN_Id: {
@@ -44,7 +43,7 @@ var model = mongoose.model('Descriptor', canDescription);
                 if(countr == 0) {
                     if(defaults[key]){
                         model.create(defaults[key], function(err) {
-                            if(err) console.error(err);
+                            if(err) logger.error(err);
                         });
                     }
                 }
@@ -56,7 +55,7 @@ module.exports.model = model;
 module.exports.reset = function(cb) {
     fs.readFile(`${local}/defaults.conf`, function(err, data) {
         if(err) {
-            console.error("error reading file");
+            logger.error("error reading file");
             cb(err);
             return;
         }
@@ -71,7 +70,7 @@ module.exports.reset = function(cb) {
                 let CAN = new model(defaults[key]);
                 CAN.save(function(err) {
                     if(err) {
-                        console.error("error saving doc");
+                        logger.error("error saving doc");
                         error = err;
                         return;
                     }

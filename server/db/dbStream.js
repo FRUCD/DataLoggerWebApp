@@ -1,7 +1,6 @@
 const Writable = require('stream').Writable;
 var mongo = require("mongodb").MongoClient;
 var EventEmitter = require('events');
-var logger = require('../console/log.js');
 class dbStream extends Writable {
     constructor(options) {
         super(options);

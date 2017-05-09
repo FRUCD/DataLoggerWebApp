@@ -1,7 +1,6 @@
 var fs = require('fs');
 var csv = require('csvtojson');
 var Parser = require('../../serial/dynamicParser.js');
-var logger = require('../../console/log.js');
 module.exports = function index(req,res){
     let file = req.file;
     let parser = new Parser();
@@ -38,7 +37,7 @@ module.exports = function index(req,res){
         // csvRow is an array
     })
     .on('done',(error)=>{
-        if(error) console.error(error);
+        if(error) logger.error(error);
         console.log("done reading csv");
         console.log(`Processed ${array.length} from csv`);
         res.send(array);

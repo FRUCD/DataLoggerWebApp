@@ -2,7 +2,6 @@ var stream = require('stream');
 var Q = require('q');
 var Descriptor = require('../api/db/parse_descriptor.js');
 var Validator = require('../api/db/validator.js');
-var logger = require('../console/log.js');
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
     constructor(options){
         super(options);
@@ -22,8 +21,8 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             this.push(JSON.stringify(value));
         }.bind(this)).catch(function(err){
             if(process.env.NODE_ENV=="development"){
-                //if(err) console.error(err);
-                //console.error("missing some parser");
+                if(err) console.error(err);
+                console.error("missing some parser");
             }
         }.bind(this))
         .done();
