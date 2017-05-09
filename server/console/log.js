@@ -97,7 +97,11 @@ module.exports.set = function(msg) {
     var string = '';
     canMessages.set(msg[0], msg.slice(1, msg.length - 1));
     for(let [key, value] of canMessages) {
-        string += sprintf('%5s: %s\n', key, util.inspect(value));
+        string += sprintf('%5x: %08d', key, value[0]);
+        for(let i = 1; i < value.length; i++) {
+            string += sprintf(' %x', value[i]);
+        }
+        string += '\n';
     }
     right.setContent(string);
     screen.render();
