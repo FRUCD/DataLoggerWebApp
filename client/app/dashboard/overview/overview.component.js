@@ -17,15 +17,21 @@ function updateThrottleBrake(throttle, brake) {
   }
 }
 
-function updateTemperatures($scope, temp) {
+function updateTemperatures(temp) {
   var arrayLength = temp.temp_array.length;
   for (var i = 0; i < arrayLength; i++) {
     temp.temp_array[i] = parseInt(temp.temp_array[i].toString(16), 10);
     angular.element(document.querySelector('#t'+ i)).html(temp.temp_array[i] + "&degC");
     if(temp.temp_array[i]>150) temp.temp_array[i] = 150;
-    document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - temp.temp_array[i] / 150 * 120) + ", 75%, 50%)"
+    document.getElementById("t"+i).style.backgroundColor = "hsl(" + (120 - temp.temp_array[i] / 150 * 120) + ", 75%, 50%)";
   }
 
+}
+
+function updateMotorTemp(temp) {
+  let val = temp.generics[0].value;
+  angular.element(document.querySelector("#mt")).html(val + "&degC");
+  document.getElementById("mt").style.backgroundColor = "hsl(" + (120 - val / 150 * 120) + ", 75%, 50%)";
 }
 
 function updateStates(bms,car)
@@ -119,16 +125,13 @@ export class OverviewController {
     this.scope = $scope;
     this.soc = new SOCGauge();
     var self = this;
-    $scope.$on('$destroy', function () {
+    $scope.$on('$destroy', function() {
       socket.unsyncUpdates('car');
-    });
-    $scope.$on('$destroy', function () {
-      socket.unsyncUpdates('temp');
-    });
-    $scope.$on('$destroy', function () {
       socket.unsyncUpdates('bms');
+      socket.unsyncUpdates('temp');
+      socket.unsyncUpdates('data');
     });
-    $http.get('/api/run/last',{params:{CAN_Id:1574}}).then(function(res){
+    $http.get('/api/run/last',{params:{CAN_Id:1574}}).then(function(res) {
       if(res.data && res.data.CAN_Id == 1574){
         if($("#car-state").text()=="Car State: "){
           updateStates(null, res.data);
@@ -160,7 +163,14 @@ export class OverviewController {
     $http.get('/api/run/last',{params:{CAN_Id:1160}}).then(function(res){
       if(res.data && res.data.CAN_Id == 1160){
         if($("#t0").text()==""){
-          updateTemperatures($scope,res.data);
+          updateTemperatures(res.data);
+        }
+      }
+    });
+    $http.get('/api/run/last',{params:{CAN_Id:1382}}).then(function(res){
+      if(res.data && res.data.CAN_Id == 1382){
+        if($("#mt").text()==""){
+          updateMotorTemp(res.data);
         }
       }
     });
@@ -176,13 +186,18 @@ export class OverviewController {
     }.bind(this));
     this.socket.syncUpdates('temp', function (data) {
       if (data) {
-        updateTemperatures(this.scope,data);
+        updateTemperatures(data);
       }
     }.bind(this));
     this.socket.syncUpdates('bms', function (data) {
       if (data && data.CAN_Id == 392) {
         updateStates(data,null);
         this.soc.updateSOC(data);
+      }
+    }.bind(this));
+    this.socket.syncUpdates('data', function (data) {
+      if (data && data.CAN_Id == 1382) {
+        updateMotorTemp(data);
       }
     }.bind(this));
   }

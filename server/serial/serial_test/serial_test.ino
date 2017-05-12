@@ -12,6 +12,7 @@ int temp[2] = {0x04,0x88};
 int state[2] = {0x01,0x87};
 int flag[2] = {0x02,0x45};
 int tempDegrees[6] = {120,80,40,10,0,250};
+int motor[2] = {0x05, 0x66};
 int x = 0;
 int state_inc = 0;
 uint32_t voltage = 0;
@@ -39,7 +40,7 @@ void loop() {
   Serial.write(1);
   Serial.write(0xFF);
   Serial.write('\n');
-  Serial.flush();
+  
   Serial.write(throttle[0]);
   Serial.write(throttle[1]);
   tick = millis();
@@ -61,7 +62,7 @@ void loop() {
   Serial.write(1);
   Serial.write(0xFF);
   Serial.write('\n');
-  Serial.flush();
+  
   Serial.write(temp[0]);
   Serial.write(temp[1]);
   tick = millis();
@@ -83,8 +84,10 @@ void loop() {
   Serial.write(250);
   Serial.write(0xFF);
   Serial.write('\n');
+  
   x++;
   if(x>0x7FF) x = 0;
+  
   Serial.write(battery[0]);
   Serial.write(battery[1]);
   tick = millis();
@@ -108,6 +111,7 @@ void loop() {
   Serial.write('\n');
   voltage+=10;
   if(voltage>12000) voltage = 0;
+  
   Serial.write(generic[0]);
   Serial.write(generic[1]);
   tick = millis();
@@ -131,7 +135,6 @@ void loop() {
   Serial.write('\n');
   voltage+=10;
   if(voltage>12000) voltage = 0;
-  Serial.flush();
 
   if(x%100 == 0) state_inc++;
   if(state_inc>5) state_inc = 0;
@@ -156,7 +159,7 @@ void loop() {
   Serial.write(2);
   Serial.write(0xFF);
   Serial.write('\n');
-  Serial.flush();
+  
   Serial.write(pack[0]);
   Serial.write(pack[1]);
   tick = millis();
@@ -178,7 +181,7 @@ void loop() {
   Serial.write(2);
   Serial.write(0xFF);
   Serial.write('\n');
-  Serial.flush();
+
   Serial.write(flag[0]);
   Serial.write(flag[1]);
   tick = millis();
@@ -200,6 +203,28 @@ void loop() {
   Serial.write(2);
   Serial.write(0xFF);
   Serial.write('\n');
+ 
+  Serial.write(motor[0]);
+  Serial.write(motor[1]);
+  tick = millis();
+  time[0] = (unsigned int)((tick&0xFF000000)>>24);
+  time[1] = (unsigned int)((tick&0x00FF0000)>>16);
+  time[2] = (unsigned int)((tick&0x0000FF00)>>8);
+  time[3] = (unsigned int)(tick&0x000000FF);
+  Serial.write(time[0]);
+  Serial.write(time[1]);
+  Serial.write(time[2]);
+  Serial.write(time[3]);
+  Serial.write(x & 0xFF);
+  Serial.write(x & 0xFF);
+  Serial.write(x & 0xFF);
+  Serial.write(x & 0xFF);
+  Serial.write(x & 0xFF);
+  Serial.write(x & 0xFF);
+  Serial.write(x & 0xFF);
+  Serial.write(x & 0xFF);
+  Serial.write(0xFF);
+  Serial.write('\n');
   Serial.flush();
-  delay(100);
+  delay(10);
 }

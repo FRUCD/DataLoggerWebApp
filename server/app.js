@@ -25,7 +25,7 @@ var app = express();
 var server = http.createServer(app);
 var socketio = require('socket.io')(server, {
   serveClient: config.env !== 'production',
-  path:'/socket.io-client'
+  path: '/socket.io-client'
 });
 var Serial = require('./serial/serial.js');
 var Parser = require('./serial/dynamicParser.js');
@@ -33,7 +33,7 @@ var dbStream = require('./db/dbStream.js');
 var arduinoListener;
 var parser = new Parser();
 var database = new dbStream();
-parser.on('data',function(data) {
+parser.on('data', function(data) {
     data = JSON.parse(data);
     switch (data.CAN_Id) {
     case 1574:
