@@ -28,7 +28,7 @@
         <div class="col-md-6">
           <h1>Create Map</h1>
           <form>
-            <div class="form-group"><label>CAN ID: <input type="number" class="form-control" ng-model="new.CAN_Id"/></label></div>
+            <div class="form-group"><label>CAN ID: <input type="text" class="form-control" ng-model="new.CAN_Id"/></label></div>
             <div class="form-group"><label>Description: <input type="text" class="form-control" ng-model="new.PDO_Description"/></label></div>
             <h2>Mapping</h2>
             <div class="form-group" ng-repeat="map in new.map">
@@ -45,6 +45,7 @@
             <input type="button" class="btn btn-secondary" ng-click="new.map.push({length:'',offset:'',description:'',dataType:''});" value="Add Map"/>
             <input type="submit" class="btn btn-primary" ng-click="createNew()" value="Save"/>
           </form>
+          <button ng-click="reset()" class="btn btn-secondary" style="margin-top:30px; width:100%;">Reset Parser</button> 
         </div>
         <div class="col-md-6">
           <h1>Edit Map</h1>

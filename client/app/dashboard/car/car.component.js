@@ -33,7 +33,6 @@ function plotNew(newData) {
     count++;
   }
   else if(newData.CAN_Id==1574){
-    console.log("data");
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.state) object.state = newData.state;
@@ -61,7 +60,7 @@ export class CarController {
     this.throttleBuffer = new AverageBuffer(1000,['throttle'],plotNew);
     this.brakeBuffer = new AverageBuffer(1000,['brake'],plotNew);
     this.carStateBuffer = new DeltaBuffer(['state'],plotNew);
-    //this.carStateBuffer.begin();
+    this.carStateBuffer.begin();
 
     carChart = generate('#car-chart',[],'Timestamp',['throttle', 'brake'],'line',
       {
@@ -70,6 +69,8 @@ export class CarController {
       },
       {
         tick: {
+          min: 0,
+          max: 1,
           format: d3.format("%")
         }
       },false);

@@ -1,6 +1,21 @@
 import c3 from 'c3'
 import smoothie from 'smoothie'
 import $ from 'jquery'
+class ChartUIControl {
+  constructor(array) {
+    this.charts = array || [];
+  }
+  zoomEnd(domain) {
+      console.log(domain);
+      for(let chart of this.charts) {
+          chart.zoom(domain);
+      }
+  }
+  bind(chart) {
+      this.charts.push(chart);
+  }
+}
+var ChartControl = new ChartUIControl();
 class C3Chart{
     constructor(chart) {
         this._chart = chart;
@@ -21,6 +36,9 @@ class C3Chart{
             data.Timestamp = timeFormatter(data.Timestamp);
         }
         this._chart.load(object);
+    }
+    zoom(range) {
+        this._chart.zoom(range);
     }
 }
 function timeFormatter(date){
@@ -98,16 +116,18 @@ module.exports = function (bindTo, dataJson, xKey, xValue, type, names, yTick, s
             duration: 0
           },
           subchart: {
-            show: true
+            show: true, 
+            onbrush: ChartControl.zoomEnd.bind(ChartControl)
           },
           size: {
             height: 600
           },
-          tooltip:{
+          tooltip: {
             show: true
           }
         };
         let chart = c3.generate(config);
+        ChartControl.bind(chart);
         return new C3Chart(chart);
     }
 }

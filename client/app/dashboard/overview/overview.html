@@ -7,19 +7,25 @@
   <div class="jumbotron">
   <div class="container">
     <div style="display: flex">
-      <div class="throttle-brake">
-        <div style="display: inline-flex; align-items: flex-end; max-height: 400px; height: 400px; text-align: center;margin-top: 40px">
-          <div>
-            <div id="throttle-bar" style="width: 100px;height: 1px;background-color: darkgreen;margin-right: 10px; text-align:center; padding-top: 5px;margin-bottom: 15px; color: white"></div>
-              <font size="4">Throttle</font>
-          </div>
-          <div>
-            <div id="brake-bar" style="width: 100px;height: 1px; background-color: darkred; text-align:center;padding-top: 5px;margin-bottom: 15px; color: white"></div>
-               <font size="4">Brake</font>
+      <div>
+        <div class="throttle-brake">
+          <div style="display: inline-flex; align-items: flex-end; max-height: 300px; height: 300px; text-align: center;margin-top: 40px">
+            <div>
+              <div id="throttle-bar" style="width: 100px;height: 1px;background-color: darkgreen;margin-right: 10px; text-align:center; padding-top: 5px;margin-bottom: 15px; color: white"></div>
+                <font size="4">Throttle</font>
+            </div>
+            <div>
+              <div id="brake-bar" style="width: 100px;height: 1px; background-color: darkred; text-align:center;padding-top: 5px;margin-bottom: 15px; color: white"></div>
+                <font size="4">Brake</font>
+            </div>
           </div>
         </div>
+        <div class="gauge">
+          <div id="soc-gauge"></div>
+          <div>SOC</div>
+        </div>
       </div>
-      <div  class="temperature-table" style="margin-left: 10%;display: flex; flex-direction: column-reverse; align-items: flex-end;">
+      <div class="temperature-table" style="margin-left: 10%;display: inline-flex; flex-direction: column; align-items: flex-start;">
         <div style="text-align: center">
           <table>
             <tr>
@@ -33,11 +39,15 @@
               <td><div class="temperature" id="t5" style="background-color: darkgreen"></div></td>
             </tr>
           </table>
-          <font size="4">Temperatures</font>
+          <font size="4">BMS Temperatures</font>
+        </div>
+        <div class="motor" style="text-align: center">
+          <div id="mt"></div>
+          <font size="4">Motor Temperature</font>
         </div>
       </div>
 
-      <div class="info" style="margin-left: 10%; font-size:20px">
+      <div class="info" style="margin-left: 10%; font-size:16px">
         BMS State:
         <div id="bms-state"></div>
         <br>

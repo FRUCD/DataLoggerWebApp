@@ -18,6 +18,8 @@ import config from './environment';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
 import mongoose from 'mongoose';
+
+var fs = require('fs');
 var MongoStore = connectMongo(session);
 
 export default function(app) {
@@ -33,7 +35,7 @@ export default function(app) {
 
   app.set('appPath', path.join(config.root, 'client'));
   app.use(express.static(app.get('appPath')));
-  app.use(morgan('dev'));
+  app.use(morgan('dev', {stream: require('../console/log.js').logStream}));
 
   app.set('views', `${config.root}/server/views`);
   app.engine('html', require('ejs').renderFile);

@@ -1,7 +1,6 @@
 var MongoClient = require('mongodb').MongoClient;
 var database;
 var activeCallback;
-var logger = require('../../../console/log.js');
 
 function sort(collections){
   collections.sort(function(a,b){
@@ -29,7 +28,7 @@ function quicksort(collections,low,high){
 }
 MongoClient.connect('mongodb://localhost/data',function(err,db){
   if(err){
-    console.error(err);
+    logger.error(err);
     return;
   }
   database = db;
@@ -37,7 +36,7 @@ MongoClient.connect('mongodb://localhost/data',function(err,db){
 
 export function list(req,res){
   database.listCollections({name:/[0-9]+.[0-9]+.[0-9]+-[0-9]+.[0-9]+.[0-9]+/}).toArray(function (err,array) {
-    if(err)console.error(err);
+    if(err)logger.error(err);
     var collections = [];
     array.forEach(function(value,index,array){
       collections.push(value.name);
@@ -65,7 +64,7 @@ export function download(req,res){
         res.write(JSON.stringify(element)+'\r\n');
     },function(err){
       if(err){
-        console.error(err);
+        logger.error(err);
         res.status(402).end();
         return;
       }
@@ -77,17 +76,17 @@ export function download(req,res){
       var string = "";
       string+=element.CAN_Id.toString(16);
       string+=",";
-      string+=element.Timestamp.toString(16);
+      string+=element.Timestamp.toString(19);
       string+=",";
       for(let data of element.raw){
         string+=data.toString(16);
         string+=","
       }
-      string+="\n";
+      string+="\r\n";
       res.write(string);
     },function(err){
       if(err){
-        console.error(err);
+        logger.error(err);
         res.status(402).end();
         return;
       }
@@ -124,7 +123,7 @@ export function printData(req,res){
     if((start||start==0)&&end)collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).skip(start).limit(end-start).toArray(function(err,elements)
     {
         if(err) {
-            console.error(err);
+            logger.error(err);
             res.status(404);
         }
         console.log("Sent "+elements.length+" elements from db");
@@ -133,7 +132,7 @@ export function printData(req,res){
     else{
         collection.find().project({_id:0}).sort({Timestamp:1, CAN_Id:1}).toArray(function(err, elements) {
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.status(404);
             }
             res.status(200).send(elements);

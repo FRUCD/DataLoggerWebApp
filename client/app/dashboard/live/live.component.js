@@ -131,8 +131,8 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.throttle || newData.throttle == 0) object.throttle = newData.throttle / 0x7FFF;
-    if (newData.brake || newData.brake == 0) object.brake = (newData.brake - 0x190) / (0x3FF - 0x190);
-    if (tb_count < 10 && tb_initialPointRemoved) tb_chart.flow({
+    if (newData.brake || newData.brake == 0) object.brake = (newData.brake - 0x195) / (0x3FF - 0x195);
+    if (tb_count < 50 && tb_initialPointRemoved) tb_chart.flow({
       json: object,
       length: 0
     });
@@ -149,7 +149,7 @@ function plotNew(newData) {
     object.Timestamp = newData.Timestamp;
     if (newData.state) object.state = newData.state;
 
-    if (state_count < 10 && state_initialPointRemoved) state_chart.flow({
+    if (state_count < 50 && state_initialPointRemoved) state_chart.flow({
       json: object,
       length: 0
     });
@@ -183,11 +183,10 @@ function plotNew(newData) {
     var object = new Object();
     object.Timestamp = newData.Timestamp;
     if (newData.temp_array) {
-        for (let i = 0; i < newData.temp_array.length; i++)
-          object["temp" + i] = newData.temp_array[i];
+        for (var i = 0; i < newData.temp_array.length; i++)
+          object["temp" + i] = parseInt(newData.temp_array[i].toString(16), 10);
       }
-
-    if (temp_count < 10 && temp_initialPointRemoved) temp_chart.flow({
+    if (temp_count < 50 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
       length: 0
     });
@@ -201,7 +200,7 @@ function plotNew(newData) {
   }
   else if (newData.CAN_Id == "392flag") {
     delete newData.CAN_Id;
-    if (bmsFlag_count < 10 && bmsFlag_initialPointRemoved) bmsFlag_chart.flow({
+    if (bmsFlag_count < 50 && bmsFlag_initialPointRemoved) bmsFlag_chart.flow({
       json: newData,
       length: 0
     });
@@ -219,7 +218,7 @@ function plotNew(newData) {
       var graph = genericsGraphMap.get(newData.CAN_Id);
       var canId = newData.CAN_Id;
       delete newData.CAN_Id;
-      if (genericsBufferMap.get(canId).count < 10 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
+      if (genericsBufferMap.get(canId).count < 50 && genericsBufferMap.get(canId).firstPointRemoved) graph.flow({
         json: newData,
         length: 0
       });
@@ -244,9 +243,9 @@ export class LiveComponent {
     this.brakeBuffer = new AverageBuffer(1000, ['brake'], plotNew);
     this.tempBuffer = new AverageBuffer(1000, ['temp_array'], plotNew);
     this.voltageBuffer = new AverageBuffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
-    this.carStateBuffer = new DeltaBuffer(['state'],plotNew);
+    this.carStateBuffer = new DeltaBuffer(['state'], plotNew);
     this.carStateBuffer.begin();
-	  this.bmsStateBuffer = new DeltaBuffer(['flag'],plotNew);
+	  this.bmsStateBuffer = new DeltaBuffer(['flag'], plotNew);
     this.bmsStateBuffer.begin();
 
     $scope.genericsGraphMap = genericsGraphMap;
@@ -259,6 +258,8 @@ export class LiveComponent {
         'brake': 'Brake'
       },
       {
+        min: 0,
+        max: 1,
         tick: {
           format: d3.format("%")
         }
@@ -275,6 +276,8 @@ export class LiveComponent {
         'temp5': 'Temperature 6',
       },
       {
+        min: 0,
+        max: 60,
         tick: {
           format: d3.format(".2")
         }
@@ -289,7 +292,7 @@ export class LiveComponent {
       },
       {
         tick: {
-          format: d3.format(".2")
+          format: function(d){return d/1000 + "V"}
         }
       },false);
 
