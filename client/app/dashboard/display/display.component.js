@@ -232,9 +232,8 @@ export class DisplayComponent {
             object.temp_array = message.temp_array;
             object.CAN_Id = message.CAN_Id;
             for(var i = 0; i < message.temp_array.length; i++) {
-              object.temp_array[i] = parseInt(message.temp_array[i].toString(16), 10);
+              object.temp_array[i] = parseInt(message.temp_array[i].toString(16), 16);
             }
-
             if(!$scope.buffers.has(message.CAN_Id)) $scope.buffers.set(message.CAN_Id,new AverageBuffer(1000, ['temp_array'], function(buffer){
               let point = new Object();
               point.Timestamp = buffer.Timestamp;

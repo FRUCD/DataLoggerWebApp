@@ -184,7 +184,7 @@ function plotNew(newData) {
     object.Timestamp = newData.Timestamp;
     if (newData.temp_array) {
         for (var i = 0; i < newData.temp_array.length; i++)
-          object["temp" + i] = parseInt(newData.temp_array[i].toString(16), 10);
+          object["temp" + i] = parseInt(newData.temp_array[i].toString(16), 16);
       }
     if (temp_count < 50 && temp_initialPointRemoved) temp_chart.flow({
       json: object,
