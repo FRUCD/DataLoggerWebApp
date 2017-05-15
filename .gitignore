@@ -13,3 +13,7 @@ coverage
 server/api/upload/files/*
 dist.*
 release.*
+
+client/assets/fonts/bootstrap/glyphicons-halflings-regular\.svg
+
+client/assets/fonts/font-awesome/fontawesome-webfont\.svg
