@@ -238,10 +238,10 @@ export class LiveComponent {
   constructor($scope, $timeout, socket) {
     this.socket = socket;
     console.log("creating buffers");
-    this.throttleBuffer = new AverageBuffer(1000, ['throttle'], plotNew);
+    this.throttleBuffer = new AverageBuffer(100, ['throttle'], plotNew);
     console.log("created buffers");
-    this.brakeBuffer = new AverageBuffer(1000, ['brake'], plotNew);
-    this.tempBuffer = new AverageBuffer(1000, ['temp_array'], plotNew);
+    this.brakeBuffer = new AverageBuffer(100, ['brake'], plotNew);
+    this.tempBuffer = new AverageBuffer(2000, ['temp_array'], plotNew);
     this.voltageBuffer = new AverageBuffer(1000, ['min_voltage', 'max_voltage', 'pack_voltage'], plotNew);
     this.carStateBuffer = new DeltaBuffer(['state'], plotNew);
     this.carStateBuffer.begin();

@@ -57,8 +57,8 @@ export class CarController {
     count = 0;
     initialPointRemoved = false;
     this.socket = socket;
-    this.throttleBuffer = new AverageBuffer(1000,['throttle'],plotNew);
-    this.brakeBuffer = new AverageBuffer(1000,['brake'],plotNew);
+    this.throttleBuffer = new AverageBuffer(50,['throttle'],plotNew);
+    this.brakeBuffer = new AverageBuffer(50,['brake'],plotNew);
     this.carStateBuffer = new DeltaBuffer(['state'],plotNew);
     this.carStateBuffer.begin();
 
