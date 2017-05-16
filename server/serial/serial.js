@@ -89,7 +89,7 @@ class serialStream extends Readable
                 for(var i=6; i<data.length ;i++){
                     array.push(data.readUInt8(i));
                 }
-                //logger.set(array);
+                logger.set(array);
                 if(array[2] == 255 && array[3] == 255 && array[4] == 255 && array[5] == 255 && array[6] == 255 && array[7] == 255 && array[8] == 255 && array[9] == 255) {
                     //crap data, return;
                     return;
