@@ -1,14 +1,14 @@
 var stream = require('stream');
+const StringDecoder = require('string_decoder').StringDecoder;
+var sprintf = require("sprintf-js").sprintf;
+const decoder = new StringDecoder('utf8');
 if(process.env.NODE_ENV !== 'test') {
     var blessed = require('blessed');
     var util = require('util');
     var screen = blessed.screen({
         smartCSR: true
     });
-    var sprintf = require("sprintf-js").sprintf;
     screen.title = 'DataLogger';
-    const StringDecoder = require('string_decoder').StringDecoder;
-    const decoder = new StringDecoder('utf8');
     var canMessages = new Map();
     // Create a box perfectly centered horizontally and vertically.
     var left = blessed.text({
