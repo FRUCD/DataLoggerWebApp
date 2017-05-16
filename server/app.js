@@ -10,8 +10,10 @@ mongoose.Promise = require('bluebird');
 import config from './config/environment';
 import http from 'http';
 import logger from './console/log';
-console.log = logger.log;
-console.error = logger.error;
+if(process.env.NODE_ENV != "test") {
+    console.log = logger.log;
+    console.error = logger.error;
+}
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
 mongoose.connection.on('error', function(err) {

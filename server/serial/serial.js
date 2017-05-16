@@ -17,7 +17,7 @@ class serialStream extends Readable
         console.log("connect called");
         var self = this;
         this.findArduino(function(err,port){
-            if(err) logger.error(err);
+            if(err) console.error(err);
             if(port)self.setPort(port);
         });
         if(!self.reconnect){
@@ -25,7 +25,7 @@ class serialStream extends Readable
                 if(!self.arduinoPort){ 
                     //console.log("reconnecting to Arduino Serial"); 
                     self.findArduino(function(err,port){
-                        if(err) logger.error(err); 
+                        if(err) console.error(err); 
                         if(port)self.setPort(port); 
                     }); 
                 }  
@@ -43,7 +43,7 @@ class serialStream extends Readable
     findArduino(callback){
         SerialPort.list(function (err, ports) {
             if(err){
-                logger.error(err);
+                console.error(err);
                 console.log("error in listing ports");
                 callback(err,null);
             }
@@ -71,7 +71,7 @@ class serialStream extends Readable
             }
             catch(e){
                 console.log("error attaching to port");
-                logger.error(e);
+                console.error(e);
             }
         }
     }
@@ -89,7 +89,7 @@ class serialStream extends Readable
                 for(var i=6; i<data.length ;i++){
                     array.push(data.readUInt8(i));
                 }
-                logger.set(array);
+                //logger.set(array);
                 if(array[2] == 255 && array[3] == 255 && array[4] == 255 && array[5] == 255 && array[6] == 255 && array[7] == 255 && array[8] == 255 && array[9] == 255) {
                     //crap data, return;
                     return;

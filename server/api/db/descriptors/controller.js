@@ -5,7 +5,7 @@ var Validator = require('../validator.js');
 export function listDescriptor(req, res) {
     model.find({}, {_id: 0, CAN_Id: 1, PDO_Description: 1}, function(err, result) {
         if(err) {
-            logger.error(err);
+            console.error(err);
             res.sendStatus(401);
             return;
         }
@@ -16,7 +16,7 @@ export function listDescriptor(req, res) {
 export function getDescriptor(req, res) {
     model.findOne({CAN_Id: req.params.descriptor}, {_id: 0, "map.key": 0}, function(err, result) {
         if(err) {
-            logger.error(err);
+            console.error(err);
             res.sendStatus(401);
             return;
         }
@@ -56,14 +56,14 @@ export function updateDescriptor(req, res) {
                 console.log(add);
                 model.findOneAndUpdate({CAN_Id: req.params.descriptor}, {$set: set, $unset: unset}, {upsert: false, new: true}, function(err, doc) {
                     if(err) {
-                        logger.error(err);
+                        console.error(err);
                         res.status(501).send("invalid update procedure");
                         return;
                     }
                     doc = doc.toObject();
                     model.findOneAndUpdate({CAN_Id: doc.CAN_Id}, {$addToSet: {map: {$each: add}}}, {upsert: true, new: true}, function(err, doc) {
                         if(err) {
-                            logger.error(err);
+                            console.error(err);
                             res.status(501).send("invalid update procedure");
                             return;
                         }
@@ -75,7 +75,7 @@ export function updateDescriptor(req, res) {
                 model.create(request, function(err) {
                     if(err) {
                         console.log("error creating documents");
-                        logger.error(err);
+                        console.error(err);
                         return;
                     }
                     res.sendStatus(200);
@@ -83,7 +83,7 @@ export function updateDescriptor(req, res) {
             }
         })
         .catch(function(err) {
-            logger.error(err);
+            console.error(err);
         })
         .done();
     }
@@ -110,7 +110,7 @@ export function deleteMap(req,res){
                 delete element.key;
                 model.findOneAndUpdate({CAN_Id: req.params.descriptor}, {$pull: {map: element}}, {multi: false,upsert: false}, function(err, doc) {
                     if(err){
-                        logger.error(err);
+                        console.error(err);
                         res.status(501).send("invalid update procedure");
                         return;
                     }
@@ -121,7 +121,7 @@ export function deleteMap(req,res){
                 res.status(401).send("can't delete core mapping");
             }
         }, function(err) {
-            if(err) logger.error(err);
+            if(err) console.error(err);
             res.status(501).send("invalid update procedure");
         });
         /**/
@@ -144,7 +144,7 @@ export function deleteMap(req,res){
                 res.status(401).send("can't delete core mapping");
             }
         }, function(err) {
-            if(err) logger.error(err);
+            if(err) console.error(err);
             res.status(501).send("invalid delete procedure");
         });
     }
@@ -152,7 +152,7 @@ export function deleteMap(req,res){
 export function reset(req, res) {
     ParseDescriptor.reset(err => {
         if(err) {
-            logger.error(err);
+            console.error(err);
             res.sendStatus(401);
             return;
         }

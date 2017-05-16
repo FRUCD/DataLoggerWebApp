@@ -37,7 +37,7 @@ module.exports = function index(req,res){
         // csvRow is an array
     })
     .on('done',(error)=>{
-        if(error) logger.error(error);
+        if(error) console.error(error);
         console.log("done reading csv");
         console.log(`Processed ${array.length} from csv`);
         res.send(array);

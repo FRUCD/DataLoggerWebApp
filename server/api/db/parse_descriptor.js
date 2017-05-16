@@ -43,7 +43,7 @@ var model = mongoose.model('Descriptor', canDescription);
                 if(countr == 0) {
                     if(defaults[key]){
                         model.create(defaults[key], function(err) {
-                            if(err) logger.error(err);
+                            if(err) console.error(err);
                         });
                     }
                 }
@@ -55,7 +55,7 @@ module.exports.model = model;
 module.exports.reset = function(cb) {
     fs.readFile(`${local}/defaults.conf`, function(err, data) {
         if(err) {
-            logger.error("error reading file");
+            console.error("error reading file");
             cb(err);
             return;
         }
@@ -70,7 +70,7 @@ module.exports.reset = function(cb) {
                 let CAN = new model(defaults[key]);
                 CAN.save(function(err) {
                     if(err) {
-                        logger.error("error saving doc");
+                        console.error("error saving doc");
                         error = err;
                         return;
                     }
