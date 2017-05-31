@@ -6,7 +6,9 @@ module.exports = function index(req,res){
     let parser = new Parser();
     var array = [];
     parser.on('data',function(data){
-        array.push(JSON.parse(data));
+        let ret = JSON.parse(data);
+        delete ret.raw;
+        array.push(ret);
     });
     let stream = fs.createReadStream(file.path);
     let headerSet = false;

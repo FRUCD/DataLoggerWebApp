@@ -6,11 +6,15 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
     constructor(options){
         super(options);
         var self = this;
-        this.load = Descriptor.model.find().exec().then(function(array){
-            self.specification = array;
+        this.load = Descriptor.model.find().exec()
+        .then(function(array) {
+            self.specification = new Map();
+            for(let map of array) {
+                self.specification.set(map.CAN_Id, map);
+            }
         });
-        if(options&&options.done)
-            this.load.done(function(){
+        if(options && options.done)
+            this.load.done(function() {
                 options.done();
             });
     }
@@ -136,32 +140,10 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         for(var i=2;i<data.length;i++){
             out.raw.push(data[i].toString(16));
         }
-        if(this.load.status=='pending')this.load.done();
-        if(this.specification){
-            for(var i=0;i<this.specification.length;i++)
-            {
-                if(data[0]==this.specification[i].CAN_Id) {
-                    return self.beginParsing(out,data,this.specification[i]);
-                }
-            }
-        }
+        var spec = this.specification || new Map();
+        var map = spec.get(data[0]) || {CAN_Id: data[0], map:[]};
+        return this.beginParsing(out, data, map);
         //console.log("looking up database");
-        return Descriptor.model.findOne({CAN_Id:data[0]}).exec().then(function(doc){
-        //TODO run validation
-            try{
-                if(!doc) return out;
-                Validator(doc);
-                if(self.specification){
-                    self.specification.push(doc);
-                }
-                return self.beginParsing(out,data,doc);
-            }
-            catch(e){
-                throw new Error(e);
-            }
-        }).catch(function(){
-            throw new Error("invalid parser for CAN_Id: "+data[0]);
-        });
     }
     parse(data){
         if(data&&data.length>0){
