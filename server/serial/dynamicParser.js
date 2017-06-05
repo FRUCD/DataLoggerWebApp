@@ -12,7 +12,8 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             for(let map of array) {
                 self.specification.set(map.CAN_Id, map);
             }
-        });
+        })
+        .done();
         if(options && options.done)
             this.load.done(function() {
                 options.done();
