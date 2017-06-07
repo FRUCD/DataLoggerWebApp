@@ -76,7 +76,7 @@ export function download(req,res){
       var string = "";
       string+=element.CAN_Id.toString(16);
       string+=",";
-      string+=element.Timestamp.toString(19);
+      string+=element.Timestamp.toString(10);
       string+=",";
       for(let data of element.raw){
         string+=data.toString(16);
