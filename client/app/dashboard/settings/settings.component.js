@@ -1,3 +1,6 @@
+/**
+ * @module settings
+ */
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './settings.routes';

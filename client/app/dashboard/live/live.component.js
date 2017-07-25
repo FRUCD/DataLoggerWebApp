@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module live
+ */
 const angular = require('angular');
 
 const uiRouter = require('angular-ui-router');

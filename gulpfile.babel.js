@@ -6,6 +6,7 @@ import del from 'del';
 import gulp from 'gulp';
 import grunt from 'grunt';
 import path from 'path';
+import jsdoc from 'gulp-jsdoc3';
 import through2 from 'through2';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import http from 'http';
@@ -187,6 +188,11 @@ gulp.task('env:prod', () => {
 /********************
  * Tasks
  ********************/
+
+gulp.task('doc', function(cb) {
+    gulp.src(['./client/**/*.js', './server/**/*.js'], {read: false})
+        .pipe(jsdoc(cb));
+});
 
 gulp.task('inject', cb => {
     runSequence(['inject:scss'], cb);

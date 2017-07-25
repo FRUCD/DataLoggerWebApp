@@ -1,3 +1,7 @@
+/**
+ * @module bms
+ */
+
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './bms.routes';
@@ -6,7 +10,9 @@ import generate from '../../utils/chart'
 
 import AverageBuffer from '../../utils/average_buffer'
 import DeltaBuffer from '../../utils/delta_buffer'
-
+/**
+ * @class BMSController
+ */
 export class BMSController {
   /*@ngInject*/
   constructor($scope, $timeout, socket) {

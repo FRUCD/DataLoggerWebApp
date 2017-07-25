@@ -1,9 +1,16 @@
+/**
+ * @module overview
+ */
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './overview.routes';
 import $ from 'jquery';
 import c3 from 'c3';
-
+/**
+ * @function
+ * @param {*} throttle 
+ * @param {*} brake 
+ */
 function updateThrottleBrake(throttle, brake) {
   if(throttle || throttle == 0)
   {
@@ -16,7 +23,10 @@ function updateThrottleBrake(throttle, brake) {
     document.getElementById("brake-bar").style.height = 300 * ((brake - 0x195) / (0x3FF - 0x195)) + "px";
   }
 }
-
+/**
+ * @function
+ * @param {*} temp 
+ */
 function updateTemperatures(temp) {
   var arrayLength = temp.temp_array.length;
   for (var i = 0; i < arrayLength; i++) {
@@ -27,13 +37,20 @@ function updateTemperatures(temp) {
   }
 
 }
-
+/**
+ * @function
+ * @param {*} temp 
+ */
 function updateMotorTemp(temp) {
   let val = temp.generics[0].value;
   angular.element(document.querySelector("#mt")).html(val + "&degC");
   document.getElementById("mt").style.backgroundColor = "hsl(" + (120 - val / 150 * 120) + ", 75%, 50%)";
 }
-
+/**
+ * @function
+ * @param {*} bms 
+ * @param {*} car 
+ */
 function updateStates(bms,car)
 {
   console.log(bms);
@@ -92,7 +109,10 @@ function updateStates(bms,car)
     angular.element(document.querySelector('#car-state')).html("Car State: " + carState);
   }
 }
-
+/**
+ * Self contained Gauge class
+ * @class SOCGauge
+ */
 class SOCGauge {
     constructor() {
         this.gauge = c3.generate({
@@ -117,7 +137,9 @@ class SOCGauge {
         });
     }
 }
-
+/**
+ * @class
+ */
 export class OverviewController {
   /*@ngInject*/
   constructor($scope, $http, socket) {
@@ -175,7 +197,10 @@ export class OverviewController {
       }
     });
   }
-
+/**
+ * Registers the socket handlers
+ * @function $onInit
+ */
   $onInit() {
     this.socket.syncUpdates('car', function (data) {
       if (data) {

@@ -114,7 +114,6 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 }
             }
             else array = data;
-            console.log(array);
             out.CAN_Id = array[0];
             out.Timestamp = array[1];
             chooseParser(out,array);   

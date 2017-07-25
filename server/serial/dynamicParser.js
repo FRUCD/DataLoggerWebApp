@@ -6,12 +6,17 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
     constructor(options){
         super(options);
         var self = this;
+        var start = new Date().getTime();
         this.load = Descriptor.model.find().exec()
         .then(function(array) {
             self.specification = new Map();
             for(let map of array) {
                 self.specification.set(map.CAN_Id, map);
             }
+            console.log("db load: " + (new Date().getTime() - start));
+        })
+        .catch(function(error) {
+            console.error(error);
         })
         .done();
         if(options && options.done)
@@ -20,7 +25,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             });
     }
     _transform(chunk, encoding, next) {
-        var transformed = Q.fcall(this.parse.bind(this),chunk);
+        var transformed = Q.fcall(this.parse.bind(this), chunk);
         transformed.then(function(value)
         {
             this.push(JSON.stringify(value));
@@ -133,6 +138,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         return out;
     }
     chooseParser(data){
+        debugger;
         var self = this;
         var out = new Object();
         out.CAN_Id = data[0];
@@ -162,7 +168,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 }
                 else array = data;
                 //console.log(array); 
-                deferred.resolve(Q.fcall(this.chooseParser.bind(this),array));
+                deferred.resolve(Q.fcall(this.chooseParser.bind(this), array));
             }.bind(this));
             return deferred.promise;
         }

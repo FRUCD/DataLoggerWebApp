@@ -1,5 +1,4 @@
 var Mongoose = require('mongoose');
-var Q = require('q');
 Mongoose.Promise = require('q').Promise;
 var path = require('path');
 var local = path.resolve(__dirname);

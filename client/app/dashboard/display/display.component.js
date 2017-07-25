@@ -1,3 +1,7 @@
+/**
+ * AngularJS component for static page
+ * @module display
+ */
 'use strict';
 const angular = require('angular');
 
@@ -9,13 +13,36 @@ import routes from './display.routes';
 import AverageBuffer from '../../utils/average_buffer.js';
 import DeltaBuffer from '../../utils/delta_buffer.js';
 import generate from '../../utils/chart.js'
-
+/**
+ * Function called to process any generic data contained within the CAN message payload.
+ * @param {*} message - raw JSON object from socket
+ * @param {*} type - one of the three type strings 'state' | 'decimal' | 'flag'. Each must be parsed separately.
+ * @param {*} ids - AngularJS watched array for the ids of the graphs
+ * @param {*} $scope - AngularJS scope object
+ * @function bindGenerics
+ * 
+ */
 function bindGenerics(message, type, ids, $scope){
   var descriptionArr = [];
+  /**
+   * simpleVal is an object whose keys are the descriptions of the generics, and the values are the relevant values.
+   * @name simpleVal
+   * @member {Object}
+   * @memberof bindGenerics
+   */
   var simpleVal = new Object();
   simpleVal.Timestamp = message.Timestamp;
   simpleVal.CAN_Id = message.CAN_Id + type;
   message.generics.forEach(function (generic) {
+    /**
+     * generic is an element of the generics array
+     * @member {Object} generic
+     * @memberof bindGenerics
+     * @property {string} generic.dataType - describes the type of the 'value' property
+     * @property {string} generic.subDataType - describes the type of the values in the array, if generic.dataType == 'array'
+     * @property {string} generic.description - user-defined description of the value
+     * @property {number} generic.value - the numerical value of the element, can be an array.
+     */
     if (generic.dataType == type) {
       //if(type=="state")console.log(generic);
       simpleVal[generic.description] = generic.value;
@@ -71,9 +98,17 @@ function bindGenerics(message, type, ids, $scope){
     $scope.buffers.get(simpleVal.CAN_Id).push(simpleVal);
   }
 }
-
+/**
+ * @class DisplayComponent
+ */
 export class DisplayComponent {
   /*@ngInject*/
+  /**
+   * @constructor
+   * @param {*} $scope the scope object  
+   * @param {*} $http the http angular object
+   * @param {*} Upload external upload library
+   */
   constructor($scope, $http, Upload) {
     $scope.graphRenderQueue = [];
     $scope.genericsIds = [];
