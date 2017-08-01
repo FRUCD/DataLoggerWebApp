@@ -1,36 +1,26 @@
 var stream = require('stream');
+var fs = require('fs');
 var Q = require('q');
-var Descriptor = require('../api/db/parse_descriptor.js');
-var Validator = require('../api/db/validator.js');
+var path = require('path')
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
-    constructor(options) {
+    constructor(options){
         options = options || {};
         options.objectMode = true;
         super(options);
+        var config = fs.readFileSync(path.join(__dirname, '../api/db/defaults.conf'), 'utf-8');
+        config = JSON.parse(config);
         var self = this;
-        var start = new Date().getTime();
-        this.load = Descriptor.model.find().exec()
-        .then(function(array) {
-            self.specification = new Map();
-            for(let map of array) {
-                self.specification.set(map.CAN_Id, map);
-            }
-            console.log("db load: " + (new Date().getTime() - start));
-        })
-        .catch(function(error) {
-            console.error(error);
-        })
-        .done();
-        if(options && options.done)
-            this.load.done(function() {
-                options.done();
-            });
+        this.specification = new Map();
+        Object.keys(config).forEach(function(key){
+            self.specification.set(config[key].CAN_Id, config[key]);
+        });
     }
     _transform(chunk, encoding, next) {
         var transformed = Q.fcall(this.parse.bind(this), chunk);
         transformed.then(function(value)
         {
             this.push(value);
+            next();
         }.bind(this)).catch(function(err){
             if(process.env.NODE_ENV=="development"){
                 if(err) console.error(err);
@@ -38,7 +28,6 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
             }
         }.bind(this))
         .done();
-        next();
     }
     getArray(data,map){
         var out = [];
@@ -154,12 +143,10 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         //console.log("looking up database");
     }
     parse(data){
-        if(data&&data.length>0){
-            var deferred = Q.defer();
-            setImmediate(function() {
-                deferred.resolve(Q.fcall(this.chooseParser.bind(this), data));
-            }.bind(this));
-            return deferred.promise;
+        if(data&&data.length>0) {
+            var array = data;
+            //console.log(array); 
+            return Q.fcall(this.chooseParser.bind(this), array);
         }
         else return "";
     }

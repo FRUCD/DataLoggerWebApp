@@ -83,16 +83,14 @@ class serialStream extends Readable
         if(data.length==16){
             setImmediate(function(){
                 var array = [];
-                data = Buffer.from(data,'utf-8').slice(0,data.length-2);
+                data = Buffer.from(data, 'utf-8').slice(0, data.length - 2);
                 array.push(data.readUInt16BE(0));
                 array.push(data.readUInt32BE(2));
-                for(var i=6; i<data.length ;i++){
+                for(var i = 6; i < data.length; i++) {
                     array.push(data.readUInt8(i));
                 }
                 logger.set(array);
-                if(!this.push(JSON.stringify(array))){
-                    //console.log("pausing because the read has stopped");
-                }
+                this.push(array);
             }.bind(this));
         }
     }

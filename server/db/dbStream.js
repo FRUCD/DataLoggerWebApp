@@ -3,6 +3,8 @@ var mongo = require("mongodb").MongoClient;
 var EventEmitter = require('events');
 class dbStream extends Writable {
     constructor(options) {
+        options = options || {};
+        options.objectMode = true;
         super(options);
         this.buffer = [];
         this.emitter = new EventEmitter();
@@ -35,15 +37,15 @@ class dbStream extends Writable {
             }
         });    
     }
-    _write(chunk,encoding,callback)
+    _write(chunk, encoding, callback)
     {
         if(this.collection){
             //console.log("writing");
-            this.collection.insert(JSON.parse(chunk));
+            this.collection.insert(chunk);
             this.empty = false;
         }
-        else if(!this.collection){
-            this.buffer.push(JSON.parse(chunk));
+        else if(!this.collection) {
+            this.buffer.push(chunk);
         }
         callback();
     }

@@ -1,4 +1,3 @@
-var stream = require('stream');
 function parseDashStatus(out,data){
     out.state = data[2];
 }
@@ -88,27 +87,48 @@ function chooseParser(out,data){
             break;
     }
 }
-class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
-    constructor(options) {
-        options = options || {};
-        options.objectMode = true;
-        super(options);
+function parse(data) {
+    if(data&&data.length>0){
+        var out = new Object();
+        var array = data;
+        out.CAN_Id = array[0];
+        out.Timestamp = array[1];
+        chooseParser(out,array);   
+        return out;
     }
-    _transform(chunk, encoding, next) {
-        var transformed = this.parse(chunk);
-        this.push(transformed);
-        next();
-    }
-    parse(data){
-        if(data&&data.length>0){
-            var out = new Object();
-            var array = data;
-            out.CAN_Id = array[0];
-            out.Timestamp = array[1];
-            chooseParser(out,array);   
-            return out;
-        }
-        else return "";
-    }
+    else return "";
 }
-module.exports = parseStream;
+var can = [
+    0x200,
+    0x201,
+    1574,
+    392,
+    1160,
+    904
+];
+var array = [
+    200,
+    0, // timestamp
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    20
+];
+var start = new Date().getTime();
+console.log("start time: " + start);
+for(var i = 0; i < 100000; i++) {
+    array[0] = can[Math.floor(Math.random() * can.length)];
+    array[1] = new Date().getTime();
+    parse(array);
+}
+var total = new Date().getTime() - start;
+console.log("time taken: ");
+console.log(total);
+console.log("average frame time: ");
+console.log(total / 100000);
+console.log("average frame rate: ");
+console.log(1000 / (total / 100000));

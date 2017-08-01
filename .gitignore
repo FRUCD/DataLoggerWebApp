@@ -3,6 +3,7 @@ public
 .tmp
 .sass-cache
 .idea
+.vscode*
 client/bower_components
 client/index.html
 dist
