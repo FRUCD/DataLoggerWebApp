@@ -153,7 +153,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         return this.beginParsing(out, data, map);
         //console.log("looking up database");
     }
-    parse(data){
+    parse(data) {
         if(data&&data.length>0){
             var deferred = Q.defer();
             setImmediate(function() {

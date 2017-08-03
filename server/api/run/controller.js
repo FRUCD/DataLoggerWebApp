@@ -15,7 +15,6 @@ class Controller{
     hookParser(parser){
         this.cache.clear();
         parser.on('data',function(data){
-            data = JSON.parse(data);
             this.cache.set(data.CAN_Id, data);
         }.bind(this));
     }

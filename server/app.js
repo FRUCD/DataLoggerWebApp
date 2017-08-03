@@ -35,8 +35,16 @@ var dbStream = require('./db/dbStream.js');
 var arduinoListener;
 var parser = new Parser();
 var database = new dbStream();
+var webSource = socketio.of('/src');
+webSource.on('connect', function(socket) {
+    console.log("Source connected: ");
+    arduinoListener.unpipe(parser);
+    arduinoListener.disconnect();
+    socket.on('data', function(data) {
+        parser.write(data);
+    });
+});
 parser.on('data', function(data) {
-    data = JSON.parse(data);
     switch (data.CAN_Id) {
     case 1574:
     case 512:
