@@ -65,7 +65,7 @@ export default function(app) {
    * https://github.com/krakenjs/lusca
    */
   if(env !== 'test' && !process.env.SAUCE_USERNAME) {
-    /*app.use(lusca({
+    app.use(lusca({
       csrf: {
         angular: true
       },
@@ -76,7 +76,7 @@ export default function(app) {
         preload: true
       },
       xssProtection: true
-    }));*/
+    }));
   }
 
   if(env === 'development') {
