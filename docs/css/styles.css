@@ -1,0 +1,8 @@
+@import './containers.css';
+#navigation {
+    background-color: #0e0c28;
+}
+#logo-container {
+    height: 120px;
+    margin-top: 50px;
+}

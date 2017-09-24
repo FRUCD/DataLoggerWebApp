@@ -6,6 +6,8 @@ class serialStream extends Readable
 {
     constructor(options)
     {
+        options = options || {};
+        options.objectMode = true;
         super(options);
         this.connect();
     }
@@ -89,7 +91,6 @@ class serialStream extends Readable
                 for(var i = 6; i < data.length; i++) {
                     array.push(data.readUInt8(i));
                 }
-                logger.set(array);
                 this.push(array);
             }.bind(this));
         }
