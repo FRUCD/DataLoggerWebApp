@@ -3,34 +3,49 @@ var Q = require('q');
 var Descriptor = require('../api/db/parse_descriptor.js');
 var Validator = require('../api/db/validator.js');
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
-    constructor(options){
+    constructor(options) {
+        options = options || {};
+        options.objectMode = true;
         super(options);
         var self = this;
-        this.load = Descriptor.model.find().exec().then(function(array){
-            self.specification = array;
-        });
-        if(options&&options.done)
-            this.load.done(function(){
+        var start = new Date().getTime();
+        this.load = Descriptor.model.find().exec()
+        .then(function(array) {
+            self.specification = new Map();
+            for(let map of array) {
+                self.specification.set(map.CAN_Id, map);
+            }
+            console.log("db load: " + (new Date().getTime() - start));
+        })
+        .catch(function(error) {
+            console.error(error);
+        })
+        .done();
+        if(options && options.done)
+            this.load.done(function() {
                 options.done();
             });
     }
     _transform(chunk, encoding, next) {
-        var transformed = Q.fcall(this.parse.bind(this),chunk);
+        var transformed = Q.fcall(this.parse.bind(this), chunk);
         transformed.then(function(value)
         {
-            //console.log(value);
-            this.push(JSON.stringify(value));
-        }.bind(this)).catch(function(){
-            console.error("missing some parser");
-        }.bind(this));
+            this.push(value);
+        }.bind(this)).catch(function(err){
+            if(process.env.NODE_ENV=="development"){
+                if(err) console.error(err);
+                console.error("missing some parser");
+            }
+        }.bind(this))
+        .done();
         next();
     }
     getArray(data,map){
         var out = [];
-        for(var i=Math.floor(map.offset/8)+2;i<data.length;i+=map.array.subLength/8){
+        for(var i=0;i<map.length;i++){
             out.push(this.getValue(data.slice(),
                 {dataType:map.array.subDataType,
-                    offset:(i-2)*8,
+                    offset:map.offset+i*map.array.subLength,
                     length:map.array.subLength
                 }));
         }
@@ -68,12 +83,12 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         var offset = map.offset;
         while(length>0){
             value = value<<8;
-            value |= data[Math.floor(map.offset/8)+2];
+            value |= data[Math.floor(offset/8)+2];
             offset+=8;
             length-=8;
         }
         length = map.length;
-        out.push(value==0x00);
+        out.push(value==0);
         while(length>0){
             out.push((value&0x01)==0x01);
             value = value>>1;
@@ -117,6 +132,7 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
                 var object = new Object();
                 object.description = value.description;
                 object.dataType = value.dataType;
+                if(value.dataType == 'array') object.subDataType = value.array.subDataType;
                 object.value = self.getValue(data.slice(),value);
                 out.generics.push(object);
             }
@@ -132,47 +148,16 @@ class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, a
         for(var i=2;i<data.length;i++){
             out.raw.push(data[i].toString(16));
         }
-        if(this.load.status=='pending')this.load.done();
-        for(var i=0;i<this.specification.length;i++)
-        {
-            if(data[0]==this.specification[i].CAN_Id) {
-                return self.beginParsing(out,data,this.specification[i]);
-            }
-        }
-        console.log("looking up database");
-        return Descriptor.model.findOne({CAN_Id:data[0]}).exec().then(function(doc){
-        //TODO run validation
-            try{
-                Validator(doc);
-                if(self.specification){
-                    self.specification.push(doc);
-                }
-                return self.beginParsing(out,data,doc);
-            }
-            catch(e){
-                throw new Error(e);
-            }
-        }).catch(function(){
-            throw new Error("something went horribly wrong");
-        });
+        var spec = this.specification || new Map();
+        var map = spec.get(data[0]) || {CAN_Id: data[0], map:[]};
+        return this.beginParsing(out, data, map);
+        //console.log("looking up database");
     }
-    parse(data){
+    parse(data) {
         if(data&&data.length>0){
             var deferred = Q.defer();
-            setImmediate(function(){
-                data = JSON.parse(data);
-                if(!data)return "";
-                var array = [];
-                if(data instanceof Object)
-                {
-                    for(var i=0;i<Object.keys(data).length;i++)
-                    {
-                        array.push(data[Object.keys(data)[i]]);
-                    }
-                }
-                else array = data;
-                //console.log(array); 
-                deferred.resolve(Q.fcall(this.chooseParser.bind(this),array));
+            setImmediate(function() {
+                deferred.resolve(Q.fcall(this.chooseParser.bind(this), data));
             }.bind(this));
             return deferred.promise;
         }

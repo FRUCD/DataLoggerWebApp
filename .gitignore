@@ -3,6 +3,7 @@ public
 .tmp
 .sass-cache
 .idea
+.vscode*
 client/bower_components
 client/index.html
 dist
@@ -10,3 +11,10 @@ dist
 npm-debug.log
 coverage
 *.orig
+server/api/upload/files/*
+dist.*
+release.*
+
+client/assets/fonts/bootstrap/glyphicons-halflings-regular\.svg
+
+client/assets/fonts/font-awesome/fontawesome-webfont\.svg

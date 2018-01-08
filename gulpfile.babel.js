@@ -6,6 +6,7 @@ import del from 'del';
 import gulp from 'gulp';
 import grunt from 'grunt';
 import path from 'path';
+import jsdoc from 'gulp-jsdoc3';
 import through2 from 'through2';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import http from 'http';
@@ -188,6 +189,11 @@ gulp.task('env:prod', () => {
  * Tasks
  ********************/
 
+gulp.task('doc', function(cb) {
+    gulp.src(['./client/**/*.js', './server/**/*.js'], {read: false})
+        .pipe(jsdoc(cb));
+});
+
 gulp.task('inject', cb => {
     runSequence(['inject:scss'], cb);
 });
@@ -293,7 +299,12 @@ gulp.task('start:client', cb => {
         cb();
     });
 });
-
+gulp.task('start:client:prod',cb => {
+    whenServerReady(() => {
+        open('http://localhost:'+config.port);
+        cb();
+    });
+});
 gulp.task('start:server', () => {
     process.env.NODE_ENV = process.env.NODE_ENV || 'development';
     config = require(`./${serverPath}/config/environment`);
@@ -338,7 +349,7 @@ gulp.task('serve', cb => {
     runSequence(
         [
             'clean:tmp',
-            'lint:scripts',
+            //'lint:scripts',
             'inject',
             'copy:fonts:dev',
             'env:all'
@@ -372,7 +383,7 @@ gulp.task('serve:dist', cb => {
         'build',
         'env:all',
         'env:prod',
-        ['start:server:prod', 'start:client'],
+        ['start:server:prod', 'start:client:prod'],
         cb);
 });
 
@@ -473,6 +484,7 @@ gulp.task('build', cb => {
         [
             'copy:extras',
             'copy:assets',
+            'copy:root',
             'copy:defaults',
             'copy:fonts:dist',
             'copy:server',
@@ -510,6 +522,12 @@ gulp.task('copy:defaults', () => {
     return gulp.src([
         `${serverPath}/api/db/defaults.conf`
     ]).pipe(gulp.dest(`${paths.dist}/${serverPath}/api/db`));
+})
+gulp.task('copy:root', () => {
+    return gulp.src([
+        './README.md',
+        './start.bat'
+    ]).pipe(gulp.dest(`${paths.dist}`));
 })
 gulp.task('copy:extras', () => {
     return gulp.src([

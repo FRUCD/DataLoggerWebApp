@@ -3,7 +3,7 @@ module.exports = function(descriptor){
     assert.ok(descriptor.CAN_Id);
     assert.ok(descriptor.map);
     descriptor.map.forEach(function(value){
-        assert.ok(value.length);
+        assert.ok(value.length || value.length == 0);
         assert.ok(value.offset||value.offset==0);
         assert.ok(value.length>=0&&value.length<=64);
         assert.ok(value.offset>=0&&value.offset<=64);

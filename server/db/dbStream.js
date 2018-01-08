@@ -3,15 +3,24 @@ var mongo = require("mongodb").MongoClient;
 var EventEmitter = require('events');
 class dbStream extends Writable {
     constructor(options) {
+        options = options || {};
+        options.objectMode = true;
         super(options);
         this.buffer = [];
         this.emitter = new EventEmitter();
         var self = this;
+        this.empty = true;
         mongo.connect('mongodb://localhost/data',function(err,db){
             if(err)console.error.bind(console,"connection error");
             var d = new Date();
+            let formatter = new Intl.NumberFormat('en-US', {minimumIntegerDigits: 2});
             self.db = db;
-            self.collection = db.collection(d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate()+"-"+d.getHours()+"."+d.getMinutes()+"."+d.getSeconds());
+            self.collection = db.collection(d.getFullYear() + "."
+                + formatter.format(d.getMonth() + 1) + "." + formatter.format(d.getDate())
+                + "-" + formatter.format(d.getHours()) + "."
+                + formatter.format(d.getMinutes())+ "."
+                + formatter.format(d.getSeconds()));
+
             self.collection.createIndex("Timestamp");
             self.collection.createIndex("CAN_Id");
             console.log(self.collection.collectionName);
@@ -28,19 +37,27 @@ class dbStream extends Writable {
             }
         });    
     }
-    _write(chunk,encoding,callback)
+    _write(chunk, encoding, callback)
     {
         if(this.collection){
             //console.log("writing");
-            this.collection.insert(JSON.parse(chunk));
+            this.collection.insert(chunk);
+            this.empty = false;
         }
-        else if(!this.collection){
-            this.buffer.push(JSON.parse(chunk));
+        else if(!this.collection) {
+            this.buffer.push(chunk);
         }
         callback();
     }
     ready(callback){
         this.emitter.on("ready",callback);
+    }
+    save(){
+        if(this.empty) {
+            this.collection.drop(function(err){
+                if(err) console.error(err);
+            });
+        }
     }
 }
 module.exports = dbStream;

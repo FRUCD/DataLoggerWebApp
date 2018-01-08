@@ -1,3 +1,6 @@
+/**
+ * @module dashboard
+ */
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import routing from './dashboard.routes';
@@ -7,6 +10,7 @@ import car from './car/car.component';
 import bms from './bms/bms.component';
 import database from './database/database.component';
 import curtis from './curtis/curtis.component';
+import log from './log/log.component';
 import status from './status/status.component';
 import settings from './settings/settings.component';
 import live from './live/live.component';
@@ -22,7 +26,7 @@ export class DashboardController {
   }
 }
 
-export default angular.module('dataLoggerWebAppApp.dashboard', [uiRouter, overview, database, status, settings, car, bms, curtis, live, display])
+export default angular.module('dataLoggerWebAppApp.dashboard', [uiRouter, overview, database, status, settings, car, bms, log,curtis, live, display])
   .config(routing)
   .component('dashboard', {
     template: require('./dashboard.html'),

@@ -4,9 +4,6 @@ function parseDashStatus(out,data){
 }
 function parsePackStatus(out,data){
     out.carName = data[2];
-    data[3] = data[3];
-    data[4] = data[4];
-    data[5] = data[5];
     out.SOC = data[3];
     var flag = data[4] << 8 | data[5];
     out.flag = [];
@@ -92,29 +89,20 @@ function chooseParser(out,data){
     }
 }
 class parseStream extends stream.Transform{ //ES6 Javascript is now just Java, apparently
-    constructor(options){
+    constructor(options) {
+        options = options || {};
+        options.objectMode = true;
         super(options);
     }
     _transform(chunk, encoding, next) {
         var transformed = this.parse(chunk);
-        this.push(JSON.stringify(transformed));
+        this.push(transformed);
         next();
     }
     parse(data){
         if(data&&data.length>0){
             var out = new Object();
-            data = JSON.parse(data);
-            if(!data)return "";
-            var array = [];
-            if(data instanceof Object)
-            {
-                for(var i=0;i<Object.keys(data).length;i++)
-                {
-                    array.push(data[Object.keys(data)[i]]);
-                }
-            }
-            else array = data;
-            console.log(array);
+            var array = data;
             out.CAN_Id = array[0];
             out.Timestamp = array[1];
             chooseParser(out,array);   

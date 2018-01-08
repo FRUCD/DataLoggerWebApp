@@ -53,7 +53,10 @@ module.exports = function makeWebpackConfig(options) {
                 'angular-ui-router',
                 'lodash',
                 'd3',
-                'c3'
+                'c3',
+                'ng-file-upload',
+                'smoothie',
+                'jquery'
             ]
         };
     }

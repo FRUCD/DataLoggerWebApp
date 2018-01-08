@@ -3,17 +3,42 @@
     <div class="col-sm-8 col-md-10">
       <h2 class="heading">BMS <small>Information about the battery</small></h2>
     </div>
-    <div class="col-sm-2 col-md-1">
-      <a ui-sref="dashboard.overview" class="btn btn-primary btn-outline btn-rounded">Overview</a>
-    </div>
-    <div class="col-sm-2 col-md-1">
-      <a ui-sref="dashboard.car" class="btn btn-primary btn-outline btn-rounded">Car</a>
-    </div>
   </div>
 	<div class="jumbotron">
-		<div class="container">
-			<h1>DATA!</h1>
-			Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! Data! <br /><br />
-		</div>
+		<div class="container-fluid">
+      <div class="row">
+        <h3>State</h3>
+      </div>
+      <div class="graph">
+        <div id="state-chart"></div>
+      </div>
+	    <div class="row">
+        <h3>BMS Flag</h3>
+      </div>
+      <div class="graph">
+        <div id="bms-flag-chart"></div>
+      </div>
+      <div class="row">
+        <h3>Pedal</h3>
+      </div>
+      <div class="graph">
+        <div id="throttle-brake-chart"></div>
+      </div>
+      <div class="row">
+        <h3>BMS Temperatures</h3>
+      </div>
+      <div class="graph">
+        <div id="temp-chart"></div>
+      </div>
+      <div class="row">
+        <h3>Battery</h3>
+      </div>
+      <div class="graph">
+        <div id="battery-chart"></div>
+      </div>
+      <div class="row">
+        <h3>Generics</h3>
+      </div>
+      <div ng-repeat="value in genericsIds" on-finish-render="updateGraphs" id="can{{value}}">{{value}}</div>
 	</div>
 </div>
